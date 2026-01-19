@@ -1,0 +1,25 @@
+is it possible for layou change for ios
+
+Yes, it's possible to have layout changes for iOS in the white-label system, but it requires additional setup since iOS doesn't have product flavors like Android.
+
+Current iOS Support Status:
+
+The white-label system currently focuses on Android. For iOS, you would need:
+
+Multiple Xcode Schemes - One per school
+Multiple Targets or Build Configurations - For different bundle IDs
+xcconfig files - For build-time configuration
+What's needed for iOS white-label:
+
+Component	Android (Done)	iOS (Needed)
+Package/Bundle ID	Product Flavors	Xcode Targets/Schemes
+App Name	resValue	Info.plist per target
+App Icon	src/{flavor}/res/	Asset catalogs per target
+Firebase Config	Build script copies	Build phase script
+Environment	react-native-config	react-native-config + xcconfig
+Options for iOS:
+
+Xcode Targets - Create separate target per school (most robust)
+Build Configurations + xcconfig - Use different configs per school
+Build Scripts - Copy files before build (simpler but manual)
+Would you like me to implement iOS white-label support with Xcode schemes and build configurations? This would allow you to build different school apps for iOS using commands like:

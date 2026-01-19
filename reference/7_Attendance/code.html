@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Attendance</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "Noto Sans", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>.no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111418] dark:text-white overflow-x-hidden">
+<div class="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto bg-white dark:bg-[#101922] shadow-xl overflow-hidden">
+<div class="flex items-center bg-white dark:bg-[#101922] p-4 pb-2 justify-between sticky top-0 z-50 border-b border-gray-100 dark:border-gray-800">
+<div class="text-[#111418] dark:text-white flex size-12 shrink-0 items-center cursor-pointer">
+<span class="material-symbols-outlined text-2xl">arrow_back_ios</span>
+</div>
+<h2 class="text-[#111418] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Attendance</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-transparent text-[#111418] dark:text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 p-0">
+<span class="material-symbols-outlined text-2xl">tune</span>
+</button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto no-scrollbar pb-20">
+<div class="bg-white dark:bg-[#101922] pt-4 pb-2">
+<div class="flex w-full overflow-x-auto no-scrollbar gap-3 px-4">
+<button class="flex-none px-5 py-2.5 rounded-full bg-primary text-white text-sm font-bold shadow-sm shadow-primary/20 whitespace-nowrap transition-transform active:scale-95">
+                        ARIVUMATHI V
+                    </button>
+<button class="flex-none px-5 py-2.5 rounded-full bg-white dark:bg-[#1a2632] border border-gray-200 dark:border-gray-700 text-[#111418] dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors whitespace-nowrap">
+                        PRANAV OG
+                    </button>
+<button class="flex-none px-5 py-2.5 rounded-full bg-white dark:bg-[#1a2632] border border-gray-200 dark:border-gray-700 text-[#111418] dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors whitespace-nowrap">
+                        LAVANYA S
+                    </button>
+</div>
+</div>
+<div class="bg-white dark:bg-[#101922] pb-4 pt-2">
+<div class="flex flex-col gap-0.5 px-4">
+<div class="flex items-center p-1 justify-between mb-4 mt-2">
+<button class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
+<span class="material-symbols-outlined text-lg text-[#111418] dark:text-white">chevron_left</span>
+</button>
+<p class="text-[#111418] dark:text-white text-base font-bold leading-tight flex-1 text-center">October 2023</p>
+<button class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
+<span class="material-symbols-outlined text-lg text-[#111418] dark:text-white">chevron_right</span>
+</button>
+</div>
+<div class="grid grid-cols-7 mb-2">
+<p class="text-[#617589] dark:text-gray-400 text-[13px] font-bold flex h-8 w-full items-center justify-center">S</p>
+<p class="text-[#617589] dark:text-gray-400 text-[13px] font-bold flex h-8 w-full items-center justify-center">M</p>
+<p class="text-[#617589] dark:text-gray-400 text-[13px] font-bold flex h-8 w-full items-center justify-center">T</p>
+<p class="text-[#617589] dark:text-gray-400 text-[13px] font-bold flex h-8 w-full items-center justify-center">W</p>
+<p class="text-[#617589] dark:text-gray-400 text-[13px] font-bold flex h-8 w-full items-center justify-center">T</p>
+<p class="text-[#617589] dark:text-gray-400 text-[13px] font-bold flex h-8 w-full items-center justify-center">F</p>
+<p class="text-[#617589] dark:text-gray-400 text-[13px] font-bold flex h-8 w-full items-center justify-center">S</p>
+</div>
+<div class="grid grid-cols-7 gap-y-2">
+<div class="h-10 w-full"></div>
+<div class="h-10 w-full"></div>
+<div class="h-10 w-full"></div>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">1</div></button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">2</div></button>
+<button class="h-10 w-full text-white text-sm font-medium">
+<div class="flex size-full items-center justify-center rounded-full bg-red-500 shadow-md shadow-red-500/30">3</div>
+</button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">4</div></button>
+<button class="h-10 w-full text-white text-sm font-medium">
+<div class="flex size-full items-center justify-center rounded-full bg-primary shadow-md shadow-primary/30">5</div>
+</button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">6</div></button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">7</div></button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">8</div></button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">9</div></button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">10</div></button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">11</div></button>
+<button class="h-10 w-full text-white text-sm font-medium">
+<div class="flex size-full items-center justify-center rounded-full bg-red-500 shadow-md shadow-red-500/30">12</div>
+</button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">13</div></button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">14</div></button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">15</div></button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">16</div></button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">17</div></button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">18</div></button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">19</div></button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">20</div></button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">21</div></button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">22</div></button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">23</div></button>
+<button class="h-10 w-full text-white text-sm font-medium">
+<div class="flex size-full items-center justify-center rounded-full bg-red-500 shadow-md shadow-red-500/30">24</div>
+</button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">25</div></button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">26</div></button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">27</div></button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">28</div></button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">29</div></button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">30</div></button>
+<button class="h-10 w-full text-[#111418] dark:text-white text-sm font-medium"><div class="flex size-full items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">31</div></button>
+</div>
+<div class="flex justify-center gap-6 mt-4 pb-2">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+<span class="text-xs font-medium text-gray-600 dark:text-gray-400">Absent</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+<span class="text-xs font-medium text-gray-600 dark:text-gray-400">Today</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-gray-200 dark:bg-gray-700"></span>
+<span class="text-xs font-medium text-gray-600 dark:text-gray-400">Present</span>
+</div>
+</div>
+</div>
+</div>
+<div class="h-2 w-full bg-gray-50 dark:bg-[#15202b] border-t border-b border-gray-100 dark:border-gray-800"></div>
+<div class="bg-white dark:bg-[#101922] p-6">
+<div class="rounded-2xl bg-white dark:bg-[#1a2632] border border-gray-100 dark:border-gray-800 shadow-sm p-6 flex flex-col items-center justify-center text-center">
+<p class="text-[#617589] dark:text-gray-400 text-sm font-bold uppercase tracking-widest mb-2">Total Absent Days</p>
+<div class="flex items-baseline gap-1">
+<span class="text-5xl font-bold text-[#111418] dark:text-white tracking-tight">3</span>
+<span class="text-base text-gray-500 dark:text-gray-400 font-medium">days</span>
+</div>
+<div class="mt-4 flex items-center justify-center gap-2 px-3 py-1.5 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-bold">
+<span class="material-symbols-outlined text-base">warning</span>
+<span>Needs Attention</span>
+</div>
+</div>
+<div class="mt-6">
+<h3 class="text-[#111418] dark:text-white text-lg font-bold leading-tight mb-4 px-1">Absent History</h3>
+<div class="flex flex-col gap-3">
+<div class="flex items-center p-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-[#1a2632]/50">
+<div class="flex-none w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 font-bold text-xs">
+                                24
+                            </div>
+<div class="ml-3 flex-1">
+<p class="text-sm font-bold text-[#111418] dark:text-white">Tuesday, Oct 24</p>
+<p class="text-xs text-gray-500 dark:text-gray-400">Unexcused Absence</p>
+</div>
+</div>
+<div class="flex items-center p-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-[#1a2632]/50">
+<div class="flex-none w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 font-bold text-xs">
+                                12
+                            </div>
+<div class="ml-3 flex-1">
+<p class="text-sm font-bold text-[#111418] dark:text-white">Thursday, Oct 12</p>
+<p class="text-xs text-gray-500 dark:text-gray-400">Sick Leave</p>
+</div>
+</div>
+<div class="flex items-center p-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-[#1a2632]/50">
+<div class="flex-none w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 font-bold text-xs">
+                                03
+                            </div>
+<div class="ml-3 flex-1">
+<p class="text-sm font-bold text-[#111418] dark:text-white">Tuesday, Oct 03</p>
+<p class="text-xs text-gray-500 dark:text-gray-400">Family Emergency</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>

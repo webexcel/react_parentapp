@@ -1,0 +1,76 @@
+{
+  "$schema": "../brand.schema.json",
+  "brand": {
+    "id": "crescent",
+    "name": "Crescent Matriculation Girls Hr. Sec. School",
+    "shortName": "Crescent",
+    "tagline": "Excellence in Education"
+  },
+  "app": {
+    "android": {
+      "applicationId": "com.schooltree.crescentapp",
+      "versionCode": 1,
+      "versionName": "1.0.0"
+    },
+    "ios": {
+      "bundleId": "com.schooltree.crescent",
+      "version": "1.0.0",
+      "buildNumber": "1"
+    }
+  },
+  "api": {
+    "baseUrl": "https://dev1.schooltree.in/api",
+    "databaseName": "cresent"
+  },
+  "firebase": {
+    "projectId": "schooltrees-69f4b",
+    "configGroup": "group-a"
+  },
+  "auth": {
+    "type": "otp",
+    "otpLength": 6,
+    "countryCode": "+91"
+  },
+  "theme": {
+    "colors": {
+      "primary": "#137fec",
+      "primaryDark": "#0b4dc9",
+      "primarySoft": "#EFF6FF",
+      "accent": "#10b981",
+      "background": "#f6f7f8",
+      "surface": "#ffffff",
+      "text": "#111418",
+      "textSecondary": "#617589",
+      "success": "#10b981",
+      "warning": "#f59e0b",
+      "error": "#ef4444",
+      "info": "#3b82f6"
+    },
+    "fonts": {
+      "primary": "Lexend",
+      "secondary": "Inter"
+    }
+  },
+  "features": {
+    "modules": {
+      "dashboard": { "enabled": true },
+      "circulars": { "enabled": true },
+      "homework": { "enabled": true },
+      "attendance": { "enabled": true },
+      "exams": { "enabled": true },
+      "marks": { "enabled": true },
+      "fees": { "enabled": true, "showPaymentGateway": false },
+      "calendar": { "enabled": true },
+      "gallery": { "enabled": true },
+      "timetable": { "enabled": true },
+      "chat": { "enabled": false },
+      "profile": { "enabled": true }
+    },
+    "notifications": {
+      "enabled": true,
+      "topics": ["circulars", "homework", "attendance"]
+    },
+    "offlineMode": true,
+    "darkMode": false
+  }
+}

@@ -1,0 +1,16 @@
+# School Management Commands
+npm run school:add          # Add new school
+npm run school:list         # List all schools
+npm run school:edit <id>    # Edit school
+npm run school:sync         # Sync build files
+
+# Build Commands
+npm run android:crescent    # Debug build
+npm run build:crescent:aab  # Release AAB
+
+# Key Files
+brands/{school_id}/brand.config.json     # School config
+brands/{school_id}/assets/               # Firebase configs, icons
+android/app/build.gradle                 # Product flavors
+src/core/brand/                          # Brand system code
+scripts/school-manager.js                # CLI tool

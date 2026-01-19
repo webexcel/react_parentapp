@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html class="" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Parent Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>tailwind.config = {darkMode: "class", theme: {extend: {colors: {primary: "#137fec", "background-light": "#f6f7f8", "background-dark": "#101922", "surface-light": "#ffffff", "surface-dark": "#1f2937", "text-main-light": "#111827", "text-main-dark": "#f3f4f6", "text-sub-light": "#6b7280", "text-sub-dark": "#9ca3af"}, fontFamily: {display: "Lexend"}, borderRadius: {DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem"}, boxShadow: {soft: "0 4px 20px -2px rgba(0, 0, 0, 0.05)"}}}};</script>
+<style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main-light dark:text-text-main-dark antialiased transition-colors duration-200 pb-24">
+<header class="sticky top-0 z-50 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-sm px-4 py-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-800">
+<div class="flex items-center gap-3">
+<button class="p-2 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition">
+<span class="material-icons-round text-2xl">menu</span>
+</button>
+<h1 class="text-xl font-bold">Dashboard</h1>
+</div>
+<div class="flex items-center gap-3">
+<button class="relative p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition">
+<span class="material-icons-outlined text-2xl text-gray-600 dark:text-gray-300">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-background-light dark:border-background-dark"></span>
+</button>
+<div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-primary font-bold text-sm">
+            P
+        </div>
+</div>
+</header>
+<div class="pt-4 pb-2 px-4">
+<div class="flex gap-3 overflow-x-auto hide-scrollbar snap-x">
+<button class="snap-start flex-shrink-0 bg-primary text-white px-5 py-2 rounded-full text-sm font-medium shadow-md transition-transform active:scale-95">
+            Pranav OG
+        </button>
+<button class="snap-start flex-shrink-0 bg-white dark:bg-surface-dark text-text-sub-light dark:text-text-sub-dark border border-gray-200 dark:border-gray-700 px-5 py-2 rounded-full text-sm font-medium transition-transform active:scale-95">
+            Arivumathi V
+        </button>
+<button class="snap-start flex-shrink-0 bg-white dark:bg-surface-dark text-text-sub-light dark:text-text-sub-dark border border-gray-200 dark:border-gray-700 px-5 py-2 rounded-full text-sm font-medium transition-transform active:scale-95">
+            Lavanya S
+        </button>
+</div>
+</div>
+<main class="px-4 py-4 space-y-6">
+<div>
+<h2 class="text-2xl font-bold text-text-main-light dark:text-white">Welcome back, Parent</h2>
+<p class="text-text-sub-light dark:text-text-sub-dark text-sm mt-1">Here is what's happening with your children today.</p>
+</div>
+<div class="flex flex-col gap-3">
+<div class="bg-surface-light dark:bg-surface-dark p-4 rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700">
+<div class="flex justify-between items-center mb-3">
+<span class="text-sm font-medium text-text-sub-light dark:text-text-sub-dark">Attendance</span>
+<div class="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
+<span class="material-icons-round text-sm">check_circle</span>
+</div>
+</div>
+<div class="grid grid-cols-3 divide-x divide-gray-100 dark:divide-gray-700">
+<div class="flex flex-col items-center px-1">
+<div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-2 font-bold text-xs ring-2 ring-white dark:ring-surface-dark shadow-sm">
+                            P
+                        </div>
+<div class="text-lg font-bold text-gray-900 dark:text-white">95%</div>
+<div class="text-[10px] text-gray-500 dark:text-gray-400 font-medium">Pranav</div>
+</div>
+<div class="flex flex-col items-center px-1">
+<div class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mb-2 font-bold text-xs ring-2 ring-white dark:ring-surface-dark shadow-sm">
+                            A
+                        </div>
+<div class="text-lg font-bold text-gray-900 dark:text-white">88%</div>
+<div class="text-[10px] text-gray-500 dark:text-gray-400 font-medium">Arivumathi</div>
+</div>
+<div class="flex flex-col items-center px-1">
+<div class="w-10 h-10 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center mb-2 font-bold text-xs ring-2 ring-white dark:ring-surface-dark shadow-sm">
+                            L
+                        </div>
+<div class="text-lg font-bold text-gray-900 dark:text-white">92%</div>
+<div class="text-[10px] text-gray-500 dark:text-gray-400 font-medium">Lavanya</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark p-4 rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700">
+<div class="flex justify-between items-center mb-3">
+<span class="text-sm font-medium text-text-sub-light dark:text-text-sub-dark">Homework</span>
+<div class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center">
+<span class="material-icons-round text-sm">assignment_late</span>
+</div>
+</div>
+<div class="grid grid-cols-3 divide-x divide-gray-100 dark:divide-gray-700">
+<div class="flex flex-col items-center px-1">
+<div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-2 font-bold text-xs ring-2 ring-white dark:ring-surface-dark shadow-sm">
+                            P
+                        </div>
+<div class="text-lg font-bold text-gray-900 dark:text-white">1</div>
+<div class="text-[10px] text-orange-500 font-medium">Pending</div>
+</div>
+<div class="flex flex-col items-center px-1">
+<div class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mb-2 font-bold text-xs ring-2 ring-white dark:ring-surface-dark shadow-sm">
+                            A
+                        </div>
+<div class="text-lg font-bold text-gray-900 dark:text-white">0</div>
+<div class="text-[10px] text-green-500 font-medium">Completed</div>
+</div>
+<div class="flex flex-col items-center px-1">
+<div class="w-10 h-10 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center mb-2 font-bold text-xs ring-2 ring-white dark:ring-surface-dark shadow-sm">
+                            L
+                        </div>
+<div class="text-lg font-bold text-gray-900 dark:text-white">3</div>
+<div class="text-[10px] text-orange-500 font-medium">Pending</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark p-4 rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700 flex justify-between items-center">
+<div class="flex flex-col justify-between h-full">
+<span class="text-sm font-medium text-text-sub-light dark:text-text-sub-dark mb-1">Circulars</span>
+<div>
+<div class="text-2xl font-bold text-gray-900 dark:text-white">2 New</div>
+</div>
+</div>
+<div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+<span class="material-icons-round text-2xl">campaign</span>
+</div>
+</div>
+</div>
+<section>
+<div class="flex items-center justify-between mb-3">
+<h3 class="text-lg font-bold text-text-main-light dark:text-white">Latest News</h3>
+<a class="text-xs font-semibold text-primary hover:text-blue-700" href="#">View All</a>
+</div>
+<div class="flex gap-4 overflow-x-auto hide-scrollbar snap-x pb-4 -mx-4 px-4">
+<div class="snap-center flex-shrink-0 w-64 bg-surface-light dark:bg-surface-dark rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700 p-5 flex flex-col justify-center">
+<div>
+<p class="text-sm font-medium text-gray-900 dark:text-white leading-relaxed">Congratulations to all participants for their innovative projects.</p>
+</div>
+</div>
+<div class="snap-center flex-shrink-0 w-64 bg-surface-light dark:bg-surface-dark rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700 p-5 flex flex-col justify-center">
+<div>
+<p class="text-sm font-medium text-gray-900 dark:text-white leading-relaxed">Register your child for track and field events before Friday.</p>
+</div>
+</div>
+<div class="snap-center flex-shrink-0 w-64 bg-surface-light dark:bg-surface-dark rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700 p-5 flex flex-col justify-center">
+<div>
+<p class="text-sm font-medium text-gray-900 dark:text-white leading-relaxed">The new wing is now open for students with extended hours.</p>
+</div>
+</div>
+</div>
+</section>
+<section>
+<div class="flex items-center gap-2 mb-3">
+<span class="material-icons-round text-blue-600 dark:text-blue-400 text-2xl">grid_view</span>
+<h3 class="text-lg font-bold text-text-main-light dark:text-white">Quick Access</h3>
+</div>
+<div class="space-y-3">
+<button class="w-full bg-surface-light dark:bg-surface-dark p-3.5 rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700 flex items-center hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+<div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 flex items-center justify-center flex-shrink-0">
+<span class="material-icons-round text-xl">campaign</span>
+</div>
+<div class="ml-4 flex-1 text-left">
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">Circulars</h4>
+<p class="text-xs text-gray-500 dark:text-gray-400">Notices &amp; announcements</p>
+</div>
+<span class="px-2.5 py-1 rounded-md bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-300 text-[10px] font-bold">2 NEW</span>
+</button>
+<button class="w-full bg-surface-light dark:bg-surface-dark p-3.5 rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700 flex items-center hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+<div class="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300 flex items-center justify-center flex-shrink-0">
+<span class="material-icons-round text-xl">assignment</span>
+</div>
+<div class="ml-4 flex-1 text-left">
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">Homework</h4>
+<p class="text-xs text-gray-500 dark:text-gray-400">Daily assignments &amp; tasks</p>
+</div>
+<span class="px-2.5 py-1 rounded-md bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-300 text-[10px] font-bold">1 PENDING</span>
+</button>
+<div class="grid grid-cols-2 gap-3">
+<button class="bg-surface-light dark:bg-surface-dark p-3.5 rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700 flex flex-col items-start text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+<div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-300 flex items-center justify-center mb-3">
+<span class="material-icons-round text-xl">star</span>
+</div>
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">View Marks</h4>
+<p class="text-xs text-gray-500 dark:text-gray-400">Progress reports &amp; grades</p>
+</button>
+<button class="bg-surface-light dark:bg-surface-dark p-3.5 rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700 flex flex-col items-start text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+<div class="w-10 h-10 rounded-xl bg-pink-100 dark:bg-pink-900/40 text-pink-600 dark:text-pink-300 flex items-center justify-center mb-3">
+<span class="material-icons-round text-xl">collections</span>
+</div>
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">Gallery</h4>
+<p class="text-xs text-gray-500 dark:text-gray-400">Event photos &amp; memories</p>
+</button>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<button class="bg-surface-light dark:bg-surface-dark p-3.5 rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700 flex flex-col items-start text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+<div class="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-300 flex items-center justify-center mb-3">
+<span class="material-icons-round text-xl">event_note</span>
+</div>
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">Exam Schedule</h4>
+<p class="text-xs text-gray-500 dark:text-gray-400">Datesheet &amp; syllabus</p>
+</button>
+<button class="bg-surface-light dark:bg-surface-dark p-3.5 rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700 flex flex-col items-start text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+<div class="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-300 flex items-center justify-center mb-3">
+<span class="material-icons-round text-xl">calendar_today</span>
+</div>
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">Calendar</h4>
+<p class="text-xs text-gray-500 dark:text-gray-400">Holidays &amp; events</p>
+</button>
+</div>
+<button class="w-full bg-surface-light dark:bg-surface-dark p-3.5 rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700 flex items-center hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+<div class="w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-900/40 text-teal-600 dark:text-teal-300 flex items-center justify-center flex-shrink-0">
+<span class="material-icons-round text-xl">person_outline</span>
+</div>
+<div class="ml-4 flex-1 text-left">
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">Attendance</h4>
+<p class="text-xs text-gray-500 dark:text-gray-400">Monthly reports</p>
+</div>
+<span class="px-2.5 py-1 rounded-md bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-300 text-[10px] font-bold">95% PRESENT</span>
+</button>
+<button class="w-full bg-surface-light dark:bg-surface-dark p-3.5 rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700 flex items-center hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+<div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300 flex items-center justify-center flex-shrink-0">
+<span class="material-icons-round text-xl">payments</span>
+</div>
+<div class="ml-4 flex-1 text-left">
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">Fee Details</h4>
+<p class="text-xs text-gray-500 dark:text-gray-400">Invoices &amp; receipts</p>
+</div>
+<span class="px-2.5 py-1 rounded-md bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-300 text-[10px] font-bold">PAYMENT DUE</span>
+</button>
+<button class="w-full bg-surface-light dark:bg-surface-dark p-3.5 rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700 flex items-center hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+<div class="w-10 h-10 rounded-xl bg-cyan-100 dark:bg-cyan-900/40 text-cyan-600 dark:text-cyan-300 flex items-center justify-center flex-shrink-0">
+<span class="material-icons-round text-xl">schedule</span>
+</div>
+<div class="ml-4 flex-1 text-left">
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">Timetable</h4>
+<p class="text-xs text-gray-500 dark:text-gray-400">Weekly class routine</p>
+</div>
+</button>
+</div>
+</section>
+</main>
+<nav class="fixed bottom-0 left-0 right-0 bg-surface-light dark:bg-surface-dark border-t border-gray-200 dark:border-gray-800 pb-safe pt-2 px-6 flex justify-between items-center z-50 shadow-[0_-5px_15px_rgba(0,0,0,0.02)]">
+<button class="flex flex-col items-center p-2 text-primary">
+<span class="material-icons-round">dashboard</span>
+<span class="text-[10px] font-medium mt-1">Home</span>
+</button>
+<button class="flex flex-col items-center p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
+<span class="material-icons-outlined">menu_book</span>
+<span class="text-[10px] font-medium mt-1">Homework</span>
+</button>
+<button class="flex flex-col items-center p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
+<span class="material-icons-outlined">bar_chart</span>
+<span class="text-[10px] font-medium mt-1">Marks</span>
+</button>
+<button class="flex flex-col items-center p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
+<span class="material-icons-outlined">person</span>
+<span class="text-[10px] font-medium mt-1">Profile</span>
+</button>
+</nav>
+<div class="h-20"></div>
+
+</body></html>

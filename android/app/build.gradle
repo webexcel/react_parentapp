@@ -1,58 +1,36 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
+apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
 
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
  */
 react {
-    /* Folders */
-    //   The root of your project, i.e. where "package.json" lives. Default is '../..'
-    // root = file("../../")
-    //   The folder where the react-native NPM package is. Default is ../../node_modules/react-native
-    // reactNativeDir = file("../../node_modules/react-native")
-    //   The folder where the react-native Codegen package is. Default is ../../node_modules/@react-native/codegen
-    // codegenDir = file("../../node_modules/@react-native/codegen")
-    //   The cli.js file which is the React Native CLI entrypoint. Default is ../../node_modules/react-native/cli.js
-    // cliFile = file("../../node_modules/react-native/cli.js")
-
     /* Variants */
-    //   The list of variants to that are debuggable. For those we're going to
-    //   skip the bundling of the JS bundle and the assets. By default is just 'debug'.
-    //   If you add flavors like lite, prod, etc. you'll have to list your debuggableVariants.
-    // debuggableVariants = ["liteDebug", "prodDebug"]
-
-    /* Bundling */
-    //   A list containing the node command and its flags. Default is just 'node'.
-    // nodeExecutableAndArgs = ["node"]
-    //
-    //   The command to run when bundling. By default is 'bundle'
-    // bundleCommand = "ram-bundle"
-    //
-    //   The path to the CLI configuration file. Default is empty.
-    // bundleConfig = file(../rn-cli.config.js)
-    //
-    //   The name of the generated asset file containing your JS bundle
-    // bundleAssetName = "MyApplication.android.bundle"
-    //
-    //   The entry file for bundle generation. Default is 'index.android.js' or 'index.js'
-    // entryFile = file("../js/MyApplication.android.js")
-    //
-    //   A list of extra flags to pass to the 'bundle' commands.
-    //   See https://github.com/react-native-community/cli/blob/main/docs/commands.md#bundle
-    // extraPackagerArgs = []
-
-    /* Hermes Commands */
-    //   The hermes compiler command to run. By default it is 'hermesc'
-    // hermesCommand = "$rootDir/my-custom-hermesc/bin/hermesc"
-    //
-    //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
-    // hermesFlags = ["-O", "-output-source-map"]
+    // List debuggable variants for all flavors
+    debuggableVariants = ["bsschoolDebug", "crescentDebug", "psseniorDebug", "railwaybalabhavanDebug"]
 
     /* Autolinking */
     autolinkLibrariesWithApp()
 }
+
+/**
+ * Environment file mapping for react-native-config
+ * Maps each flavor+buildType combination to its environment file
+ */
+project.ext.envConfigFiles = [
+    bsschooldebug: "../../brands/bsschool/env/.env.development",
+    bsschoolrelease: "../../brands/bsschool/env/.env.production",
+    crescentdebug: "../../brands/crescent/env/.env.development",
+    crescentrelease: "../../brands/crescent/env/.env.production",
+    psseniordebug: "../../brands/pssenior/env/.env.development",
+    psseniorrelease: "../../brands/pssenior/env/.env.production",
+    railwaybalabhavandebug: "../../brands/railwaybalabhavan/env/.env.development",
+    railwaybalabhavanrelease: "../../brands/railwaybalabhavan/env/.env.production",
+]
 
 /**
  * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
@@ -77,14 +55,73 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.schooltree.crescentapp"
+    namespace "com.schooltree.parentapp"
+
     defaultConfig {
-        applicationId "com.schooltree.crescentapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+
+        // Default BuildConfig fields (overridden by flavors)
+        buildConfigField "String", "BRAND_ID", "\"crescent\""
+        buildConfigField "String", "AUTH_TYPE", "\"password\""
+        buildConfigField "String", "DB_NAME", "\"crescent_db\""
     }
+
+    /**
+     * Product Flavors - White-label configuration for different schools
+     * Each flavor creates a separate app with its own:
+     * - Application ID (package name)
+     * - App name
+     * - Brand configuration
+     */
+    flavorDimensions "brand"
+
+    productFlavors {
+        // B.S Nursery & Primary School
+        bsschool {
+            dimension "brand"
+            applicationId "com.schooltree.bs"
+            resValue "string", "app_name", "B.S Nursery & Primary School Parent"
+            buildConfigField "String", "BRAND_ID", "\"bsschool\""
+            buildConfigField "String", "AUTH_TYPE", "\"otp\""
+            buildConfigField "String", "DB_NAME", "\"bs_school\""
+        }
+
+        // Crescent Matriculation Girls Hr. Sec. School
+        crescent {
+            dimension "brand"
+            applicationId "com.schooltree.crescentapp"
+            resValue "string", "app_name", "Crescent Matriculation Girls Hr. Sec. School Parent"
+            buildConfigField "String", "BRAND_ID", "\"crescent\""
+            buildConfigField "String", "AUTH_TYPE", "\"otp\""
+            buildConfigField "String", "DB_NAME", "\"cresent\""
+        }
+
+        // P.S. Senior Secondary School
+        pssenior {
+            dimension "brand"
+            applicationId "com.schooltree.pssenior"
+            resValue "string", "app_name", "P.S. Senior Secondary School Parent"
+            buildConfigField "String", "BRAND_ID", "\"pssenior\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"pssenior\""
+        }
+
+        // Reilway Bala Bhavan School
+        railwaybalabhavan {
+            dimension "brand"
+            applicationId "com.schooltree.balabhavan"
+            resValue "string", "app_name", "Reilway Bala Bhavan School Parent"
+            buildConfigField "String", "BRAND_ID", "\"railwaybalabhavan\""
+            buildConfigField "String", "AUTH_TYPE", "\"otp\""
+            buildConfigField "String", "DB_NAME", "\"rlybalabhavans\""
+        }
+
+        // Add more school flavors using: npm run school:add
+    }
+
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -92,7 +129,15 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        // Add release signing configs per brand as needed
+        // crescentRelease {
+        //     storeFile file('keystores/crescent.keystore')
+        //     storePassword System.getenv("CRESCENT_STORE_PASSWORD")
+        //     keyAlias 'crescent'
+        //     keyPassword System.getenv("CRESCENT_KEY_PASSWORD")
+        // }
     }
+
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
@@ -103,6 +148,26 @@ android {
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+    }
+
+    /**
+     * Source sets for brand-specific resources
+     * Each brand can have its own icons, colors, and other resources
+     * Place resources in: android/app/src/{brandName}/res/
+     */
+    sourceSets {
+        bsschool {
+            res.srcDirs = ['src/bsschool/res']
+        }
+        crescent {
+            res.srcDirs = ['src/crescent/res']
+        }
+        pssenior {
+            res.srcDirs = ['src/pssenior/res']
+        }
+        railwaybalabhavan {
+            res.srcDirs = ['src/railwaybalabhavan/res']
         }
     }
 }

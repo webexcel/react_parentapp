@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Home Work</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#0d59f2",
+                        "primary-dark": "#0b4dc9",
+                        "background-light": "#f5f6f8",
+                        "background-dark": "#101622",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e293b"
+                    },
+                    fontFamily: {
+                        display: "Inter"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.125rem",
+                        lg: "0.25rem",
+                        xl: "0.5rem",
+                        full: "0.75rem"
+                    }
+                }
+            }
+        };
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased selection:bg-primary/30">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto shadow-2xl bg-background-light dark:bg-background-dark">
+<header class="sticky top-0 z-20 bg-background-light dark:bg-background-dark/95 backdrop-blur-md transition-colors duration-200">
+<div class="flex items-center justify-between px-4 pt-6 pb-2">
+<button class="group flex size-10 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-slate-800 dark:text-slate-100" style="font-size: 24px;">arrow_back</span>
+</button>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight flex-1 text-center">Home Work</h2>
+<div class="size-10"></div>
+</div>
+<div class="mt-2 pb-4">
+<div class="px-4 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Select Student</div>
+<div class="flex gap-6 px-4 overflow-x-auto no-scrollbar items-start pb-2">
+<button class="flex flex-col items-center gap-2 group shrink-0">
+<div class="relative p-1">
+<div class="size-16 rounded-full overflow-hidden bg-orange-100 border-2 border-white dark:border-surface-dark ring-2 ring-primary shadow-lg dark:shadow-primary/20">
+<div class="w-full h-full flex items-center justify-center text-orange-600 bg-orange-100">
+<span class="material-symbols-outlined text-[32px]">person</span>
+</div>
+</div>
+<div class="absolute bottom-0 right-0 translate-x-1 translate-y-1 bg-primary text-white rounded-full p-0.5 border-2 border-white dark:border-surface-dark flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</div>
+</div>
+<span class="text-primary text-xs font-bold tracking-wide text-center max-w-[80px] leading-tight">ARIVUMATHI V</span>
+</button>
+<button class="flex flex-col items-center gap-2 group shrink-0 opacity-60 hover:opacity-100 transition-opacity">
+<div class="relative p-1">
+<div class="size-16 rounded-full overflow-hidden bg-emerald-100 border-2 border-transparent group-hover:border-slate-200 dark:group-hover:border-slate-700 transition-all">
+<div class="w-full h-full flex items-center justify-center text-emerald-600 bg-emerald-100">
+<span class="material-symbols-outlined text-[32px]">person</span>
+</div>
+</div>
+</div>
+<span class="text-slate-600 dark:text-slate-400 text-xs font-medium text-center max-w-[80px] leading-tight">PRANAV OG</span>
+</button>
+<button class="flex flex-col items-center gap-2 group shrink-0 opacity-60 hover:opacity-100 transition-opacity">
+<div class="relative p-1">
+<div class="size-16 rounded-full overflow-hidden bg-indigo-100 border-2 border-transparent group-hover:border-slate-200 dark:group-hover:border-slate-700 transition-all">
+<div class="w-full h-full flex items-center justify-center text-indigo-600 bg-indigo-100">
+<span class="material-symbols-outlined text-[32px]">person</span>
+</div>
+</div>
+</div>
+<span class="text-slate-600 dark:text-slate-400 text-xs font-medium text-center max-w-[80px] leading-tight">LAVANYA S</span>
+</button>
+</div>
+</div>
+</header>
+<main class="flex-1 px-4 pt-2 pb-24">
+<div class="mb-6">
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+<span class="material-symbols-outlined text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+</div>
+<input class="w-full h-12 rounded-xl bg-white dark:bg-surface-dark border-none pl-11 pr-4 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-primary/20 shadow-sm transition-all" placeholder="Search homework..." type="text"/>
+</div>
+</div>
+<section class="mb-8">
+<h3 class="flex items-center gap-2 text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4 px-1">
+<span class="size-2 rounded-full bg-orange-500 shadow-sm shadow-orange-500/50"></span>
+                    Pending Homework
+                </h3>
+<div class="space-y-4">
+<article class="bg-white dark:bg-surface-dark rounded-xl shadow-sm p-4 transition-all active:scale-[0.99] border border-slate-100 dark:border-slate-800">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[24px]">person</span>
+</div>
+<div>
+<h3 class="text-sm font-bold text-slate-900 dark:text-white">ARIVUMATHI V</h3>
+<p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Class 5-B</p>
+</div>
+</div>
+<div class="flex flex-col items-end gap-1">
+<span class="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-900/20 text-[10px] font-bold text-blue-600 dark:text-blue-300 uppercase tracking-wide">Maths</span>
+<span class="text-[10px] font-medium text-slate-400">Due Today</span>
+</div>
+</div>
+<div class="text-sm text-slate-600 dark:text-slate-300 space-y-2 leading-relaxed mb-4">
+<p>Complete the exercise on <strong class="text-slate-800 dark:text-slate-100 font-semibold">Algebraic Expressions</strong>. Please show your working for problems 5 through 10.</p>
+</div>
+<div class="space-y-3">
+<div>
+<p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 mb-2 uppercase tracking-wide">Reference Image</p>
+<div class="w-full h-48 rounded-xl overflow-hidden relative bg-slate-100 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+<img alt="Maths Exercise 1" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCk7MXyL8082Rw4_bRrREAyBE922lHpq5MVq6i6UWeR3P9qTkagjuNMfU0iSnqx595Fm5H5OWVHZvO4RQ7koYHz77gZdIL4DE7Q-4ZTqW9e4dzdrrhoUuLtbTPYAFuaomkvyrQfiF4nXk3J5r-nSeuixatho0RkVTQ_QL8tODglB7fOC2pTEGEpX4tFnWXOnZDID1FeixVNtFWYGSSC_RULUvx-h6S9PwYHLmigs7tcNKKiNZ9nZCslVs04vhnWOBQVrjnvTjyy75M"/>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 group cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<div class="size-10 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0 border border-red-200 dark:border-red-800/30">
+<span class="material-symbols-outlined text-[24px]">picture_as_pdf</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">Algebra_Worksheet.pdf</p>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="text-[10px] text-slate-500 dark:text-slate-400">145 KB</span>
+<span class="size-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
+<span class="text-[10px] text-primary font-medium">Download</span>
+</div>
+</div>
+<button class="size-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-slate-400 hover:text-primary transition-colors border border-slate-200 dark:border-slate-600">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+</div>
+</div>
+</article>
+<article class="bg-white dark:bg-surface-dark rounded-xl shadow-sm p-4 transition-all active:scale-[0.99] border border-slate-100 dark:border-slate-800">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+<span class="material-symbols-outlined text-[24px]">person</span>
+</div>
+<div>
+<h3 class="text-sm font-bold text-slate-900 dark:text-white">PRANAV OG</h3>
+<p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Class 5-B</p>
+</div>
+</div>
+<div class="flex flex-col items-end gap-1">
+<span class="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-900/20 text-[10px] font-bold text-emerald-600 dark:text-emerald-300 uppercase tracking-wide">Science</span>
+<span class="text-[10px] font-medium text-slate-400">Due Tomorrow</span>
+</div>
+</div>
+<div class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+<p>Project submission: <strong class="text-slate-800 dark:text-slate-100 font-semibold">'Save Water'</strong>. Prepare a poster or a working model. Listen to instructions below.</p>
+</div>
+<div class="space-y-3">
+<div class="flex items-center gap-3 p-3 rounded-xl bg-purple-50 dark:bg-purple-900/10 border border-purple-100 dark:border-purple-800/30">
+<div class="size-10 rounded-full bg-purple-100 dark:bg-purple-800/30 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 border border-purple-200 dark:border-purple-700/30 cursor-pointer hover:scale-105 transition-transform shadow-sm">
+<span class="material-symbols-outlined text-[22px] ml-0.5">play_arrow</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-center mb-1">
+<p class="text-[10px] font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wide">Instructions</p>
+<span class="text-[10px] font-medium text-slate-500 dark:text-slate-400">2:15</span>
+</div>
+<div class="flex items-end gap-0.5 h-4 w-full opacity-60">
+<div class="w-1 h-2 bg-purple-400 rounded-full"></div>
+<div class="w-1 h-3 bg-purple-500 rounded-full"></div>
+<div class="w-1 h-4 bg-purple-600 rounded-full"></div>
+<div class="w-1 h-3 bg-purple-500 rounded-full"></div>
+<div class="w-1 h-2 bg-purple-400 rounded-full"></div>
+<div class="w-1 h-1 bg-purple-300 rounded-full"></div>
+<div class="w-1 h-3 bg-purple-500 rounded-full"></div>
+<div class="w-1 h-4 bg-purple-600 rounded-full"></div>
+<div class="w-1 h-2 bg-purple-400 rounded-full"></div>
+<div class="w-1 h-1 bg-purple-300 rounded-full"></div>
+<div class="w-1 h-2 bg-slate-300 dark:bg-slate-600 rounded-full"></div>
+<div class="w-1 h-3 bg-slate-300 dark:bg-slate-600 rounded-full"></div>
+<div class="w-1 h-2 bg-slate-300 dark:bg-slate-600 rounded-full"></div>
+<div class="w-1 h-1 bg-slate-300 dark:bg-slate-600 rounded-full"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 group cursor-pointer hover:border-emerald-200 transition-colors">
+<div class="size-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-200 dark:border-blue-800/30">
+<span class="material-symbols-outlined text-[24px]">description</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">Project_Guidelines.docx</p>
+<p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">850 KB</p>
+</div>
+<button class="size-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors border border-slate-200 dark:border-slate-600">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+</div>
+</div>
+</article>
+</div>
+</section>
+<section class="mb-4">
+<h3 class="flex items-center gap-2 text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4 px-1">
+<span class="size-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50"></span>
+                    Completed Homework
+                </h3>
+<div class="space-y-4">
+<article class="bg-white dark:bg-surface-dark rounded-xl shadow-sm p-4 transition-all active:scale-[0.99] opacity-90 hover:opacity-100 border border-slate-100 dark:border-slate-800">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 shrink-0">
+<span class="material-symbols-outlined text-[24px]">person</span>
+</div>
+<div>
+<h3 class="text-sm font-bold text-slate-900 dark:text-white">LAVANYA S</h3>
+<p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Class 5-A</p>
+</div>
+</div>
+<div class="flex flex-col items-end gap-1">
+<span class="px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-900/20 text-[10px] font-bold text-indigo-600 dark:text-indigo-300 uppercase tracking-wide">English</span>
+<span class="text-[10px] font-medium text-slate-400">02 Jan</span>
+</div>
+</div>
+<div class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+<p>Read <strong>Chapter 4: The Great Adventure</strong> aloud. Pay attention to pronunciation. A reference recording is attached for practice.</p>
+</div>
+<div class="mt-4">
+<div class="flex items-center gap-3 p-3 rounded-xl bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-800/30">
+<div class="size-10 rounded-full bg-indigo-100 dark:bg-indigo-800/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-200 dark:border-indigo-700/30 cursor-pointer hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]">play_arrow</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-center mb-1">
+<p class="text-[10px] font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wide">Reference Audio</p>
+<span class="text-[10px] font-medium text-slate-500 dark:text-slate-400">1:58</span>
+</div>
+<div class="relative h-1 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+<div class="absolute top-0 left-0 h-full w-0 bg-indigo-500 rounded-full"></div>
+</div>
+</div>
+<button class="size-8 flex items-center justify-center text-indigo-400 hover:text-indigo-600 transition-colors">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+</div>
+</div>
+</article>
+<article class="bg-white dark:bg-surface-dark rounded-xl shadow-sm p-4 transition-all active:scale-[0.99] opacity-90 hover:opacity-100 border border-slate-100 dark:border-slate-800">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 shrink-0">
+<span class="material-symbols-outlined text-[24px]">person</span>
+</div>
+<div>
+<h3 class="text-sm font-bold text-slate-900 dark:text-white">ARIVUMATHI V</h3>
+<p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Class 5-B</p>
+</div>
+</div>
+<div class="flex flex-col items-end gap-1">
+<span class="px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-900/20 text-[10px] font-bold text-orange-600 dark:text-orange-300 uppercase tracking-wide">Social</span>
+<span class="text-[10px] font-medium text-slate-400">28 Dec</span>
+</div>
+</div>
+<div class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+<p>Map marking activity: Mark the major rivers of India on a physical map.</p>
+</div>
+<div>
+<p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 mb-2 uppercase tracking-wide">Reference Maps</p>
+<div class="flex overflow-x-auto gap-3 pb-2 no-scrollbar snap-x snap-mandatory">
+<div class="snap-start shrink-0 w-60 h-40 rounded-xl overflow-hidden relative bg-slate-100 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+<img alt="Map 1" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDick24fZxGFlS8uC_NV69EtLSIjxLRdVwy3aiS2zZV6NNVOseM0mrWkU5xByC1NYO1ntyWlJ8PbOTBEzZdcTkMTNOq3XYAdkdRNfW32cngE6nOuvtlh2thDkONfjYiwROBrlpbxUhra4Q0VQOz8dk3rpKYWNbOQhhbwfEyehaqcu5NuB-ZR7Wx-Eg7Qh8LjfDE0w4JXHN_ELdGhBg5GHw9u92fDEMV6bD9NyfvKstqgbCSioMz37hJOrVkPamWYk0TtD--z7airuk"/>
+</div>
+<div class="snap-start shrink-0 w-60 h-40 rounded-xl overflow-hidden relative bg-slate-100 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+<img alt="Map 2" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxA4ZKXQsAM2uWzfupGvDhVUGf6KuJCw1ObeMC6GxWHjObi2CkT9u2bKSMH2b2x9mJT0fejHl1Kn7tfgVojCD6xs9INvG7qieB5jT5bpVhcfy4YbJlETDh4tyP-rmcOZTpode8N_0BoRdJPfUqNScyH7AsVu7fMV9wu9gD6wTywM-ZeTvbOo4nMqLZrBnih49PtrlCQLym7gkTX7-Ed4Bz8w9NKhgPSDlNj1RwJITisvjSyC1qnooiaz0Kpab5aNqrrx27THv_M08"/>
+</div>
+<div class="snap-start shrink-0 w-60 h-40 rounded-xl overflow-hidden relative bg-slate-100 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+<img alt="Map 3" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs-MP1-1p-Aw7GmmfXJq9AvFa3FQzkjLYkQ0ZvZBYXZloGIi7yzHFjEWkibnckXRyOnMuC8FX0DnpmitD8OFipHkpLM1GeWIYqJOWXm2m0lSqrj7fKbsv3KjaoF7sTvBv-67wPMFvEHTPf5s-ySMLGSverKsQSJqqaaJdp1S8rnILJMM_NZv27WkMALuXSlgZLAo_2LUhUsEmpJ4Zbo1yaJRcDnSE0qepgn8depz9NHnZ-01rCei0yQ-uIpJWFDlBlan6CGcd2yTY"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+<span class="text-white font-bold text-xs tracking-wide bg-black/30 px-3 py-1 rounded-full backdrop-blur-sm border border-white/20">View All</span>
+</div>
+</div>
+</div>
+</div>
+</article>
+</div>
+</section>
+<div class="py-6 flex justify-center">
+<div class="flex items-center gap-2 text-slate-400 text-sm">
+<span class="size-1.5 bg-slate-300 dark:bg-slate-700 rounded-full animate-bounce"></span>
+<span class="size-1.5 bg-slate-300 dark:bg-slate-700 rounded-full animate-bounce delay-100"></span>
+<span class="size-1.5 bg-slate-300 dark:bg-slate-700 rounded-full animate-bounce delay-200"></span>
+</div>
+</div>
+</main>
+</div>
+<div class="fixed bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-background-light dark:from-background-dark to-transparent pointer-events-none z-10 max-w-md mx-auto"></div>
+</body></html>

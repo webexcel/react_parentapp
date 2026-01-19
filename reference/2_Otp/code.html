@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+
+<html class="" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OTP Verification</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<script>tailwind.config = {darkMode: "class", theme: {extend: {colors: {primary: "#141414", "primary-soft": "#EFF6FF", "background-light": "#f7f7f7", "background-dark": "#191919", "card-light": "#FFFFFF", "card-dark": "#1E293B", "text-light": "#1E293B", "text-dark": "#F1F5F9", "text-secondary-light": "#64748B", "text-secondary-dark": "#94A3B8"}, fontFamily: {display: "Plus Jakarta Sans"}, borderRadius: {DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem"}, boxShadow: {soft: "0 4px 20px -2px rgba(0, 0, 0, 0.05)", card: "0 2px 10px rgba(0, 0, 0, 0.03)", glow: "0 0 20px -5px rgba(29, 78, 216, 0.5)"}}}};</script>
+<style>
+    body {
+      min-height: max(600px, 100dvh);
+    }.no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }.no-scrollbar {
+        -ms-overflow-style: none;scrollbar-width: none;}
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark antialiased transition-colors duration-200 flex flex-col">
+<header class="sticky top-0 z-50 px-5 py-4 flex items-center justify-between w-full max-w-lg mx-auto">
+<button class="w-10 h-10 rounded-full bg-white dark:bg-card-dark shadow-card flex items-center justify-center text-text-secondary-light dark:text-text-secondary-dark hover:text-primary transition-colors active:scale-95">
+<span class="material-icons-round">arrow_back</span>
+</button>
+<h1 class="font-bold text-lg tracking-tight opacity-0">Verification</h1>
+<div class="w-10"></div>
+</header>
+<main class="flex-1 px-6 py-6 pb-12 w-full max-w-lg mx-auto flex flex-col justify-center items-center relative">
+<div class="absolute top-1/4 -right-20 w-64 h-64 bg-blue-100 dark:bg-blue-900/20 rounded-full blur-3xl -z-10 opacity-60"></div>
+<div class="absolute bottom-1/4 -left-20 w-64 h-64 bg-indigo-100 dark:bg-indigo-900/20 rounded-full blur-3xl -z-10 opacity-60"></div>
+<div class="relative mb-8">
+<div class="w-24 h-24 bg-white dark:bg-card-dark rounded-full shadow-soft flex items-center justify-center relative z-10">
+<div class="w-20 h-20 bg-primary-soft dark:bg-blue-900/30 rounded-full flex items-center justify-center text-primary dark:text-blue-400">
+<span class="material-icons-round text-4xl">lock_person</span>
+</div>
+</div>
+<div class="absolute top-0 right-0 w-4 h-4 bg-green-400 rounded-full border-2 border-background-light dark:border-background-dark"></div>
+<div class="absolute bottom-1 -left-2 w-3 h-3 bg-yellow-400 rounded-full border-2 border-background-light dark:border-background-dark"></div>
+</div>
+<div class="text-center mb-10">
+<h2 class="text-2xl font-bold mb-3 text-text-light dark:text-white">OTP Verification</h2>
+<p class="text-text-secondary-light dark:text-text-secondary-dark leading-relaxed px-4">
+                We have sent a 4-digit verification code to your registered mobile number
+                <span class="block font-semibold text-text-light dark:text-gray-200 mt-1">+91-98XXX-XX210</span>
+</p>
+</div>
+<form class="w-full flex flex-col items-center">
+<div class="flex justify-between gap-3 mb-8 w-full px-2">
+<input autofocus="" class="w-16 h-16 rounded-2xl bg-white dark:bg-card-dark border-0 shadow-card text-center text-2xl font-bold text-primary focus:ring-2 focus:ring-primary focus:scale-105 transition-all outline-none caret-primary placeholder-transparent dark:text-blue-400" inputmode="numeric" maxlength="1" placeholder="-" type="text"/>
+<input class="w-16 h-16 rounded-2xl bg-white dark:bg-card-dark border-0 shadow-card text-center text-2xl font-bold text-primary focus:ring-2 focus:ring-primary focus:scale-105 transition-all outline-none caret-primary placeholder-transparent dark:text-blue-400" inputmode="numeric" maxlength="1" placeholder="-" type="text"/>
+<input class="w-16 h-16 rounded-2xl bg-white dark:bg-card-dark border-0 shadow-card text-center text-2xl font-bold text-primary focus:ring-2 focus:ring-primary focus:scale-105 transition-all outline-none caret-primary placeholder-transparent dark:text-blue-400" inputmode="numeric" maxlength="1" placeholder="-" type="text"/>
+<input class="w-16 h-16 rounded-2xl bg-white dark:bg-card-dark border-0 shadow-card text-center text-2xl font-bold text-primary focus:ring-2 focus:ring-primary focus:scale-105 transition-all outline-none caret-primary placeholder-transparent dark:text-blue-400" inputmode="numeric" maxlength="1" placeholder="-" type="text"/>
+</div>
+<div class="flex flex-col items-center gap-2 mb-10 w-full">
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark font-medium">
+                    Resend code in <span class="text-primary dark:text-blue-400 font-bold">00:28</span>
+</p>
+<button class="text-sm font-semibold text-gray-400 dark:text-gray-600 cursor-not-allowed" disabled="" type="button">
+                    Resend OTP
+                </button>
+</div>
+<button class="w-full bg-primary hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-600/30 active:scale-[0.98] transition-all flex items-center justify-center gap-2" type="button">
+<span>Verify &amp; Proceed</span>
+<span class="material-icons-round text-sm">arrow_forward</span>
+</button>
+</form>
+</main>
+<div class="h-6"></div>
+</body></html>
