@@ -42,6 +42,7 @@ export interface BrandModules {
   timetable: ModuleConfig;
   chat: ModuleConfig;
   profile: ModuleConfig;
+  parentMessage: ModuleConfig;
 }
 
 // Feature flags and settings
@@ -117,6 +118,7 @@ const defaultFeatures: BrandFeatures = {
     timetable: { enabled: true },
     chat: { enabled: false },
     profile: { enabled: true },
+    parentMessage: { enabled: true },
   },
   notifications: {
     enabled: true,

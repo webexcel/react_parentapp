@@ -10,7 +10,7 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import {
   ListTemplate,
   Text,
@@ -31,9 +31,16 @@ const IMAGE_SIZE = (SCREEN_WIDTH - spacing.base * 3) / 2;
 export const GalleryScreen: React.FC = () => {
   const navigation = useNavigation();
   const { students, selectedStudentId, selectStudent } = useAuth();
-  const { albums, isLoading, error, refetch } = useGallery();
+  const { albums, isLoading, isFetching, error, refetch } = useGallery();
 
   const [refreshing, setRefreshing] = useState(false);
+
+  // Auto-fetch when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
   const [selectedAlbum, setSelectedAlbum] = useState<GalleryAlbum | null>(null);
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [showImageViewer, setShowImageViewer] = useState(false);
@@ -146,7 +153,7 @@ export const GalleryScreen: React.FC = () => {
   );
 
   // Loading state
-  if (isLoading && !refreshing) {
+  if ((isLoading || isFetching) && !refreshing) {
     return (
       <ListTemplate
         headerProps={{

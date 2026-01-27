@@ -4,8 +4,8 @@ import {AuthProvider} from '../core/auth';
 import {BrandProvider} from '../core/brand';
 import {ThemeProvider} from '../design-system/theme/ThemeContext';
 
-// Create React Query client
-const queryClient = new QueryClient({
+// Create React Query client - exported for Reactotron integration
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 2,

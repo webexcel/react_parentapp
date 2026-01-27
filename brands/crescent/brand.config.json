@@ -64,7 +64,8 @@
       "gallery": { "enabled": true },
       "timetable": { "enabled": true },
       "chat": { "enabled": false },
-      "profile": { "enabled": true }
+      "profile": { "enabled": true },
+      "parentMessage": { "enabled": true }
     },
     "notifications": {
       "enabled": true,

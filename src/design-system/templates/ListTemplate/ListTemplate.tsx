@@ -26,7 +26,7 @@ export const ListTemplate: React.FC<ListTemplateProps> = ({
     <SafeAreaView style={styles.container} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor={colors.surfaceLight} />
       <ScreenHeader {...headerProps} />
-      {!hideStudentSelector && students.length > 0 && onSelectStudent && (
+      {!hideStudentSelector && students.length > 1 && onSelectStudent && (
         <StudentCardSelector
           students={students}
           selectedId={selectedStudentId}

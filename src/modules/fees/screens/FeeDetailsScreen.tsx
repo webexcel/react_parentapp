@@ -8,7 +8,7 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import {
   Text,
   Icon,
@@ -36,6 +36,7 @@ export const FeeDetailsScreen: React.FC = () => {
     totalAmount,
     balanceAmount,
     isLoading,
+    isFetching,
     error,
     refetch,
   } = useFeeDetails();
@@ -47,6 +48,14 @@ export const FeeDetailsScreen: React.FC = () => {
     isLoading: isHistoryLoading,
     refetch: refetchHistory,
   } = usePaymentHistory();
+
+  // Auto-fetch when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+      refetchHistory();
+    }, [refetch, refetchHistory])
+  );
 
   // Manage fee selection with sequential order rule
   const {
@@ -134,7 +143,7 @@ export const FeeDetailsScreen: React.FC = () => {
   };
 
   // Loading state
-  if (isLoading && !refreshing) {
+  if ((isLoading || isFetching) && !refreshing) {
     return (
       <ListTemplate
         headerProps={{

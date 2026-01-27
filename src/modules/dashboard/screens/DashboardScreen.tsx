@@ -49,11 +49,19 @@ export const DashboardScreen: React.FC = () => {
     hasFlashMessage,
     latestMessages,
     isLoading,
+    isFetching,
     error,
     refresh,
   } = useDashboard();
 
   const selectedStudent = students.find((s) => s.id === selectedStudentId) || students[0];
+
+  // Auto-fetch when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+    }, [refresh])
+  );
 
   // Show modal only on first load when flash messages are available
   useEffect(() => {
@@ -77,6 +85,12 @@ export const DashboardScreen: React.FC = () => {
     return avatarColors[index % avatarColors.length];
   };
 
+  const getHomeworkStatusText = (pending: number, completed: number) => {
+    if (pending === 0 && completed === 0) return 'No Homework';
+    if (pending === 0 && completed > 0) return 'All Complete';
+    return `${pending} Pending`;
+  };
+
   // Transform API data for attendance display - show all students
   const attendanceData = useMemo(() => {
     return students.map((student, index) => ({
@@ -92,9 +106,10 @@ export const DashboardScreen: React.FC = () => {
     return students.map((student, index) => ({
       ...student,
       pending: student.id === selectedStudentId ? summary.homeworkCount : 0,
+      completed: student.id === selectedStudentId ? summary.homeworkCompleted : 0,
       color: getAvatarColor(index),
     }));
-  }, [students, selectedStudentId, summary.homeworkCount]);
+  }, [students, selectedStudentId, summary.homeworkCount, summary.homeworkCompleted]);
 
   // Transform API latest messages to news format
   const latestNews = useMemo(() => {
@@ -171,6 +186,15 @@ export const DashboardScreen: React.FC = () => {
       iconBg: '#CFFAFE',
       iconColor: '#0891B2',
       onPress: () => navigation.navigate(ROUTES.TIMETABLE),
+    },
+    {
+      id: 'parentMessage',
+      icon: 'message',
+      title: 'Write to School',
+      subtitle: 'Contact school',
+      iconBg: '#F3E8FF',
+      iconColor: '#9333EA',
+      onPress: () => navigation.navigate(ROUTES.PARENT_MESSAGES),
     },
   ];
 
@@ -282,7 +306,7 @@ export const DashboardScreen: React.FC = () => {
           >
             <View style={styles.circularsContent}>
               <Text style={styles.cardLabel}>Circulars</Text>
-              {isLoading ? (
+              {(isLoading || isFetching) && !refreshing ? (
                 <ActivityIndicator size="small" color={colors.primary} style={{ marginTop: spacing.xs }} />
               ) : (
                 <Text style={styles.circularsValue}>
@@ -366,8 +390,28 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={styles.cardLabel}>Attendance</Text>
                 <Text style={styles.compactCardValue}>{summary.leaveCount} Absent</Text>
               </View>
-              <View style={[styles.compactCardBadge, { backgroundColor: '#D1FAE5' }]}>
-                <Text style={[styles.compactCardBadgeText, { color: '#059669' }]}>PRESENT</Text>
+              <View style={[
+                styles.compactCardBadge,
+                {
+                  backgroundColor: summary.todayAttendanceStatus?.toLowerCase() === 'present'
+                    ? '#D1FAE5'
+                    : summary.todayAttendanceStatus?.toLowerCase() === 'absent'
+                    ? '#FEE2E2'
+                    : '#FEF3C7'
+                }
+              ]}>
+                <Text style={[
+                  styles.compactCardBadgeText,
+                  {
+                    color: summary.todayAttendanceStatus?.toLowerCase() === 'present'
+                      ? '#059669'
+                      : summary.todayAttendanceStatus?.toLowerCase() === 'absent'
+                      ? '#DC2626'
+                      : '#D97706'
+                  }
+                ]}>
+                  {summary.todayAttendanceStatus?.toUpperCase() || 'NOT MARKED'}
+                </Text>
               </View>
             </TouchableOpacity>
           )}
@@ -426,8 +470,11 @@ export const DashboardScreen: React.FC = () => {
                         </Text>
                       </>
                     )}
-                    <Text style={styles.studentValue}>
-                      {student.pending === 0 ? 'No Homework' : `${student.pending} Pending`}
+                    <Text style={[
+                      styles.studentValue,
+                      student.pending === 0 && student.completed > 0 && { color: colors.success }
+                    ]}>
+                      {getHomeworkStatusText(student.pending, student.completed)}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -443,13 +490,27 @@ export const DashboardScreen: React.FC = () => {
               </View>
               <View style={styles.compactCardContent}>
                 <Text style={styles.cardLabel}>Homework</Text>
-                <Text style={styles.compactCardValue}>
-                  {summary.homeworkCount === 0 ? 'No Homework' : `${summary.homeworkCount} Pending`}
+                <Text style={[
+                  styles.compactCardValue,
+                  summary.homeworkCount === 0 && summary.homeworkCompleted > 0 && { color: colors.success }
+                ]}>
+                  {getHomeworkStatusText(summary.homeworkCount, summary.homeworkCompleted)}
                 </Text>
               </View>
-              <View style={[styles.compactCardBadge, { backgroundColor: '#FFEDD5' }]}>
-                <Text style={[styles.compactCardBadgeText, { color: '#EA580C' }]}>PENDING</Text>
-              </View>
+              {/* Only show badge if there's homework (pending or completed) */}
+              {(summary.homeworkCount > 0 || summary.homeworkCompleted > 0) && (
+                <View style={[
+                  styles.compactCardBadge,
+                  { backgroundColor: summary.homeworkCount === 0 ? '#D1FAE5' : '#FFEDD5' }
+                ]}>
+                  <Text style={[
+                    styles.compactCardBadgeText,
+                    { color: summary.homeworkCount === 0 ? colors.success : '#EA580C' }
+                  ]}>
+                    {summary.homeworkCount === 0 ? 'DONE' : 'PENDING'}
+                  </Text>
+                </View>
+              )}
             </TouchableOpacity>
           )}
         </View>
@@ -538,6 +599,16 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={styles.quickAccessGridTitle}>{quickAccessItems[5].title}</Text>
                 <Text style={styles.quickAccessGridSubtitle}>{quickAccessItems[5].subtitle}</Text>
               </TouchableOpacity>
+            </View>
+            <View style={styles.quickAccessRow}>
+              <TouchableOpacity style={styles.quickAccessGridItem} onPress={quickAccessItems[6].onPress}>
+                <View style={[styles.quickAccessIcon, { backgroundColor: quickAccessItems[6].iconBg }]}>
+                  <Icon name={quickAccessItems[6].icon as any} size={20} color={quickAccessItems[6].iconColor} />
+                </View>
+                <Text style={styles.quickAccessGridTitle}>{quickAccessItems[6].title}</Text>
+                <Text style={styles.quickAccessGridSubtitle}>{quickAccessItems[6].subtitle}</Text>
+              </TouchableOpacity>
+              <View style={styles.quickAccessGridItem} />
             </View>
           </View>
         </View>

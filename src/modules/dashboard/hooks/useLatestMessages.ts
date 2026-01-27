@@ -7,6 +7,7 @@ import { LatestMessage } from '../types/dashboard.types';
 interface UseLatestMessagesResult {
   latestMessages: LatestMessage[];
   isLoading: boolean;
+  isFetching: boolean;
   error: Error | null;
   refetch: () => Promise<any>;
 }
@@ -18,6 +19,7 @@ export const useLatestMessages = (): UseLatestMessagesResult => {
   const {
     data: latestMessages = [],
     isLoading,
+    isFetching,
     error,
     refetch,
   } = useQuery({
@@ -40,6 +42,7 @@ export const useLatestMessages = (): UseLatestMessagesResult => {
   return {
     latestMessages,
     isLoading,
+    isFetching,
     error: error as Error | null,
     refetch,
   };

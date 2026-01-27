@@ -26,6 +26,7 @@ export interface AttendanceItem {
 export interface HomeworkItem {
   adno: string;
   count: number;
+  completed?: number;
 }
 
 export interface FeesData {
@@ -149,6 +150,7 @@ export interface DashboardSummary {
   attendancePercentage: number;
   todayAttendanceStatus: string;
   homeworkCount: number;
+  homeworkCompleted: number;
   paymentDue: number;
   paymentStatus: string;
   leaveCount: number;

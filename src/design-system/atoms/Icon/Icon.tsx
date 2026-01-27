@@ -44,7 +44,12 @@ export type IconName =
   | 'lock'
   | 'info'
   | 'warning'
-  | 'receipt';
+  | 'receipt'
+  | 'message'
+  | 'delete'
+  | 'playCircle'
+  | 'add'
+  | 'arrowBack';
 
 export interface IconProps {
   name: IconName;
@@ -97,6 +102,11 @@ const iconMap: Record<IconName, string> = {
   info: 'info',
   warning: 'warning',
   receipt: 'receipt',
+  message: 'message',
+  delete: 'delete',
+  playCircle: 'play-circle-filled',
+  add: 'add',
+  arrowBack: 'arrow-back',
 };
 
 export const Icon: React.FC<IconProps> = ({

@@ -26,6 +26,13 @@ import {GalleryScreen} from '../modules/gallery';
 import {TimetableScreen} from '../modules/timetable';
 import {ChatScreen} from '../modules/chat';
 import {MarksScreen} from '../modules/marks';
+import {ParentMessagesScreen, SendMessageScreen} from '../modules/parentMessage';
+
+// Debug: verify components are imported correctly
+if (__DEV__) {
+  console.log('[Navigation] ParentMessagesScreen:', typeof ParentMessagesScreen === 'function' ? 'OK' : 'UNDEFINED!');
+  console.log('[Navigation] SendMessageScreen:', typeof SendMessageScreen === 'function' ? 'OK' : 'UNDEFINED!');
+}
 
 // Stack and Tab navigators
 const AuthStack = createNativeStackNavigator();
@@ -147,6 +154,12 @@ const TabNavigator = () => {
 const MainNavigator = () => {
   const {isModuleEnabled} = useBrand();
 
+  // Debug: Log which screens are being registered
+  if (__DEV__) {
+    console.log('[MainNavigator] Registering screens...');
+    console.log('[MainNavigator] ParentMessages screen will be registered:', !!ParentMessagesScreen);
+  }
+
   return (
     <MainStack.Navigator
       screenOptions={{
@@ -206,6 +219,16 @@ const MainNavigator = () => {
       {isModuleEnabled('marks') && (
         <MainStack.Screen name={ROUTES.MARKS} component={MarksScreen} />
       )}
+
+      {/* Parent Message - Always registered (visibility controlled in Dashboard) */}
+      <MainStack.Screen
+        name={ROUTES.PARENT_MESSAGES}
+        component={ParentMessagesScreen}
+      />
+      <MainStack.Screen
+        name={ROUTES.SEND_MESSAGE}
+        component={SendMessageScreen}
+      />
 
       {/* Notification Settings - Always available (part of profile) */}
       <MainStack.Screen

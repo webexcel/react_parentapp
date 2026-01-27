@@ -19,6 +19,7 @@ export const useGallery = () => {
   const {
     data: albums = [],
     isLoading,
+    isFetching,
     error,
     refetch,
   } = useQuery({
@@ -32,43 +33,54 @@ export const useGallery = () => {
         return [];
       }
 
-      const response = await galleryApi.getCategories(classIds);
-      console.log('Gallery response:', JSON.stringify(response));
+      try {
+        const response = await galleryApi.getCategories(classIds);
+        console.log('Gallery response:', JSON.stringify(response));
 
-      if (response.status && response.data) {
-        const baseUrl = response.url || '';
+        if (response.status && response.data) {
+          const baseUrl = response.url || '';
 
-        return response.data.map((category) => {
-          // Build image URLs from the image names
-          const images: GalleryImage[] = category.images.map((imageName, index) => ({
-            id: `${category.CatID}-${index}`,
-            uri: `${baseUrl}/${category.CatID}/${imageName}`,
-            thumbnailUri: `${baseUrl}/${category.CatID}/thumb_${imageName}`,
-          }));
+          return response.data.map((category) => {
+            // Build image URLs from the image names
+            const images: GalleryImage[] = category.images.map((imageName, index) => ({
+              id: `${category.CatID}-${index}`,
+              uri: `${baseUrl}/${category.CatID}/${imageName}`,
+              thumbnailUri: `${baseUrl}/${category.CatID}/thumb_${imageName}`,
+            }));
 
-          // Use first image as cover
-          const coverImage = images.length > 0 ? images[0].thumbnailUri || images[0].uri : '';
+            // Use first image as cover
+            const coverImage = images.length > 0 ? images[0].thumbnailUri || images[0].uri : '';
 
-          return {
-            id: String(category.CatID),
-            title: category.CatName,
-            description: category.Description,
-            date: category.SMSdate,
-            coverImage,
-            imageCount: images.length,
-            images,
-          };
-        });
+            return {
+              id: String(category.CatID),
+              title: category.CatName,
+              description: category.Description,
+              date: category.SMSdate,
+              coverImage,
+              imageCount: images.length,
+              images,
+            };
+          });
+        }
+        return [];
+      } catch (err) {
+        // Return empty array on error - galleryApi already handles 400
+        console.log('Gallery fetch error handled:', err);
+        return [];
       }
-      return [];
     },
     enabled: classIds.length > 0,
   });
 
+  // Don't expose error if query completed (even with empty data)
+  // This handles the case where backend returns 400 for "no data"
+  const hasCompletedQuery = !isLoading && !isFetching;
+
   return {
     albums,
-    isLoading,
-    error,
+    isLoading: isLoading || isFetching,
+    isFetching,
+    error: hasCompletedQuery && albums.length === 0 ? null : error,
     refetch,
   };
 };

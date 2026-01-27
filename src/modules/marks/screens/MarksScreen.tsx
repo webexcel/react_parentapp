@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, ScrollView, StyleSheet, RefreshControl, ActivityIndicator } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import {
   ListTemplate,
   Text,
@@ -43,13 +43,6 @@ const calculateGrade = (percentage: number): string => {
   return 'F';
 };
 
-// Fallback exams in case API fails
-const FALLBACK_EXAMS = [
-  { id: 1, name: 'Unit Test 1', year_id: 5 },
-  { id: 2, name: 'Mid Term', year_id: 5 },
-  { id: 3, name: 'Unit Test 2', year_id: 5 },
-  { id: 4, name: 'Final Exam', year_id: 5 },
-];
 
 export const MarksScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -66,27 +59,44 @@ export const MarksScreen: React.FC = () => {
   console.log('classId:', classId);
 
   // Fetch exams list from API using classId
-  const { exams: apiExams, isLoading: isLoadingExams, error: examsError } = useExams(classId);
+  const { exams, isLoading: isLoadingExams, isWaitingForClassId, error: examsError } = useExams(classId);
 
   // Reset exam selection when student/class changes
   useEffect(() => {
     setSelectedExamIndex(0);
   }, [selectedStudentId, classId]);
 
-  // Use API exams if available, otherwise use fallback
-  const exams = apiExams.length > 0 ? apiExams : FALLBACK_EXAMS;
+  // Get selected exam (only if exams exist)
+  const selectedExam = exams.length > 0 ? exams[selectedExamIndex] : null;
 
-  // Use first exam as default
-  const selectedExam = exams[selectedExamIndex] || FALLBACK_EXAMS[0];
-
+  // Only fetch marks if we have a valid exam from API
   const {
     marks,
     isLoading: isLoadingMarks,
+    isFetching: isFetchingMarks,
     error,
     refetch,
-  } = useMarks(selectedExam.id, selectedExam.year_id);
+  } = useMarks(
+    selectedExam?.id ?? 0,
+    selectedExam?.year_id ?? 0
+  );
 
-  const isLoading = isLoadingExams || isLoadingMarks;
+  // Auto-fetch when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
+
+  // Show loading when:
+  // 1. Exams are loading
+  // 2. We have exams and marks are loading
+  // 3. Waiting for classId (student data not yet loaded)
+  const isLoading = isWaitingForClassId || isLoadingExams || (exams.length > 0 && isLoadingMarks);
+  const isFetching = exams.length > 0 && isFetchingMarks;
+
+  // Check if no exams available from API (only after loading is complete)
+  const noExamsAvailable = !isWaitingForClassId && !isLoadingExams && exams.length === 0;
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -137,13 +147,19 @@ export const MarksScreen: React.FC = () => {
         )}
 
         {/* Loading State */}
-        {isLoading ? (
+        {(isLoading || isFetching) && !refreshing ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={colors.primary} />
             <Text variant="body" color="secondary" style={{ marginTop: spacing.md }}>
               Loading marks...
             </Text>
           </View>
+        ) : noExamsAvailable ? (
+          <EmptyState
+            icon="marks"
+            title="No Marks Available"
+            description="Exam results have not been published yet."
+          />
         ) : error ? (
           <EmptyState
             icon="marks"

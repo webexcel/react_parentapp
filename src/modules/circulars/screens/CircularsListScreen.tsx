@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { FlatList, StyleSheet, View, RefreshControl } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import {
   ListTemplate,
   SearchBar,
@@ -15,10 +15,17 @@ import { Circular } from '../types/circular.types';
 
 export const CircularsListScreen: React.FC = () => {
   const navigation = useNavigation<any>();
-  const { circulars, isLoading, refetch } = useCirculars();
+  const { circulars, isLoading, isFetching, refetch } = useCirculars();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+
+  // Auto-fetch when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
 
   const filteredCirculars = useMemo(() => {
     return circulars.filter((circular) => {
@@ -44,7 +51,7 @@ export const CircularsListScreen: React.FC = () => {
     <CircularCard circular={item} onPress={() => handleCircularPress(item)} />
   ), [handleCircularPress]);
 
-  if (isLoading && !refreshing) {
+  if ((isLoading || isFetching) && !refreshing) {
     return (
       <ListTemplate
         headerProps={{

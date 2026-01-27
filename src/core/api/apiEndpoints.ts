@@ -71,4 +71,11 @@ export const API_ENDPOINTS = {
     DIALOGFLOW_MESSAGE: '/chatbot/dialogflow/message',
     DIALOGFLOW_RESET: '/chatbot/dialogflow/reset',
   },
+
+  // Parent Message - Send messages to school
+  PARENT_MESSAGE: {
+    GET_MESSAGES: '/parentMessage/getParentUploadDetails',
+    SAVE_MESSAGE: '/parentMessage/saveMessage',
+    DELETE_MESSAGE: '/parentMessage/deleteMessage',
+  },
 } as const;

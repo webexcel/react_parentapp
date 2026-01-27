@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, FlatList, StyleSheet, RefreshControl, ActivityIndicator } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import {
   ListTemplate,
   Text,
@@ -56,7 +56,60 @@ export const ExamScheduleScreen: React.FC = () => {
   const selectedStudent = students.find(s => s.id === selectedStudentId);
   const classId = selectedStudent?.classId;
 
-  const { examSchedule, isLoading, error, refetch } = useExamSchedule(classId);
+  console.log('=== EXAM SCHEDULE SCREEN ===');
+  console.log('selectedStudentId:', selectedStudentId);
+  console.log('selectedStudent:', JSON.stringify(selectedStudent));
+  console.log('classId:', classId);
+
+  const { examSchedule, isLoading, isFetching, error, refetch } = useExamSchedule(classId);
+
+  // Auto-fetch when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
+
+  // Sort exams: upcoming first (by date ascending), completed at bottom
+  const sortedExamSchedule = [...examSchedule].sort((a, b) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const parseExamDate = (dateString: string) => {
+      const parts = dateString.split('-');
+      if (parts.length === 3) {
+        const months: { [key: string]: number } = {
+          Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+          Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11,
+        };
+        const day = parseInt(parts[0], 10);
+        const month = months[parts[1]] ?? 0;
+        const year = parseInt(parts[2], 10);
+        return new Date(year, month, day);
+      }
+      return new Date(dateString);
+    };
+
+    const dateA = parseExamDate(a.exam_date);
+    const dateB = parseExamDate(b.exam_date);
+    dateA.setHours(0, 0, 0, 0);
+    dateB.setHours(0, 0, 0, 0);
+
+    const isCompletedA = dateA < today;
+    const isCompletedB = dateB < today;
+
+    // Completed exams go to bottom
+    if (isCompletedA && !isCompletedB) return 1;
+    if (!isCompletedA && isCompletedB) return -1;
+
+    // Within same group, sort by date (ascending for upcoming, descending for completed)
+    if (isCompletedA && isCompletedB) {
+      // Completed: most recent first
+      return dateB.getTime() - dateA.getTime();
+    }
+    // Upcoming: nearest first
+    return dateA.getTime() - dateB.getTime();
+  });
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -169,7 +222,7 @@ export const ExamScheduleScreen: React.FC = () => {
       selectedStudentId={selectedStudentId || ''}
       onSelectStudent={selectStudent}
     >
-      {isLoading ? (
+      {(isLoading || isFetching) && !refreshing ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
           <Text variant="body" color="secondary" style={{ marginTop: spacing.md }}>
@@ -184,7 +237,7 @@ export const ExamScheduleScreen: React.FC = () => {
         />
       ) : (
         <FlatList
-          data={examSchedule}
+          data={sortedExamSchedule}
           keyExtractor={(item, index) => `${item.exam_date}-${item.subject}-${index}`}
           renderItem={renderExam}
           ListEmptyComponent={

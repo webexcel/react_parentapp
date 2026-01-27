@@ -13,6 +13,7 @@ export const useHomework = () => {
   const {
     data: homework = [],
     isLoading,
+    isFetching,
     error,
     refetch,
   } = useQuery({
@@ -77,7 +78,7 @@ export const useHomework = () => {
               }] : [],
               teacherName: item.teacherName || item.teacher || '',
               subjectColor: getSubjectColor(item.subject || item.subjectName || ''),
-              isAcknowledged: item.isAcknowledged || item.acknowledged || false,
+              isAcknowledged: item.completed_status === '1' || item.completed_status === 1 || item.isAcknowledged || item.acknowledged || false,
             };
 
             console.log(`=== Homework item ${index + 1} MAPPED ===`);
@@ -123,8 +124,9 @@ export const useHomework = () => {
       console.log('Homework marked as complete successfully');
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.HOMEWORK] });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Error marking homework complete:', error);
+      throw error; // Re-throw to let the screen handle the error
     },
   });
 
@@ -136,17 +138,21 @@ export const useHomework = () => {
     pendingHomework,
     completedHomework,
     isLoading,
+    isFetching,
     error,
     refetch,
     acknowledgeHomework: acknowledgeMutation.mutate,
+    acknowledgeHomeworkAsync: acknowledgeMutation.mutateAsync,
     isAcknowledging: acknowledgeMutation.isPending,
   };
 };
 
 const getHomeworkStatus = (item: any): 'pending' | 'completed' | 'overdue' => {
+  // Check completed_status from API (returns '0' or '1')
+  if (item.completed_status === '1' || item.completed_status === 1) return 'completed';
   if (item.status === 'completed' || item.isCompleted) return 'completed';
 
-  const dueDate = new Date(item.dueDate || item.submissionDate);
+  const dueDate = new Date(item.MSG_DATE || item.dueDate || item.submissionDate);
   const now = new Date();
 
   if (dueDate < now) return 'overdue';

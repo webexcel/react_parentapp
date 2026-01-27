@@ -49,14 +49,23 @@ apiClient.interceptors.response.use(
     return response;
   },
   async (error: AxiosError) => {
-    // Log error response
-    console.error('❌ API ERROR:', {
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      url: error.config?.url,
-      data: error.response?.data,
-      message: error.message,
-    });
+    // Don't log 400 errors as errors - backend often returns 400 for "no data" scenarios
+    // These are handled gracefully by individual API services
+    if (error.response?.status === 400) {
+      console.log('⚠️ API 400:', {
+        url: error.config?.url,
+        message: (error.response?.data as any)?.message || 'Bad Request',
+      });
+    } else {
+      // Log actual error responses
+      console.error('❌ API ERROR:', {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        url: error.config?.url,
+        data: error.response?.data,
+        message: error.message,
+      });
+    }
 
     if (error.response?.status === 401) {
       // Token expired or invalid - clear auth data

@@ -37,7 +37,7 @@ export const DashboardTemplate: React.FC<DashboardTemplateProps> = ({
           ) : undefined
         }
       >
-        {students.length > 1 && onSelectStudent && (
+        {students.length > 0 && onSelectStudent && (
           <StudentSelector
             students={students}
             selectedId={selectedStudentId}

@@ -1,17 +1,15 @@
-import Config from 'react-native-config';
+import { getBrandConfig } from '../brand/BrandConfig';
 
-// TODO: Fix react-native-config for new architecture - Config returns empty object
-// Temporarily using hardcoded values until react-native-config is properly configured
-const ENV_API_BASE_URL = 'http://192.168.1.8:3005/api';
-const ENV_FIREBASE_PROJECT_ID = 'schooltrees-69f4b';
+// Get config from brand configuration (reads from brand.config.json with .env override)
+const brandConfig = getBrandConfig();
 
-console.log('🔧 CONFIG DEBUG:', JSON.stringify(Config));
-console.log('🔧 Using API_BASE_URL:', ENV_API_BASE_URL);
+console.log('🔧 CONFIG DEBUG: Using brand:', brandConfig.brand.id);
+console.log('🔧 Using API_BASE_URL:', brandConfig.api.baseUrl);
 
 export const config = {
-  API_BASE_URL: Config.API_BASE_URL || ENV_API_BASE_URL,
-  FIREBASE_PROJECT_ID: Config.FIREBASE_PROJECT_ID || ENV_FIREBASE_PROJECT_ID,
-  APP_NAME: 'Crescent Parent App',
+  API_BASE_URL: brandConfig.api.baseUrl,
+  FIREBASE_PROJECT_ID: brandConfig.firebase.projectId,
+  APP_NAME: brandConfig.brand.name,
   APP_VERSION: '1.0.0',
 };
 

@@ -10,6 +10,7 @@ export const useCirculars = () => {
   const {
     data: circulars = [],
     isLoading,
+    isFetching,
     error,
     refetch,
   } = useQuery({
@@ -56,6 +57,7 @@ export const useCirculars = () => {
   return {
     circulars,
     isLoading,
+    isFetching,
     error,
     refetch,
   };

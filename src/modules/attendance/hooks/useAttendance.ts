@@ -9,6 +9,7 @@ interface UseAttendanceResult {
   days: DayAttendance[];
   summary: AttendanceSummary;
   isLoading: boolean;
+  isFetching: boolean;
   error: Error | null;
   refetch: () => void;
 }
@@ -27,6 +28,7 @@ export const useAttendance = (month?: number, year?: number): UseAttendanceResul
   const {
     data,
     isLoading,
+    isFetching,
     error,
     refetch,
   } = useQuery({
@@ -57,6 +59,7 @@ export const useAttendance = (month?: number, year?: number): UseAttendanceResul
     days: data?.days || [],
     summary: data?.summary || getDefaultSummary(),
     isLoading,
+    isFetching,
     error: error as Error | null,
     refetch,
   };

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, ScrollView, StyleSheet, RefreshControl, TouchableOpacity } from 'react-native';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp, useFocusEffect } from '@react-navigation/native';
 import {
   ListTemplate,
   Text,
@@ -47,9 +47,16 @@ export const AttendanceScreen: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
   const [refreshing, setRefreshing] = useState(false);
 
-  const { days, summary, isLoading, refetch } = useAttendance(
+  const { days, summary, isLoading, isFetching, refetch } = useAttendance(
     selectedMonth,
     selectedYear
+  );
+
+  // Auto-fetch when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
   );
 
   const handleRefresh = async () => {
@@ -86,7 +93,7 @@ export const AttendanceScreen: React.FC = () => {
     selectedMonth === currentDate.getMonth() + 1 &&
     selectedYear === currentDate.getFullYear();
 
-  if (isLoading && !refreshing) {
+  if ((isLoading || isFetching) && !refreshing) {
     return (
       <ListTemplate
         headerProps={{

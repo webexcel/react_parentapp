@@ -18,6 +18,7 @@ interface UseDashboardResult {
 
   // Loading states
   isLoading: boolean;
+  isFetching: boolean;
 
   // Error
   error: Error | null;
@@ -33,6 +34,7 @@ export const useDashboard = (): UseDashboardResult => {
   const {
     summary,
     isLoading: isBatchCountLoading,
+    isFetching: isBatchCountFetching,
     error: batchCountError,
     refetch: refetchBatchCount,
   } = useBatchCount(selectedStudentId || undefined);
@@ -42,6 +44,7 @@ export const useDashboard = (): UseDashboardResult => {
     flashMessages,
     hasFlashMessage,
     isLoading: isFlashLoading,
+    isFetching: isFlashFetching,
     error: flashError,
     refetch: refetchFlash,
   } = useFlashMessage();
@@ -50,11 +53,13 @@ export const useDashboard = (): UseDashboardResult => {
   const {
     latestMessages,
     isLoading: isLatestLoading,
+    isFetching: isLatestFetching,
     error: latestError,
     refetch: refetchLatest,
   } = useLatestMessages();
 
   const isLoading = isBatchCountLoading || isFlashLoading || isLatestLoading;
+  const isFetching = isBatchCountFetching || isFlashFetching || isLatestFetching;
   const error = batchCountError || flashError || latestError;
 
   const refresh = useCallback(async () => {
@@ -67,6 +72,7 @@ export const useDashboard = (): UseDashboardResult => {
     hasFlashMessage,
     latestMessages,
     isLoading,
+    isFetching,
     error: error as Error | null,
     refresh,
   };

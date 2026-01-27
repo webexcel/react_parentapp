@@ -9,6 +9,7 @@ interface UseFeeDetailsResult {
   totalAmount: number;
   balanceAmount: number;
   isLoading: boolean;
+  isFetching: boolean;
   error: Error | null;
   refetch: () => Promise<any>;
 }
@@ -46,7 +47,7 @@ export const useFeeDetails = (
   console.log('students array length:', students.length);
   console.log('query enabled:', !!adno);
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, isFetching, error, refetch } = useQuery({
     queryKey: [QUERY_KEYS.FEES, 'details', targetStudentId, adno, interval],
     queryFn: async () => {
       // Re-derive adno inside queryFn to ensure fresh value
@@ -96,6 +97,7 @@ export const useFeeDetails = (
     totalAmount: data?.totalAmount || 0,
     balanceAmount: data?.balanceAmount || 0,
     isLoading,
+    isFetching,
     error: error as Error | null,
     refetch,
   };

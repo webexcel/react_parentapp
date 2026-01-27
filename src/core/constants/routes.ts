@@ -22,6 +22,10 @@ export const ROUTES = {
   FEE_DETAILS: 'FeeDetails',
   GALLERY: 'Gallery',
   TIMETABLE: 'Timetable',
+
+  // Parent Message
+  PARENT_MESSAGES: 'ParentMessages',
+  SEND_MESSAGE: 'SendMessage',
 } as const;
 
 export type RouteName = (typeof ROUTES)[keyof typeof ROUTES];

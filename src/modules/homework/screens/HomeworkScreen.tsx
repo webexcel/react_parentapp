@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, SectionList, StyleSheet, RefreshControl, Alert } from 'react-native';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp, useFocusEffect } from '@react-navigation/native';
 import {
   ListTemplate,
   Chip,
@@ -44,13 +44,22 @@ export const HomeworkScreen: React.FC = () => {
     pendingHomework,
     completedHomework,
     isLoading,
+    isFetching,
     refetch,
-    acknowledgeHomework,
+    acknowledgeHomeworkAsync,
     isAcknowledging,
   } = useHomework();
 
   const [filter, setFilter] = useState<FilterType>('all');
   const [refreshing, setRefreshing] = useState(false);
+  const [acknowledgingId, setAcknowledgingId] = useState<string | null>(null);
+
+  // Refetch data when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -66,7 +75,17 @@ export const HomeworkScreen: React.FC = () => {
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Confirm',
-          onPress: () => acknowledgeHomework(homework.id),
+          onPress: async () => {
+            try {
+              setAcknowledgingId(homework.id);
+              await acknowledgeHomeworkAsync(homework.id);
+              Alert.alert('Success', 'Homework marked as complete');
+            } catch (error: any) {
+              Alert.alert('Error', error.message || 'Failed to mark homework as complete');
+            } finally {
+              setAcknowledgingId(null);
+            }
+          },
         },
       ]
     );
@@ -110,11 +129,11 @@ export const HomeworkScreen: React.FC = () => {
       onAcknowledge={
         item.status !== 'completed' ? () => handleAcknowledge(item) : undefined
       }
-      isAcknowledging={isAcknowledging}
+      isAcknowledging={acknowledgingId === item.id}
     />
   );
 
-  if (isLoading && !refreshing) {
+  if ((isLoading || isFetching) && !refreshing) {
     return (
       <ListTemplate
         headerProps={{

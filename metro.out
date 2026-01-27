@@ -107,3 +107,440 @@ Starting dev server on http://localhost:8081
  ERROR  [timeout] connection terminated with Device for app='com.schooltree.crescentapp' on device='CPH2781 - 15 - API 35' after not responding for 60 seconds.
  ERROR  [timeout] connection terminated with Device for app='com.schooltree.crescentapp' on device='CPH2781 - 15 - API 35' after not responding for 60 seconds.
  ERROR  [timeout] connection terminated with Device for app='com.schooltree.crescentapp' on device='CPH2781 - 15 - API 35' after not responding for 60 seconds.
+ ERROR  [timeout] connection terminated with Device for app='com.schooltree.crescentapp' on device='CPH2781 - 15 - API 35' after not responding for 60 seconds.
+ ERROR  [timeout] connection terminated with Device for app='com.schooltree.crescentapp' on device='CPH2781 - 15 - API 35' after not responding for 60 seconds.
+ ERROR  [timeout] connection terminated with Device for app='com.schooltree.crescentapp' on device='CPH2781 - 15 - API 35' after not responding for 60 seconds.
+ ERROR  [timeout] connection terminated with Device for app='com.schooltree.crescentapp' on device='CPH2781 - 15 - API 35' after not responding for 60 seconds.
+ BUNDLE  ./index.js ░░░░░░░░░░░░░░░░ 0.0% (0/1)
+ BUNDLE  ./index.js 
+ ERROR  [timeout] connection terminated with Device for app='com.schooltree.crescentapp' on device='CPH2781 - 15 - API 35' after not responding for 60 seconds.
+ BUNDLE  ./index.js ░░░░░░░░░░░░░░░░ 0.0% (0/1)
+ BUNDLE  ./index.js 
+ BUNDLE  ./index.js ░░░░░░░░░░░░░░░░ 0.0% (0/1)
+ BUNDLE  ./index.js 
+ ERROR  Error: Unable to resolve module ./hooks/useParentMessages from C:\RN\app\src\modules\parentMessage\index.ts: 
+
+None of these files exist:
+  * src\modules\parentMessage\hooks\useParentMessages(.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx)
+  * src\modules\parentMessage\hooks\useParentMessages
+   6 |
+   7 | // Hooks
+>  8 | export { useParentMessages, useSendMessage, useDeleteMessage } from './hooks/useParentMessages';
+     |                                                                      ^
+   9 |
+  10 | // Types
+  11 | export * from './types/parentMessage.types';
+    at ModuleResolver.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph\ModuleResolution.js:136:15)
+    at DependencyGraph.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph.js:252:43)
+    at C:\RN\app\node_modules\metro\src\lib\transformHelpers.js:163:21
+    at resolveDependencies (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:43:25)
+    at visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:81:30)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Promise.all (index 0)
+    at async visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:90:5)
+    at async Promise.all (index 0)
+    at async buildSubgraph (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:105:3)
+ ERROR  Error: Unable to resolve module ./hooks/useParentMessages from C:\RN\app\src\modules\parentMessage\index.ts: 
+
+None of these files exist:
+  * src\modules\parentMessage\hooks\useParentMessages(.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx)
+  * src\modules\parentMessage\hooks\useParentMessages
+   6 |
+   7 | // Hooks
+>  8 | export { useParentMessages, useSendMessage, useDeleteMessage } from './hooks/useParentMessages';
+     |                                                                      ^
+   9 |
+  10 | // Types
+  11 | export * from './types/parentMessage.types';
+    at ModuleResolver.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph\ModuleResolution.js:136:15)
+    at DependencyGraph.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph.js:252:43)
+    at C:\RN\app\node_modules\metro\src\lib\transformHelpers.js:163:21
+    at resolveDependencies (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:43:25)
+    at visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:81:30)
+    at async Promise.all (index 0)
+    at async visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:90:5)
+    at async Promise.all (index 0)
+    at async buildSubgraph (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:105:3)
+    at async Graph._buildDelta (C:\RN\app\node_modules\metro\src\DeltaBundler\Graph.js:163:22)
+ ERROR  Error: Unable to resolve module ./hooks/useParentMessages from C:\RN\app\src\modules\parentMessage\index.ts: 
+
+None of these files exist:
+  * src\modules\parentMessage\hooks\useParentMessages(.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx)
+  * src\modules\parentMessage\hooks\useParentMessages
+   6 |
+   7 | // Hooks
+>  8 | export { useParentMessages, useSendMessage, useDeleteMessage } from './hooks/useParentMessages';
+     |                                                                      ^
+   9 |
+  10 | // Types
+  11 | export * from './types/parentMessage.types';
+    at ModuleResolver.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph\ModuleResolution.js:136:15)
+    at DependencyGraph.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph.js:252:43)
+    at C:\RN\app\node_modules\metro\src\lib\transformHelpers.js:163:21
+    at resolveDependencies (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:43:25)
+    at visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:81:30)
+    at async Promise.all (index 0)
+    at async visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:90:5)
+    at async Promise.all (index 0)
+    at async buildSubgraph (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:105:3)
+    at async Graph._buildDelta (C:\RN\app\node_modules\metro\src\DeltaBundler\Graph.js:163:22)
+ ERROR  Error: Unable to resolve module ./hooks/useParentMessages from C:\RN\app\src\modules\parentMessage\index.ts: 
+
+None of these files exist:
+  * src\modules\parentMessage\hooks\useParentMessages(.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx)
+  * src\modules\parentMessage\hooks\useParentMessages
+   6 |
+   7 | // Hooks
+>  8 | export { useParentMessages, useSendMessage, useDeleteMessage } from './hooks/useParentMessages';
+     |                                                                      ^
+   9 |
+  10 | // Types
+  11 | export * from './types/parentMessage.types';
+    at ModuleResolver.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph\ModuleResolution.js:136:15)
+    at DependencyGraph.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph.js:252:43)
+    at C:\RN\app\node_modules\metro\src\lib\transformHelpers.js:163:21
+    at resolveDependencies (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:43:25)
+    at visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:81:30)
+    at async Promise.all (index 0)
+    at async visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:90:5)
+    at async Promise.all (index 0)
+    at async buildSubgraph (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:105:3)
+    at async Graph._buildDelta (C:\RN\app\node_modules\metro\src\DeltaBundler\Graph.js:163:22)
+ ERROR  Error: Unable to resolve module ./hooks/useParentMessages from C:\RN\app\src\modules\parentMessage\index.ts: 
+
+None of these files exist:
+  * src\modules\parentMessage\hooks\useParentMessages(.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx)
+  * src\modules\parentMessage\hooks\useParentMessages
+   6 |
+   7 | // Hooks
+>  8 | export { useParentMessages, useSendMessage, useDeleteMessage } from './hooks/useParentMessages';
+     |                                                                      ^
+   9 |
+  10 | // Types
+  11 | export * from './types/parentMessage.types';
+    at ModuleResolver.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph\ModuleResolution.js:136:15)
+    at DependencyGraph.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph.js:252:43)
+    at C:\RN\app\node_modules\metro\src\lib\transformHelpers.js:163:21
+    at resolveDependencies (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:43:25)
+    at visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:81:30)
+    at async Promise.all (index 0)
+    at async visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:90:5)
+    at async Promise.all (index 0)
+    at async buildSubgraph (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:105:3)
+    at async Graph._buildDelta (C:\RN\app\node_modules\metro\src\DeltaBundler\Graph.js:163:22)
+ ERROR  Error: Unable to resolve module ./hooks/useParentMessages from C:\RN\app\src\modules\parentMessage\index.ts: 
+
+None of these files exist:
+  * src\modules\parentMessage\hooks\useParentMessages(.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx)
+  * src\modules\parentMessage\hooks\useParentMessages
+   6 |
+   7 | // Hooks
+>  8 | export { useParentMessages, useSendMessage, useDeleteMessage } from './hooks/useParentMessages';
+     |                                                                      ^
+   9 |
+  10 | // Types
+  11 | export * from './types/parentMessage.types';
+    at ModuleResolver.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph\ModuleResolution.js:136:15)
+    at DependencyGraph.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph.js:252:43)
+    at C:\RN\app\node_modules\metro\src\lib\transformHelpers.js:163:21
+    at resolveDependencies (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:43:25)
+    at visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:81:30)
+    at async Promise.all (index 0)
+    at async visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:90:5)
+    at async Promise.all (index 0)
+    at async buildSubgraph (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:105:3)
+    at async Graph._buildDelta (C:\RN\app\node_modules\metro\src\DeltaBundler\Graph.js:163:22)
+ ERROR  Error: Unable to resolve module ./hooks/useParentMessages from C:\RN\app\src\modules\parentMessage\index.ts: 
+
+None of these files exist:
+  * src\modules\parentMessage\hooks\useParentMessages(.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx)
+  * src\modules\parentMessage\hooks\useParentMessages
+   6 |
+   7 | // Hooks
+>  8 | export { useParentMessages, useSendMessage, useDeleteMessage } from './hooks/useParentMessages';
+     |                                                                      ^
+   9 |
+  10 | // Types
+  11 | export * from './types/parentMessage.types';
+    at ModuleResolver.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph\ModuleResolution.js:136:15)
+    at DependencyGraph.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph.js:252:43)
+    at C:\RN\app\node_modules\metro\src\lib\transformHelpers.js:163:21
+    at resolveDependencies (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:43:25)
+    at visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:81:30)
+    at async Promise.all (index 0)
+    at async visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:90:5)
+    at async Promise.all (index 0)
+    at async buildSubgraph (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:105:3)
+    at async Graph._buildDelta (C:\RN\app\node_modules\metro\src\DeltaBundler\Graph.js:163:22)
+ ERROR  Error: Unable to resolve module ./hooks/useParentMessages from C:\RN\app\src\modules\parentMessage\index.ts: 
+
+None of these files exist:
+  * src\modules\parentMessage\hooks\useParentMessages(.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx)
+  * src\modules\parentMessage\hooks\useParentMessages
+   6 |
+   7 | // Hooks
+>  8 | export { useParentMessages, useSendMessage, useDeleteMessage } from './hooks/useParentMessages';
+     |                                                                      ^
+   9 |
+  10 | // Types
+  11 | export * from './types/parentMessage.types';
+    at ModuleResolver.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph\ModuleResolution.js:136:15)
+    at DependencyGraph.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph.js:252:43)
+    at C:\RN\app\node_modules\metro\src\lib\transformHelpers.js:163:21
+    at resolveDependencies (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:43:25)
+    at visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:81:30)
+    at async Promise.all (index 0)
+    at async visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:90:5)
+    at async Promise.all (index 0)
+    at async buildSubgraph (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:105:3)
+    at async Graph._buildDelta (C:\RN\app\node_modules\metro\src\DeltaBundler\Graph.js:163:22)
+ ERROR  Error: Unable to resolve module ./hooks/useParentMessages from C:\RN\app\src\modules\parentMessage\index.ts: 
+
+None of these files exist:
+  * src\modules\parentMessage\hooks\useParentMessages(.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx)
+  * src\modules\parentMessage\hooks\useParentMessages
+   6 |
+   7 | // Hooks
+>  8 | export { useParentMessages, useSendMessage, useDeleteMessage } from './hooks/useParentMessages';
+     |                                                                      ^
+   9 |
+  10 | // Types
+  11 | export * from './types/parentMessage.types';
+    at ModuleResolver.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph\ModuleResolution.js:136:15)
+    at DependencyGraph.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph.js:252:43)
+    at C:\RN\app\node_modules\metro\src\lib\transformHelpers.js:163:21
+    at resolveDependencies (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:43:25)
+    at visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:81:30)
+    at async Promise.all (index 0)
+    at async visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:90:5)
+    at async Promise.all (index 0)
+    at async buildSubgraph (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:105:3)
+    at async Graph._buildDelta (C:\RN\app\node_modules\metro\src\DeltaBundler\Graph.js:163:22)
+ ERROR  Error: Unable to resolve module ./hooks/useParentMessages from C:\RN\app\src\modules\parentMessage\index.ts: 
+
+None of these files exist:
+  * src\modules\parentMessage\hooks\useParentMessages(.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx)
+  * src\modules\parentMessage\hooks\useParentMessages
+   6 |
+   7 | // Hooks
+>  8 | export { useParentMessages, useSendMessage, useDeleteMessage } from './hooks/useParentMessages';
+     |                                                                      ^
+   9 |
+  10 | // Types
+  11 | export * from './types/parentMessage.types';
+    at ModuleResolver.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph\ModuleResolution.js:136:15)
+    at DependencyGraph.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph.js:252:43)
+    at C:\RN\app\node_modules\metro\src\lib\transformHelpers.js:163:21
+    at resolveDependencies (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:43:25)
+    at visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:81:30)
+    at async Promise.all (index 0)
+    at async visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:90:5)
+    at async Promise.all (index 0)
+    at async buildSubgraph (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:105:3)
+    at async Graph._buildDelta (C:\RN\app\node_modules\metro\src\DeltaBundler\Graph.js:163:22)
+ INFO  Launching DevTools...
+ ERROR  Error: Unable to resolve module ./hooks/useParentMessages from C:\RN\app\src\modules\parentMessage\index.ts: 
+
+None of these files exist:
+  * src\modules\parentMessage\hooks\useParentMessages(.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx)
+  * src\modules\parentMessage\hooks\useParentMessages
+   6 |
+   7 | // Hooks
+>  8 | export { useParentMessages, useSendMessage, useDeleteMessage } from './hooks/useParentMessages';
+     |                                                                      ^
+   9 |
+  10 | // Types
+  11 | export * from './types/parentMessage.types';
+    at ModuleResolver.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph\ModuleResolution.js:136:15)
+    at DependencyGraph.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph.js:252:43)
+    at C:\RN\app\node_modules\metro\src\lib\transformHelpers.js:163:21
+    at resolveDependencies (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:43:25)
+    at visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:81:30)
+    at async Promise.all (index 0)
+    at async visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:90:5)
+    at async Promise.all (index 0)
+    at async buildSubgraph (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:105:3)
+    at async Graph._buildDelta (C:\RN\app\node_modules\metro\src\DeltaBundler\Graph.js:163:22)
+ ERROR  Error: Unable to resolve module ./hooks/useParentMessages from C:\RN\app\src\modules\parentMessage\index.ts: 
+
+None of these files exist:
+  * src\modules\parentMessage\hooks\useParentMessages(.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx)
+  * src\modules\parentMessage\hooks\useParentMessages
+   6 |
+   7 | // Hooks
+>  8 | export { useParentMessages, useSendMessage, useDeleteMessage } from './hooks/useParentMessages';
+     |                                                                      ^
+   9 |
+  10 | // Types
+  11 | export * from './types/parentMessage.types';
+    at ModuleResolver.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph\ModuleResolution.js:136:15)
+    at DependencyGraph.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph.js:252:43)
+    at C:\RN\app\node_modules\metro\src\lib\transformHelpers.js:163:21
+    at resolveDependencies (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:43:25)
+    at visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:81:30)
+    at async Promise.all (index 0)
+    at async visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:90:5)
+    at async Promise.all (index 0)
+    at async buildSubgraph (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:105:3)
+    at async Graph._buildDelta (C:\RN\app\node_modules\metro\src\DeltaBundler\Graph.js:163:22)
+ ERROR  Error: Unable to resolve module ./hooks/useParentMessages from C:\RN\app\src\modules\parentMessage\index.ts: 
+
+None of these files exist:
+  * src\modules\parentMessage\hooks\useParentMessages(.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx)
+  * src\modules\parentMessage\hooks\useParentMessages
+   6 |
+   7 | // Hooks
+>  8 | export { useParentMessages, useSendMessage, useDeleteMessage } from './hooks/useParentMessages';
+     |                                                                      ^
+   9 |
+  10 | // Types
+  11 | export * from './types/parentMessage.types';
+    at ModuleResolver.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph\ModuleResolution.js:136:15)
+    at DependencyGraph.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph.js:252:43)
+    at C:\RN\app\node_modules\metro\src\lib\transformHelpers.js:163:21
+    at resolveDependencies (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:43:25)
+    at visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:81:30)
+    at async Promise.all (index 0)
+    at async visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:90:5)
+    at async Promise.all (index 0)
+    at async buildSubgraph (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:105:3)
+    at async Graph._buildDelta (C:\RN\app\node_modules\metro\src\DeltaBundler\Graph.js:163:22)
+ ERROR  Error: Unable to resolve module ./hooks/useParentMessages from C:\RN\app\src\modules\parentMessage\index.ts: 
+
+None of these files exist:
+  * src\modules\parentMessage\hooks\useParentMessages(.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx)
+  * src\modules\parentMessage\hooks\useParentMessages
+   6 |
+   7 | // Hooks
+>  8 | export { useParentMessages, useSendMessage, useDeleteMessage } from './hooks/useParentMessages';
+     |                                                                      ^
+   9 |
+  10 | // Types
+  11 | export * from './types/parentMessage.types';
+    at ModuleResolver.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph\ModuleResolution.js:136:15)
+    at DependencyGraph.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph.js:252:43)
+    at C:\RN\app\node_modules\metro\src\lib\transformHelpers.js:163:21
+    at resolveDependencies (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:43:25)
+    at visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:81:30)
+    at async Promise.all (index 0)
+    at async visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:90:5)
+    at async Promise.all (index 0)
+    at async buildSubgraph (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:105:3)
+    at async Graph._buildDelta (C:\RN\app\node_modules\metro\src\DeltaBundler\Graph.js:163:22)
+ ERROR  Error: Unable to resolve module ./hooks/useParentMessages from C:\RN\app\src\modules\parentMessage\index.ts: 
+
+None of these files exist:
+  * src\modules\parentMessage\hooks\useParentMessages(.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx)
+  * src\modules\parentMessage\hooks\useParentMessages
+   6 |
+   7 | // Hooks
+>  8 | export { useParentMessages, useSendMessage, useDeleteMessage } from './hooks/useParentMessages';
+     |                                                                      ^
+   9 |
+  10 | // Types
+  11 | export * from './types/parentMessage.types';
+    at ModuleResolver.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph\ModuleResolution.js:136:15)
+    at DependencyGraph.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph.js:252:43)
+    at C:\RN\app\node_modules\metro\src\lib\transformHelpers.js:163:21
+    at resolveDependencies (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:43:25)
+    at visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:81:30)
+    at async Promise.all (index 0)
+    at async visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:90:5)
+    at async Promise.all (index 0)
+    at async buildSubgraph (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:105:3)
+    at async Graph._buildDelta (C:\RN\app\node_modules\metro\src\DeltaBundler\Graph.js:163:22)
+ ERROR  Error: Unable to resolve module ./hooks/useParentMessages from C:\RN\app\src\modules\parentMessage\index.ts: 
+
+None of these files exist:
+  * src\modules\parentMessage\hooks\useParentMessages(.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx)
+  * src\modules\parentMessage\hooks\useParentMessages
+   6 |
+   7 | // Hooks
+>  8 | export { useParentMessages, useSendMessage, useDeleteMessage } from './hooks/useParentMessages';
+     |                                                                      ^
+   9 |
+  10 | // Types
+  11 | export * from './types/parentMessage.types';
+    at ModuleResolver.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph\ModuleResolution.js:136:15)
+    at DependencyGraph.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph.js:252:43)
+    at C:\RN\app\node_modules\metro\src\lib\transformHelpers.js:163:21
+    at resolveDependencies (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:43:25)
+    at visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:81:30)
+    at async Promise.all (index 0)
+    at async visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:90:5)
+    at async Promise.all (index 0)
+    at async buildSubgraph (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:105:3)
+    at async Graph._buildDelta (C:\RN\app\node_modules\metro\src\DeltaBundler\Graph.js:163:22)
+ BUNDLE  ./index.js ░░░░░░░░░░░░░░░░ 0.0% (0/1)
+ BUNDLE  ./index.js 
+ ERROR  Error: Unable to resolve module ./hooks/useParentMessages from C:\RN\app\src\modules\parentMessage\index.ts: 
+
+None of these files exist:
+  * src\modules\parentMessage\hooks\useParentMessages(.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx)
+  * src\modules\parentMessage\hooks\useParentMessages
+   6 |
+   7 | // Hooks
+>  8 | export { useParentMessages, useSendMessage, useDeleteMessage } from './hooks/useParentMessages';
+     |                                                                      ^
+   9 |
+  10 | // Types
+  11 | export * from './types/parentMessage.types';
+    at ModuleResolver.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph\ModuleResolution.js:136:15)
+    at DependencyGraph.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph.js:252:43)
+    at C:\RN\app\node_modules\metro\src\lib\transformHelpers.js:163:21
+    at resolveDependencies (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:43:25)
+    at visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:81:30)
+    at async Promise.all (index 0)
+    at async visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:90:5)
+    at async Promise.all (index 0)
+    at async buildSubgraph (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:105:3)
+    at async Graph._buildDelta (C:\RN\app\node_modules\metro\src\DeltaBundler\Graph.js:163:22)
+ BUNDLE  ./index.js ░░░░░░░░░░░░░░░░ 0.0% (0/1)
+ BUNDLE  ./index.js 
+ ERROR  Error: Unable to resolve module ./hooks/useParentMessages from C:\RN\app\src\modules\parentMessage\index.ts: 
+
+None of these files exist:
+  * src\modules\parentMessage\hooks\useParentMessages(.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx)
+  * src\modules\parentMessage\hooks\useParentMessages
+   6 |
+   7 | // Hooks
+>  8 | export { useParentMessages, useSendMessage, useDeleteMessage } from './hooks/useParentMessages';
+     |                                                                      ^
+   9 |
+  10 | // Types
+  11 | export * from './types/parentMessage.types';
+    at ModuleResolver.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph\ModuleResolution.js:136:15)
+    at DependencyGraph.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph.js:252:43)
+    at C:\RN\app\node_modules\metro\src\lib\transformHelpers.js:163:21
+    at resolveDependencies (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:43:25)
+    at visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:81:30)
+    at async Promise.all (index 0)
+    at async visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:90:5)
+    at async Promise.all (index 0)
+    at async buildSubgraph (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:105:3)
+    at async Graph._buildDelta (C:\RN\app\node_modules\metro\src\DeltaBundler\Graph.js:163:22)
+ BUNDLE  ./index.js ░░░░░░░░░░░░░░░░ 0.0% (0/1)
+ BUNDLE  ./index.js 
+ ERROR  Error: Unable to resolve module ./hooks/useParentMessages from C:\RN\app\src\modules\parentMessage\index.ts: 
+
+None of these files exist:
+  * src\modules\parentMessage\hooks\useParentMessages(.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx)
+  * src\modules\parentMessage\hooks\useParentMessages
+   6 |
+   7 | // Hooks
+>  8 | export { useParentMessages, useSendMessage, useDeleteMessage } from './hooks/useParentMessages';
+     |                                                                      ^
+   9 |
+  10 | // Types
+  11 | export * from './types/parentMessage.types';
+    at ModuleResolver.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph\ModuleResolution.js:136:15)
+    at DependencyGraph.resolveDependency (C:\RN\app\node_modules\metro\src\node-haste\DependencyGraph.js:252:43)
+    at C:\RN\app\node_modules\metro\src\lib\transformHelpers.js:163:21
+    at resolveDependencies (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:43:25)
+    at visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:81:30)
+    at async Promise.all (index 0)
+    at async visit (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:90:5)
+    at async Promise.all (index 0)
+    at async buildSubgraph (C:\RN\app\node_modules\metro\src\DeltaBundler\buildSubgraph.js:105:3)
+    at async Graph._buildDelta (C:\RN\app\node_modules\metro\src\DeltaBundler\Graph.js:163:22)
+ ERROR  [timeout] connection terminated with Device for app='com.schooltree.crescentapp' on device='CPH2781 - 15 - API 35' after not responding for 60 seconds.

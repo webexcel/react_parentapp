@@ -7,6 +7,7 @@ interface UseFlashMessageResult {
   flashMessages: FlashMessage[];
   hasFlashMessage: boolean;
   isLoading: boolean;
+  isFetching: boolean;
   error: Error | null;
   refetch: () => Promise<any>;
 }
@@ -15,6 +16,7 @@ export const useFlashMessage = (): UseFlashMessageResult => {
   const {
     data: flashMessages = [],
     isLoading,
+    isFetching,
     error,
     refetch,
   } = useQuery({
@@ -36,6 +38,7 @@ export const useFlashMessage = (): UseFlashMessageResult => {
     flashMessages,
     hasFlashMessage: flashMessages.length > 0,
     isLoading,
+    isFetching,
     error: error as Error | null,
     refetch,
   };

@@ -7,6 +7,7 @@ import { DashboardSummary } from '../types/dashboard.types';
 interface UseBatchCountResult {
   summary: DashboardSummary;
   isLoading: boolean;
+  isFetching: boolean;
   error: Error | null;
   refetch: () => Promise<any>;
 }
@@ -16,6 +17,7 @@ const getDefaultSummary = (): DashboardSummary => ({
   attendancePercentage: 0,
   todayAttendanceStatus: 'No Data',
   homeworkCount: 0,
+  homeworkCompleted: 0,
   paymentDue: 0,
   paymentStatus: 'No Due',
   leaveCount: 0,
@@ -31,7 +33,7 @@ export const useBatchCount = (studentId?: string): UseBatchCountResult => {
   const adno = student?.studentId || student?.id;
   const classId = student?.classId;
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, isFetching, error, refetch } = useQuery({
     queryKey: [QUERY_KEYS.DASHBOARD, 'batchCount', targetStudentId],
     queryFn: async (): Promise<DashboardSummary> => {
       if (!adno) return getDefaultSummary();
@@ -47,6 +49,7 @@ export const useBatchCount = (studentId?: string): UseBatchCountResult => {
         // Homework count for this student
         const homeworkItem = response.data.homework?.find((h) => h.adno === adno);
         summary.homeworkCount = homeworkItem?.count || 0;
+        summary.homeworkCompleted = homeworkItem?.completed || 0;
 
         // Attendance data for this student
         const attendanceItem = response.data.attendance?.find((a) => a.adno === adno);
@@ -75,6 +78,7 @@ export const useBatchCount = (studentId?: string): UseBatchCountResult => {
   return {
     summary: data || getDefaultSummary(),
     isLoading,
+    isFetching,
     error: error as Error | null,
     refetch,
   };

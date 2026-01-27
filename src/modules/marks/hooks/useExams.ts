@@ -34,16 +34,28 @@ export const useExams = (classId?: string | number) => {
   });
 
   // Transform examdata to match the Exam interface used by MarksScreen
-  const exams: Exam[] = (query.data?.examdata || []).map(item => ({
-    id: item.exam_id,
-    name: item.exam_name,
-    year_id: item.Year_Id,
-  }));
+  // Filter out exams without valid year_id to prevent API errors
+  const exams: Exam[] = (query.data?.examdata || [])
+    .filter(item => item.exam_id && item.Year_Id)
+    .map(item => ({
+      id: item.exam_id,
+      name: item.exam_name,
+      year_id: item.Year_Id,
+    }));
+
+  // Don't expose error if we got a valid response (even if empty)
+  // This handles the case where backend returns 400 for "no data"
+  const hasValidResponse = query.data !== undefined;
+
+  // Consider loading if query is loading OR if we're waiting for classId
+  const isWaitingForClassId = !classId || classId === '';
+  const isLoading = query.isLoading || query.isFetching;
 
   return {
     exams,
-    isLoading: query.isLoading,
-    error: query.error,
+    isLoading,
+    isWaitingForClassId,
+    error: hasValidResponse ? null : query.error,
     refetch: query.refetch,
   };
 };
