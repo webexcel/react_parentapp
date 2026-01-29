@@ -1,7 +1,12 @@
 import Config from 'react-native-config';
+import { NativeModules, Platform } from 'react-native';
 
 // Import brand registry (add new schools in brands/index.ts)
 import { brandRegistry } from '../../../brands';
+
+// Get brand info from native module (more reliable than react-native-config)
+const { BrandModule } = NativeModules;
+const nativeBrandId = Platform.OS === 'android' ? BrandModule?.BRAND_ID : Config.BRAND_ID;
 
 // Auth type options
 export type AuthType = 'otp' | 'password' | 'both';
@@ -43,6 +48,7 @@ export interface BrandModules {
   chat: ModuleConfig;
   profile: ModuleConfig;
   parentMessage: ModuleConfig;
+  leaveLetter: ModuleConfig;
 }
 
 // Feature flags and settings
@@ -119,6 +125,7 @@ const defaultFeatures: BrandFeatures = {
     chat: { enabled: false },
     profile: { enabled: true },
     parentMessage: { enabled: true },
+    leaveLetter: { enabled: true },
   },
   notifications: {
     enabled: true,
@@ -173,9 +180,13 @@ const brandConfigs: Record<string, BrandConfig> = Object.fromEntries(
 
 /**
  * Get the current brand ID from environment/build config
+ * Uses native BrandModule for Android (more reliable than react-native-config)
  */
 export const getCurrentBrandId = (): string => {
-  return Config.BRAND_ID || 'crescent';
+  // Try native module first (Android), then react-native-config, then fallback
+  const brandId = nativeBrandId || Config.BRAND_ID || 'crescent';
+  console.log('[BrandConfig] getCurrentBrandId:', brandId, '| Native:', nativeBrandId, '| Config:', Config.BRAND_ID);
+  return brandId;
 };
 
 /**

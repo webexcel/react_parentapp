@@ -32,11 +32,15 @@
     "build:pssenior:android:debug": "node scripts/brand-builder.js pssenior android debug",
     "android:railwaybalabhavan": "react-native run-android --variant=railwaybalabhavanDebug",
     "build:railwaybalabhavan:android": "node scripts/brand-builder.js railwaybalabhavan android release",
-    "build:railwaybalabhavan:android:debug": "node scripts/brand-builder.js railwaybalabhavan android debug"
+    "build:railwaybalabhavan:android:debug": "node scripts/brand-builder.js railwaybalabhavan android debug",
+    "android:sivakasi": "react-native run-android --variant=sivakasiDebug",
+    "build:sivakasi:android": "node scripts/brand-builder.js sivakasi android release",
+    "build:sivakasi:android:debug": "node scripts/brand-builder.js sivakasi android debug"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-native-community/datetimepicker": "^8.6.0",
     "@react-native-firebase/app": "^23.8.3",
     "@react-native-firebase/messaging": "^23.8.3",
     "@react-native/new-app-screen": "0.83.1",

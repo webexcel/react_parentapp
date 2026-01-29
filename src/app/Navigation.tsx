@@ -27,6 +27,7 @@ import {TimetableScreen} from '../modules/timetable';
 import {ChatScreen} from '../modules/chat';
 import {MarksScreen} from '../modules/marks';
 import {ParentMessagesScreen, SendMessageScreen} from '../modules/parentMessage';
+import {LeaveLetterScreen} from '../modules/leaveLetter';
 
 // Debug: verify components are imported correctly
 if (__DEV__) {
@@ -228,6 +229,12 @@ const MainNavigator = () => {
       <MainStack.Screen
         name={ROUTES.SEND_MESSAGE}
         component={SendMessageScreen}
+      />
+
+      {/* Leave Letter - Always registered (visibility controlled in Dashboard) */}
+      <MainStack.Screen
+        name={ROUTES.LEAVE_LETTER}
+        component={LeaveLetterScreen}
       />
 
       {/* Notification Settings - Always available (part of profile) */}

@@ -78,4 +78,12 @@ export const API_ENDPOINTS = {
     SAVE_MESSAGE: '/parentMessage/saveMessage',
     DELETE_MESSAGE: '/parentMessage/deleteMessage',
   },
+
+  // Leave Letter - Request leaves for students
+  LEAVE_LETTER: {
+    GET: '/leaveletter/getLeaveRequest',
+    INSERT: '/leaveletter/insertLeaveRequest',
+    UPDATE: '/leaveletter/updateLeaveRequest',
+    DELETE: '/leaveLetter/deleteLeaveRequest',
+  },
 } as const;
