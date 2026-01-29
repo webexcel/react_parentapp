@@ -534,8 +534,8 @@ async function syncBuildGradle() {
         }
 `;
 
-    envConfigCode += `    ${schoolId}debug: "../../brands/${schoolId}/env/.env.development",
-    ${schoolId}release: "../../brands/${schoolId}/env/.env.production",
+    envConfigCode += `    ${schoolId}debug: "brands/${schoolId}/env/.env.development",
+    ${schoolId}release: "brands/${schoolId}/env/.env.production",
 `;
 
     sourceSetCode += `        ${schoolId} {

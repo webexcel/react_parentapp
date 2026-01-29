@@ -12,7 +12,11 @@ import {
 } from '../../../design-system';
 import { ROUTES } from '../../../core/constants';
 import { useLogin } from '../hooks/useLogin';
-import { currentBrand } from '../../../core/brand/BrandConfig';
+import {
+  currentBrand,
+  getCurrentBrandId,
+} from '../../../core/brand/BrandConfig';
+import { getBrandLogo } from '../../../core/brand/BrandAssets';
 
 type RootStackParamList = {
   Login: undefined;
@@ -28,11 +32,20 @@ export const LoginScreen: React.FC = () => {
   const { sendOtp, isLoading, error } = useLogin();
   const authType = currentBrand.auth.type;
 
-  const isValidMobile = mobileNumber.length === 10 && /^[6-9]\d{9}$/.test(mobileNumber);
+  const isValidMobile =
+    mobileNumber.length === 10 && /^[6-9]\d{9}$/.test(mobileNumber);
 
   const handleGetOtp = async () => {
+        console.log(
+      'Current Brand in LoginScreen:',
+      // currentBrand,
+      // getCurrentBrandId(),
+    );
     if (!isValidMobile) {
-      Alert.alert('Invalid Number', 'Please enter a valid 10-digit mobile number');
+      Alert.alert(
+        'Invalid Number',
+        'Please enter a valid 10-digit mobile number',
+      );
       return;
     }
 
@@ -59,7 +72,7 @@ export const LoginScreen: React.FC = () => {
   const header = (
     <View style={styles.logoContainer}>
       <Image
-        source={require('../../../assets/images/logo.png')}
+        source={getBrandLogo(getCurrentBrandId())}
         style={styles.logo}
         resizeMode="contain"
       />
@@ -67,7 +80,8 @@ export const LoginScreen: React.FC = () => {
         {currentBrand.brand.shortName}
       </Text>
       <Text variant="body" color="secondary" center style={styles.subtitle}>
-        {currentBrand.brand.tagline || "Stay connected with your child's education"}
+        {currentBrand.brand.tagline ||
+          "Stay connected with your child's education"}
       </Text>
     </View>
   );
@@ -108,11 +122,13 @@ export const LoginScreen: React.FC = () => {
         />
 
         <TouchableOpacity
-          onPress={() => Alert.alert(
-            'Forgot Password?',
-            'Please contact your school administration to reset your password.',
-            [{ text: 'OK' }]
-          )}
+          onPress={() =>
+            Alert.alert(
+              'Forgot Password?hh',
+              'Please contact your school administration to reset your password.',
+              [{ text: 'OK' }],
+            )
+          }
           style={styles.forgotPassword}
         >
           <Text variant="body" color="primary" center>

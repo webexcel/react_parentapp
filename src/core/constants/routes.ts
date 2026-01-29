@@ -26,6 +26,9 @@ export const ROUTES = {
   // Parent Message
   PARENT_MESSAGES: 'ParentMessages',
   SEND_MESSAGE: 'SendMessage',
+
+  // Leave Letter
+  LEAVE_LETTER: 'LeaveLetter',
 } as const;
 
 export type RouteName = (typeof ROUTES)[keyof typeof ROUTES];

@@ -2,6 +2,25 @@ apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 apply plugin: "com.google.gms.google-services"
+
+/**
+ * Environment file mapping for react-native-config
+ * IMPORTANT: Must be defined BEFORE applying dotenv.gradle!
+ * Maps each flavor+buildType combination to its environment file
+ */
+project.ext.envConfigFiles = [
+    bsschooldebug: "brands/bsschool/env/.env.development",
+    bsschoolrelease: "brands/bsschool/env/.env.production",
+    crescentdebug: "brands/crescent/env/.env.development",
+    crescentrelease: "brands/crescent/env/.env.production",
+    psseniordebug: "brands/pssenior/env/.env.development",
+    psseniorrelease: "brands/pssenior/env/.env.production",
+    railwaybalabhavandebug: "brands/railwaybalabhavan/env/.env.development",
+    railwaybalabhavanrelease: "brands/railwaybalabhavan/env/.env.production",
+    sivakasidebug: "brands/sivakasi/env/.env.development",
+    sivakasirelease: "brands/sivakasi/env/.env.production",
+]
+
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
 
@@ -12,26 +31,11 @@ apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
 react {
     /* Variants */
     // List debuggable variants for all flavors
-    debuggableVariants = ["bsschoolDebug", "crescentDebug", "psseniorDebug", "railwaybalabhavanDebug"]
+    debuggableVariants = ["bsschoolDebug", "crescentDebug", "psseniorDebug", "railwaybalabhavanDebug", "sivakasiDebug"]
 
     /* Autolinking */
     autolinkLibrariesWithApp()
 }
-
-/**
- * Environment file mapping for react-native-config
- * Maps each flavor+buildType combination to its environment file
- */
-project.ext.envConfigFiles = [
-    bsschooldebug: "../../brands/bsschool/env/.env.development",
-    bsschoolrelease: "../../brands/bsschool/env/.env.production",
-    crescentdebug: "../../brands/crescent/env/.env.development",
-    crescentrelease: "../../brands/crescent/env/.env.production",
-    psseniordebug: "../../brands/pssenior/env/.env.development",
-    psseniorrelease: "../../brands/pssenior/env/.env.production",
-    railwaybalabhavandebug: "../../brands/railwaybalabhavan/env/.env.development",
-    railwaybalabhavanrelease: "../../brands/railwaybalabhavan/env/.env.production",
-]
 
 /**
  * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
@@ -120,6 +124,16 @@ android {
             buildConfigField "String", "DB_NAME", "\"rlybalabhavans\""
         }
 
+        // Sivakasi Nadar Mat School
+        sivakasi {
+            dimension "brand"
+            applicationId "com.schooltree.sivakasi"
+            resValue "string", "app_name", "Sivakasi Nadar Mat School Parent"
+            buildConfigField "String", "BRAND_ID", "\"sivakasi\""
+            buildConfigField "String", "AUTH_TYPE", "\"otp\""
+            buildConfigField "String", "DB_NAME", "\"sivakasi_nadar\""
+        }
+
         // Add more school flavors using: npm run school:add
     }
 
@@ -169,6 +183,9 @@ android {
         }
         railwaybalabhavan {
             res.srcDirs = ['src/railwaybalabhavan/res']
+        }
+        sivakasi {
+            res.srcDirs = ['src/sivakasi/res']
         }
     }
 }

@@ -26,4 +26,5 @@ export const QUERY_KEYS = {
   LATEST_MESSAGE: 'latestMessage',
   STUDENT_PHOTO: 'studentPhoto',
   GALLERY: 'gallery',
+  LEAVE_LETTER: 'leaveLetter',
 } as const;

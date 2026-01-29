@@ -196,6 +196,15 @@ export const DashboardScreen: React.FC = () => {
       iconColor: '#9333EA',
       onPress: () => navigation.navigate(ROUTES.PARENT_MESSAGES),
     },
+    {
+      id: 'leaveLetter',
+      icon: 'calendar',
+      title: 'Leave Letter',
+      subtitle: 'Request student leave',
+      iconBg: '#DCFCE7',
+      iconColor: '#16A34A',
+      onPress: () => navigation.navigate(ROUTES.LEAVE_LETTER),
+    },
   ];
 
   const displayName = 'Parent';
@@ -608,7 +617,13 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={styles.quickAccessGridTitle}>{quickAccessItems[6].title}</Text>
                 <Text style={styles.quickAccessGridSubtitle}>{quickAccessItems[6].subtitle}</Text>
               </TouchableOpacity>
-              <View style={styles.quickAccessGridItem} />
+              <TouchableOpacity style={styles.quickAccessGridItem} onPress={quickAccessItems[7].onPress}>
+                <View style={[styles.quickAccessIcon, { backgroundColor: quickAccessItems[7].iconBg }]}>
+                  <Icon name={quickAccessItems[7].icon as any} size={20} color={quickAccessItems[7].iconColor} />
+                </View>
+                <Text style={styles.quickAccessGridTitle}>{quickAccessItems[7].title}</Text>
+                <Text style={styles.quickAccessGridSubtitle}>{quickAccessItems[7].subtitle}</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>

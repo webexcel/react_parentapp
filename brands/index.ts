@@ -5,6 +5,7 @@ import bsschoolConfig from './bsschool/brand.config.json';
 import crescentConfig from './crescent/brand.config.json';
 import psseniorConfig from './pssenior/brand.config.json';
 import railwaybalabhavanConfig from './railwaybalabhavan/brand.config.json';
+import sivakasiConfig from './sivakasi/brand.config.json';
 
 // Export all brand configs as a registry
 export const brandRegistry: Record<string, any> = {
@@ -12,7 +13,8 @@ export const brandRegistry: Record<string, any> = {
   crescent: crescentConfig,
   pssenior: psseniorConfig,
   railwaybalabhavan: railwaybalabhavanConfig,
+  sivakasi: sivakasiConfig,
 };
 
 // Export individual configs if needed
-export { bsschoolConfig, crescentConfig, psseniorConfig, railwaybalabhavanConfig };
+export { bsschoolConfig, crescentConfig, psseniorConfig, railwaybalabhavanConfig, sivakasiConfig };
