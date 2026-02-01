@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, ScrollView, StyleSheet, RefreshControl, ActivityIndicator } from 'react-native';
+import { View, ScrollView, StyleSheet, RefreshControl, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import {
   ListTemplate,
   Text,
@@ -14,23 +15,85 @@ import {
 import { useAuth } from '../../../core/auth';
 import { useMarks } from '../hooks/useMarks';
 import { useExams } from '../hooks/useExams';
+import { useReportCard } from '../hooks/useReportCard';
+import { ReportCardWebView } from '../components/ReportCardWebView';
 
-// Subject color mapping
+// Subject color mapping (lowercase keys for case-insensitive matching)
 const SUBJECT_COLORS: { [key: string]: string } = {
-  Mathematics: '#3b82f6',
-  Science: '#10b981',
-  English: '#8b5cf6',
-  Hindi: '#f97316',
-  Tamil: '#ec4899',
-  'Social Studies': '#f59e0b',
-  Physics: '#06b6d4',
-  Chemistry: '#14b8a6',
-  Biology: '#84cc16',
-  Computer: '#a855f7',
+  mathematics: '#3b82f6',
+  maths: '#3b82f6',
+  science: '#10b981',
+  english: '#8b5cf6',
+  hindi: '#f97316',
+  tamil: '#ec4899',
+  'social studies': '#f59e0b',
+  'social science': '#f59e0b',
+  sst: '#f59e0b',
+  physics: '#06b6d4',
+  chemistry: '#14b8a6',
+  biology: '#84cc16',
+  computer: '#a855f7',
+  'computer science': '#a855f7',
+  computers: '#a855f7',
+  'information technology': '#a855f7',
+  it: '#a855f7',
+  'business studies': '#0ea5e9',
+  accountancy: '#f43f5e',
+  accounts: '#f43f5e',
+  economics: '#22c55e',
+  geography: '#eab308',
+  history: '#d97706',
+  'political science': '#7c3aed',
+  sanskrit: '#be185d',
+  urdu: '#059669',
+  telugu: '#dc2626',
+  kannada: '#7c2d12',
+  malayalam: '#4f46e5',
+  marathi: '#c026d3',
+  gujarati: '#0d9488',
+  'physical education': '#16a34a',
+  'moral science': '#8b5cf6',
+  'general knowledge': '#06b6d4',
+  gk: '#06b6d4',
+  art: '#f472b6',
+  music: '#a78bfa',
+  evs: '#22d3ee',
+  'environmental science': '#22d3ee',
 };
 
+// Array of colors to cycle through for unknown subjects
+const COLOR_PALETTE = [
+  '#3b82f6', '#10b981', '#8b5cf6', '#f97316', '#ec4899',
+  '#f59e0b', '#06b6d4', '#14b8a6', '#84cc16', '#a855f7',
+  '#0ea5e9', '#f43f5e', '#22c55e', '#eab308', '#d97706',
+];
+
+// Cache for dynamically assigned colors
+const dynamicColorCache: { [key: string]: string } = {};
+let colorIndex = 0;
+
 const getSubjectColor = (subject: string): string => {
-  return SUBJECT_COLORS[subject] || '#6b7280';
+  const normalizedSubject = subject.toLowerCase().trim();
+
+  // Check predefined colors
+  if (SUBJECT_COLORS[normalizedSubject]) {
+    return SUBJECT_COLORS[normalizedSubject];
+  }
+
+  // Check partial match (e.g., "Mathematics - Class X" matches "mathematics")
+  for (const [key, color] of Object.entries(SUBJECT_COLORS)) {
+    if (normalizedSubject.includes(key) || key.includes(normalizedSubject)) {
+      return color;
+    }
+  }
+
+  // Assign a consistent color from palette for unknown subjects
+  if (!dynamicColorCache[normalizedSubject]) {
+    dynamicColorCache[normalizedSubject] = COLOR_PALETTE[colorIndex % COLOR_PALETTE.length];
+    colorIndex++;
+  }
+
+  return dynamicColorCache[normalizedSubject];
 };
 
 const calculateGrade = (percentage: number): string => {
@@ -48,15 +111,11 @@ export const MarksScreen: React.FC = () => {
   const navigation = useNavigation();
   const { students, selectedStudentId, selectStudent } = useAuth();
   const [selectedExamIndex, setSelectedExamIndex] = useState(0);
+  const [showReportCard, setShowReportCard] = useState(false);
 
   // Get selected student's classId
   const selectedStudent = students.find(s => s.id === selectedStudentId);
   const classId = selectedStudent?.classId;
-
-  console.log('=== MARKS SCREEN ===');
-  console.log('selectedStudentId:', selectedStudentId);
-  console.log('selectedStudent:', selectedStudent);
-  console.log('classId:', classId);
 
   // Fetch exams list from API using classId
   const { exams, isLoading: isLoadingExams, isWaitingForClassId, error: examsError } = useExams(classId);
@@ -79,6 +138,27 @@ export const MarksScreen: React.FC = () => {
   } = useMarks(
     selectedExam?.id ?? 0,
     selectedExam?.year_id ?? 0
+  );
+
+  // Get report card URL - examgrpid from student (source of truth), term_type from exam
+  console.log('Report Card Debug:', {
+    admissionNo: selectedStudent?.admissionNo,
+    classId: Number(classId),
+    examgrpid: selectedStudent?.examgrpid,
+    yearId: selectedExam?.year_id,
+    termType: selectedExam?.term_type,
+  });
+
+  const {
+    reportCardUrl,
+    isAvailable: isReportCardAvailable,
+    isLoading: isLoadingReportCard,
+  } = useReportCard(
+    selectedStudent?.admissionNo || '',
+    Number(classId) || 0,
+    selectedStudent?.examgrpid ?? undefined,  // From student (student_class_map)
+    selectedExam?.year_id || 0,
+    selectedExam?.term_type
   );
 
   // Auto-fetch when screen comes into focus
@@ -144,6 +224,21 @@ export const MarksScreen: React.FC = () => {
               />
             ))}
           </ScrollView>
+        )}
+
+        {/* Report Card Button - Only show when exam has term_type and report card is available */}
+        {selectedExam?.term_type && isReportCardAvailable && (
+          <TouchableOpacity
+            style={styles.reportCardButton}
+            onPress={() => setShowReportCard(true)}
+            activeOpacity={0.7}
+          >
+            <Icon name="document-text-outline" size={20} color={colors.primary} />
+            <Text variant="body" semibold style={styles.reportCardButtonText}>
+              View Report Card
+            </Text>
+            <Icon name="chevron-forward" size={16} color={colors.primary} />
+          </TouchableOpacity>
         )}
 
         {/* Loading State */}
@@ -232,6 +327,13 @@ export const MarksScreen: React.FC = () => {
           </>
         )}
       </ScrollView>
+
+      {/* Report Card WebView Modal */}
+      <ReportCardWebView
+        visible={showReportCard}
+        url={reportCardUrl || ''}
+        onClose={() => setShowReportCard(false)}
+      />
     </ListTemplate>
   );
 };
@@ -260,6 +362,23 @@ const styles = StyleSheet.create({
   },
   examChip: {
     marginRight: spacing.sm,
+  },
+  reportCardButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.primarySoft,
+    marginHorizontal: spacing.base,
+    marginTop: spacing.md,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.base,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.primary,
+  },
+  reportCardButtonText: {
+    color: colors.primary,
+    marginHorizontal: spacing.sm,
   },
   sectionTitle: {
     paddingHorizontal: spacing.base,

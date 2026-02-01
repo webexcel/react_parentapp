@@ -20,6 +20,8 @@ export type {
   BrandModules,
   ModuleConfig,
   AuthType,
+  SplashConfig,
+  SplashVariant,
 } from './BrandConfig';
 
 // React context and hooks

@@ -53,6 +53,7 @@ export interface Student {
   schoolName?: string;
   dbname?: string;
   classId?: string;
+  examgrpid?: number | null;  // Exam Group ID for report cards (from student_class_map)
 }
 
 export interface GetStudentsResponse extends ApiResponse<Student[]> {}

@@ -51,6 +51,18 @@ export interface BrandModules {
   leaveLetter: ModuleConfig;
 }
 
+// Splash screen configuration
+export type SplashVariant = 'default' | 'minimal' | 'fullLogo' | 'gradient';
+
+export interface SplashConfig {
+  variant: SplashVariant;
+  showTagline?: boolean;
+  showLoader?: boolean;
+  duration?: number;
+  backgroundColor?: string; // Override primary color
+  logoSize?: 'small' | 'medium' | 'large';
+}
+
 // Feature flags and settings
 export interface BrandFeatures {
   modules: BrandModules;
@@ -60,6 +72,7 @@ export interface BrandFeatures {
   };
   offlineMode: boolean;
   darkMode: boolean;
+  splash?: SplashConfig;
 }
 
 // Complete brand configuration
@@ -109,6 +122,15 @@ const defaultColors: BrandColors = {
   info: '#3b82f6',
 };
 
+// Default splash config
+const defaultSplash: SplashConfig = {
+  variant: 'default',
+  showTagline: true,
+  showLoader: true,
+  duration: 2500,
+  logoSize: 'medium',
+};
+
 // Default features
 const defaultFeatures: BrandFeatures = {
   modules: {
@@ -133,6 +155,7 @@ const defaultFeatures: BrandFeatures = {
   },
   offlineMode: true,
   darkMode: false,
+  splash: defaultSplash,
 };
 
 // Helper to transform JSON config to BrandConfig
@@ -159,6 +182,7 @@ const transformJsonConfig = (jsonConfig: any): BrandConfig => ({
     notifications: jsonConfig.features.notifications,
     offlineMode: jsonConfig.features.offlineMode,
     darkMode: jsonConfig.features.darkMode,
+    splash: { ...defaultSplash, ...jsonConfig.features.splash },
   },
 });
 

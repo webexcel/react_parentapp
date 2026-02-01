@@ -60,10 +60,10 @@
         "enabled": true
       },
       "homework": {
-        "enabled": false
+        "enabled": true
       },
       "attendance": {
-        "enabled": false
+        "enabled": true
       },
       "exams": {
         "enabled": true

@@ -27,3 +27,6 @@ export type { IconProps, IconName } from './Icon';
 
 export { Switch } from './Switch';
 export type { SwitchProps } from './Switch';
+
+export { SplashScreen } from './SplashScreen';
+export type { SplashScreenProps } from './SplashScreen';

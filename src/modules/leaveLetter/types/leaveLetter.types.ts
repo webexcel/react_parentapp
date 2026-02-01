@@ -1,7 +1,7 @@
 // Leave Letter Types
 
 export type SessionType = 0 | 1 | 2; // 0=Full Day, 1=Forenoon, 2=Afternoon
-export type LeaveStatus = 'REQUEST' | 'APPROVED' | 'REJECTED';
+export type LeaveStatus = 'REQUEST' | 'APPROVED' | 'REJECTED' | 'PENDING';
 
 // Session options for dropdown
 export const SESSION_OPTIONS = [
@@ -10,23 +10,52 @@ export const SESSION_OPTIONS = [
   { value: '2', label: 'Afternoon' },
 ] as const;
 
+// Status display configuration with colors
+export const STATUS_CONFIG: Record<string, { label: string; color: string; bgColor: string }> = {
+  REQUEST: {
+    label: 'Pending',
+    color: '#D97706', // amber-600
+    bgColor: '#FEF3C7', // amber-100
+  },
+  PENDING: {
+    label: 'Pending',
+    color: '#D97706', // amber-600
+    bgColor: '#FEF3C7', // amber-100
+  },
+  APPROVED: {
+    label: 'Approved',
+    color: '#059669', // emerald-600
+    bgColor: '#D1FAE5', // emerald-100
+  },
+  REJECTED: {
+    label: 'Rejected',
+    color: '#DC2626', // red-600
+    bgColor: '#FEE2E2', // red-100
+  },
+};
+
 // Get session label by value
 export const getSessionLabel = (value: number | string): string => {
   const option = SESSION_OPTIONS.find(opt => opt.value === String(value));
   return option?.label || 'Unknown';
 };
 
-// Get status color
-export const getStatusColor = (status: LeaveStatus): string => {
-  switch (status) {
-    case 'APPROVED':
-      return '#10b981'; // green
-    case 'REJECTED':
-      return '#ef4444'; // red
-    case 'REQUEST':
-    default:
-      return '#f59e0b'; // yellow/amber
-  }
+// Get status color (text color)
+export const getStatusColor = (status: string): string => {
+  const config = STATUS_CONFIG[status?.toUpperCase()];
+  return config?.color || '#6B7280'; // gray fallback
+};
+
+// Get status background color
+export const getStatusBgColor = (status: string): string => {
+  const config = STATUS_CONFIG[status?.toUpperCase()];
+  return config?.bgColor || '#F3F4F6'; // gray fallback
+};
+
+// Get status display label
+export const getStatusLabel = (status: string): string => {
+  const config = STATUS_CONFIG[status?.toUpperCase()];
+  return config?.label || status || 'Unknown';
 };
 
 // API Response types

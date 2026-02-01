@@ -7,6 +7,8 @@ import {
   LeaveRequest,
   getSessionLabel,
   getStatusColor,
+  getStatusBgColor,
+  getStatusLabel,
 } from '../types/leaveLetter.types';
 
 interface LeaveRequestCardProps {
@@ -40,8 +42,10 @@ export const LeaveRequestCard: React.FC<LeaveRequestCardProps> = ({
     return `${start} - ${end}`;
   };
 
-  const canEdit = request.leaveStatus === 'REQUEST';
+  const canEdit = request.leaveStatus === 'REQUEST' || request.leaveStatus === 'PENDING';
   const statusColor = getStatusColor(request.leaveStatus);
+  const statusBgColor = getStatusBgColor(request.leaveStatus);
+  const statusLabel = getStatusLabel(request.leaveStatus);
 
   return (
     <View style={styles.card}>
@@ -51,9 +55,9 @@ export const LeaveRequestCard: React.FC<LeaveRequestCardProps> = ({
           <Icon name="calendar" size={16} color={colors.primary} />
           <Text style={styles.dateText}>{getDateRangeText()}</Text>
         </View>
-        <View style={[styles.statusBadge, {backgroundColor: statusColor + '20'}]}>
+        <View style={[styles.statusBadge, {backgroundColor: statusBgColor}]}>
           <Text style={[styles.statusText, {color: statusColor}]}>
-            {request.leaveStatus}
+            {statusLabel}
           </Text>
         </View>
       </View>

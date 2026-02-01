@@ -19,6 +19,7 @@ export interface MarksResponse {
   data: {
     exam_name?: string;
     exam_id?: number;
+    exgroup?: number | string | null;
     student_name?: string;
     class?: string;
     marks: SubjectMark[];
@@ -33,6 +34,7 @@ export interface Exam {
   id: number;
   name: string;
   year_id: number;
+  term_type?: 'term1' | 'term2' | 'term3' | null;
 }
 
 export interface ExamListResponse {
@@ -52,10 +54,26 @@ export interface ExamNameItem {
   Year_Id: number;
   Class_Id: number;
   status?: string;
+  term_type?: 'term1' | 'term2' | 'term3' | null;
 }
 
 export interface SelectExamNameResponse {
   status: boolean;
   message: string;
   examdata: ExamNameItem[];
+}
+
+// Report Card types
+export interface ReportCardRequest {
+  ADNO: string;
+  CLASSID: number;
+  EXGRPID: number;
+  YEARID: number;
+  TERMTYPE: string;
+}
+
+export interface ReportCardResponse {
+  status: boolean;
+  message: string;
+  data: string;
 }

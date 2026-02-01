@@ -7,27 +7,18 @@ const QUERY_KEYS = {
 };
 
 export const useExams = (classId?: string | number) => {
-  console.log('=== useExams CALLED ===');
-  console.log('classId received:', classId, 'type:', typeof classId);
-
   const query = useQuery({
     queryKey: [QUERY_KEYS.EXAMS, classId],
     queryFn: async () => {
-      console.log('=== FETCHING EXAMS FOR CLASS ===');
-      console.log('classId:', classId);
-
       if (!classId) {
-        console.log('No classId - returning empty examdata');
         return { status: false, message: 'No class ID', examdata: [] };
       }
 
       const parsedClassId = typeof classId === 'string' ? parseInt(classId, 10) : classId;
-      console.log('Parsed classId:', parsedClassId);
 
       const response = await marksApi.selectExamName({
         class_Id: parsedClassId,
       });
-      console.log('Exams response:', response);
       return response;
     },
     enabled: !!classId && classId !== '',
@@ -35,12 +26,14 @@ export const useExams = (classId?: string | number) => {
 
   // Transform examdata to match the Exam interface used by MarksScreen
   // Filter out exams without valid year_id to prevent API errors
+  // Order by exam_id ascending (handled by backend)
   const exams: Exam[] = (query.data?.examdata || [])
     .filter(item => item.exam_id && item.Year_Id)
     .map(item => ({
       id: item.exam_id,
       name: item.exam_name,
       year_id: item.Year_Id,
+      term_type: item.term_type,
     }));
 
   // Don't expose error if we got a valid response (even if empty)

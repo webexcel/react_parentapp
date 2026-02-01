@@ -8,7 +8,7 @@ const queryClientManager = new QueryClientManager({
 
 const reactotron = Reactotron.configure({
   name: 'Crescent Parent App',
-  host: '192.168.1.8', // Your computer's IP for physical device
+  host: 'localhost', // Use localhost with ADB reverse tcp:9090 tcp:9090
   onDisconnect: () => {
     queryClientManager.unsubscribe();
   },

@@ -23,6 +23,7 @@ import { useAuth } from '../../../core/auth';
 import { ROUTES } from '../../../core/constants';
 import { useDashboard } from '../hooks';
 import { FlashMessageModal } from '../components';
+import { useIsModuleEnabled } from '../../../core/brand/featureFlags';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -41,6 +42,16 @@ export const DashboardScreen: React.FC = () => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [showFlashModal, setShowFlashModal] = React.useState(false);
   const hasShownModalRef = React.useRef(false);
+
+  // Feature flags - check which modules are enabled
+  const isMarksEnabled = useIsModuleEnabled('marks');
+  const isGalleryEnabled = useIsModuleEnabled('gallery');
+  const isExamsEnabled = useIsModuleEnabled('exams');
+  const isCalendarEnabled = useIsModuleEnabled('calendar');
+  const isFeesEnabled = useIsModuleEnabled('fees');
+  const isHomeworkEnabled = useIsModuleEnabled('homework');
+  const isAttendanceEnabled = useIsModuleEnabled('attendance');
+  const isTimetableEnabled = useIsModuleEnabled('timetable');
 
   // Use dashboard hook for all data
   const {
@@ -125,9 +136,11 @@ export const DashboardScreen: React.FC = () => {
     return [];
   }, [latestMessages]);
 
-  const quickAccessItems = [
+  // All quick access items with their enabled state
+  const allQuickAccessItems = [
     {
       id: 'marks',
+      enabled: isMarksEnabled,
       icon: 'star',
       title: 'View Marks',
       subtitle: 'Progress reports & grades',
@@ -138,6 +151,7 @@ export const DashboardScreen: React.FC = () => {
     },
     {
       id: 'gallery',
+      enabled: isGalleryEnabled,
       icon: 'collections',
       title: 'Gallery',
       subtitle: 'Event photos & memories',
@@ -148,6 +162,7 @@ export const DashboardScreen: React.FC = () => {
     },
     {
       id: 'exams',
+      enabled: isExamsEnabled,
       icon: 'eventNote',
       title: 'Exam Schedule',
       subtitle: 'Datesheet & syllabus',
@@ -158,6 +173,7 @@ export const DashboardScreen: React.FC = () => {
     },
     {
       id: 'calendar',
+      enabled: isCalendarEnabled,
       icon: 'calendar',
       title: 'Calendar',
       subtitle: 'Holidays & events',
@@ -168,6 +184,7 @@ export const DashboardScreen: React.FC = () => {
     },
     {
       id: 'fees',
+      enabled: isFeesEnabled,
       icon: 'payments',
       title: 'Fee Details',
       subtitle: 'Invoices & receipts',
@@ -180,6 +197,7 @@ export const DashboardScreen: React.FC = () => {
     },
     {
       id: 'timetable',
+      enabled: isTimetableEnabled,
       icon: 'schedule',
       title: 'Timetable',
       subtitle: 'Weekly class routine',
@@ -189,6 +207,7 @@ export const DashboardScreen: React.FC = () => {
     },
     {
       id: 'parentMessage',
+      enabled: true, // Always enabled
       icon: 'message',
       title: 'Write to School',
       subtitle: 'Contact school',
@@ -198,6 +217,7 @@ export const DashboardScreen: React.FC = () => {
     },
     {
       id: 'leaveLetter',
+      enabled: true, // Always enabled
       icon: 'calendar',
       title: 'Leave Letter',
       subtitle: 'Request student leave',
@@ -206,6 +226,9 @@ export const DashboardScreen: React.FC = () => {
       onPress: () => navigation.navigate(ROUTES.LEAVE_LETTER),
     },
   ];
+
+  // Filter to only show enabled modules
+  const quickAccessItems = allQuickAccessItems.filter(item => item.enabled);
 
   const displayName = 'Parent';
 
@@ -329,7 +352,7 @@ export const DashboardScreen: React.FC = () => {
           </TouchableOpacity>
 
           {/* Attendance Card - Bigger for 2+ students, compact for 1 */}
-          {students.length >= 2 ? (
+          {isAttendanceEnabled && (students.length >= 2 ? (
             <View style={styles.summaryCard}>
               <View style={styles.cardHeader}>
                 <Text style={styles.cardLabel}>Attendance</Text>
@@ -423,10 +446,10 @@ export const DashboardScreen: React.FC = () => {
                 </Text>
               </View>
             </TouchableOpacity>
-          )}
+          ))}
 
           {/* Homework Card - Bigger for 2+ students, compact for 1 */}
-          {students.length >= 2 ? (
+          {isHomeworkEnabled && (students.length >= 2 ? (
             <View style={styles.summaryCard}>
               <View style={styles.cardHeader}>
                 <Text style={styles.cardLabel}>Homework</Text>
@@ -521,7 +544,7 @@ export const DashboardScreen: React.FC = () => {
                 </View>
               )}
             </TouchableOpacity>
-          )}
+          ))}
         </View>
 
 
@@ -554,79 +577,35 @@ export const DashboardScreen: React.FC = () => {
         )}
 
         {/* Quick Access */}
-        <View style={styles.section}>
-          <View style={styles.quickAccessHeader}>
-            <Icon name="gridView" size={20} color="#2563EB" />
-            <Text style={styles.quickAccessHeaderTitle}>Quick Access</Text>
-          </View>
+        {quickAccessItems.length > 0 && (
+          <View style={styles.section}>
+            <View style={styles.quickAccessHeader}>
+              <Icon name="gridView" size={20} color="#2563EB" />
+              <Text style={styles.quickAccessHeaderTitle}>Quick Access</Text>
+            </View>
 
-          <View style={styles.quickAccessList}>
-            <View style={styles.quickAccessRow}>
-              <TouchableOpacity style={styles.quickAccessGridItem} onPress={quickAccessItems[0].onPress}>
-                <View style={[styles.quickAccessIcon, { backgroundColor: quickAccessItems[0].iconBg }]}>
-                  <Icon name={quickAccessItems[0].icon as any} size={20} color={quickAccessItems[0].iconColor} />
+            <View style={styles.quickAccessList}>
+              {/* Render items in rows of 2 */}
+              {Array.from({ length: Math.ceil(quickAccessItems.length / 2) }, (_, rowIndex) => (
+                <View key={rowIndex} style={styles.quickAccessRow}>
+                  {quickAccessItems.slice(rowIndex * 2, rowIndex * 2 + 2).map((item) => (
+                    <TouchableOpacity
+                      key={item.id}
+                      style={styles.quickAccessGridItem}
+                      onPress={item.onPress}
+                    >
+                      <View style={[styles.quickAccessIcon, { backgroundColor: item.iconBg }]}>
+                        <Icon name={item.icon as any} size={20} color={item.iconColor} />
+                      </View>
+                      <Text style={styles.quickAccessGridTitle}>{item.title}</Text>
+                      <Text style={styles.quickAccessGridSubtitle}>{item.subtitle}</Text>
+                    </TouchableOpacity>
+                  ))}
                 </View>
-                <Text style={styles.quickAccessGridTitle}>{quickAccessItems[0].title}</Text>
-                <Text style={styles.quickAccessGridSubtitle}>{quickAccessItems[0].subtitle}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.quickAccessGridItem} onPress={quickAccessItems[1].onPress}>
-                <View style={[styles.quickAccessIcon, { backgroundColor: quickAccessItems[1].iconBg }]}>
-                  <Icon name={quickAccessItems[1].icon as any} size={20} color={quickAccessItems[1].iconColor} />
-                </View>
-                <Text style={styles.quickAccessGridTitle}>{quickAccessItems[1].title}</Text>
-                <Text style={styles.quickAccessGridSubtitle}>{quickAccessItems[1].subtitle}</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.quickAccessRow}>
-              <TouchableOpacity style={styles.quickAccessGridItem} onPress={quickAccessItems[2].onPress}>
-                <View style={[styles.quickAccessIcon, { backgroundColor: quickAccessItems[2].iconBg }]}>
-                  <Icon name={quickAccessItems[2].icon as any} size={20} color={quickAccessItems[2].iconColor} />
-                </View>
-                <Text style={styles.quickAccessGridTitle}>{quickAccessItems[2].title}</Text>
-                <Text style={styles.quickAccessGridSubtitle}>{quickAccessItems[2].subtitle}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.quickAccessGridItem} onPress={quickAccessItems[3].onPress}>
-                <View style={[styles.quickAccessIcon, { backgroundColor: quickAccessItems[3].iconBg }]}>
-                  <Icon name={quickAccessItems[3].icon as any} size={20} color={quickAccessItems[3].iconColor} />
-                </View>
-                <Text style={styles.quickAccessGridTitle}>{quickAccessItems[3].title}</Text>
-                <Text style={styles.quickAccessGridSubtitle}>{quickAccessItems[3].subtitle}</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.quickAccessRow}>
-              <TouchableOpacity style={styles.quickAccessGridItem} onPress={quickAccessItems[4].onPress}>
-                <View style={[styles.quickAccessIcon, { backgroundColor: quickAccessItems[4].iconBg }]}>
-                  <Icon name={quickAccessItems[4].icon as any} size={20} color={quickAccessItems[4].iconColor} />
-                </View>
-                <Text style={styles.quickAccessGridTitle}>{quickAccessItems[4].title}</Text>
-                <Text style={styles.quickAccessGridSubtitle}>{quickAccessItems[4].subtitle}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.quickAccessGridItem} onPress={quickAccessItems[5].onPress}>
-                <View style={[styles.quickAccessIcon, { backgroundColor: quickAccessItems[5].iconBg }]}>
-                  <Icon name={quickAccessItems[5].icon as any} size={20} color={quickAccessItems[5].iconColor} />
-                </View>
-                <Text style={styles.quickAccessGridTitle}>{quickAccessItems[5].title}</Text>
-                <Text style={styles.quickAccessGridSubtitle}>{quickAccessItems[5].subtitle}</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.quickAccessRow}>
-              <TouchableOpacity style={styles.quickAccessGridItem} onPress={quickAccessItems[6].onPress}>
-                <View style={[styles.quickAccessIcon, { backgroundColor: quickAccessItems[6].iconBg }]}>
-                  <Icon name={quickAccessItems[6].icon as any} size={20} color={quickAccessItems[6].iconColor} />
-                </View>
-                <Text style={styles.quickAccessGridTitle}>{quickAccessItems[6].title}</Text>
-                <Text style={styles.quickAccessGridSubtitle}>{quickAccessItems[6].subtitle}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.quickAccessGridItem} onPress={quickAccessItems[7].onPress}>
-                <View style={[styles.quickAccessIcon, { backgroundColor: quickAccessItems[7].iconBg }]}>
-                  <Icon name={quickAccessItems[7].icon as any} size={20} color={quickAccessItems[7].iconColor} />
-                </View>
-                <Text style={styles.quickAccessGridTitle}>{quickAccessItems[7].title}</Text>
-                <Text style={styles.quickAccessGridSubtitle}>{quickAccessItems[7].subtitle}</Text>
-              </TouchableOpacity>
+              ))}
             </View>
           </View>
-        </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

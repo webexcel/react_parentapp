@@ -51,6 +51,7 @@ export const API_ENDPOINTS = {
   MARKS: {
     GET_BY_ADNO: '/reportcard/getMarksOnAdno',
     SELECT_EXAM_NAME: '/reportcard/selectExamName',
+    GET_TERM_REPORTCARD: '/reportCard/getTermReportcardAdno',
   },
 
   // Payments/Fees

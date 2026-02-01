@@ -6,6 +6,8 @@ import {
   ExamListResponse,
   SelectExamNameRequest,
   SelectExamNameResponse,
+  ReportCardRequest,
+  ReportCardResponse,
 } from '../types/marks.types';
 
 export const marksApi = {
@@ -57,6 +59,26 @@ export const marksApi = {
             student_name: '',
             class: '',
           },
+        };
+      }
+      throw error;
+    }
+  },
+
+  // Get report card URL for a specific exam
+  getTermReportcard: async (params: ReportCardRequest): Promise<ReportCardResponse> => {
+    try {
+      const response = await apiClient.post<ReportCardResponse>(
+        API_ENDPOINTS.MARKS.GET_TERM_REPORTCARD,
+        params
+      );
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.status === 400) {
+        return {
+          status: false,
+          message: error.response?.data?.message || 'No Report Card Available',
+          data: '',
         };
       }
       throw error;

@@ -1,12 +1,15 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {StyleSheet, Alert} from 'react-native';
 import {AppProviders} from './AppProviders';
 import {Navigation} from './Navigation';
 import {fcmService} from '../core/notifications';
+import {SplashScreen} from '../design-system/atoms';
 
 const App = () => {
+  const [showSplash, setShowSplash] = useState(true);
+
   useEffect(() => {
     // Initialize FCM
     const initFCM = async () => {
@@ -36,6 +39,16 @@ const App = () => {
       fcmService.cleanup();
     };
   }, []);
+
+  if (showSplash) {
+    return (
+      <GestureHandlerRootView style={styles.container}>
+        <AppProviders>
+          <SplashScreen onAnimationComplete={() => setShowSplash(false)} />
+        </AppProviders>
+      </GestureHandlerRootView>
+    );
+  }
 
   return (
     <GestureHandlerRootView style={styles.container}>

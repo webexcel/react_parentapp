@@ -38,27 +38,15 @@ export const usePasswordLogin = (): UsePasswordLoginReturn => {
                 try {
                     const studentsResponse = await authService.getStudents(installId || '');
                     if (studentsResponse.status && studentsResponse.data) {
-                        console.log('=== FETCHING STUDENT PHOTOS ===');
-                        console.log('Number of students:', studentsResponse.data.length);
-
-                        // API returns fields from v_mobileapp view: SNAME, ADMISSION_ID, ADNO, CLASS, SECTION, etc.
+                        // Map API response to Student objects
                         const students: Student[] = await Promise.all(
-                            studentsResponse.data.map(async (s: any, index: number) => {
-                                console.log(`=== STUDENT ${index + 1} RAW DATA ===`);
-                                console.log('Full student object:', JSON.stringify(s));
-                                console.log('ADNO:', s.ADNO);
-                                console.log('ADMISSION_ID:', s.ADMISSION_ID);
-                                console.log('studentId:', s.studentId);
-                                console.log('id:', s.id);
-
+                            studentsResponse.data.map(async (s: any) => {
                                 const adno = String(s.ADNO || s.ADMISSION_ID || s.studentId || s.id || '');
-                                console.log(`Resolved ADNO for photo fetch: "${adno}"`);
 
                                 // Fetch student photo
                                 let photoBase64 = null;
                                 try {
                                     photoBase64 = await authService.getStudentPhoto(adno);
-                                    console.log(`Photo fetched for ${s.SNAME}:`, photoBase64 ? 'SUCCESS' : 'NULL');
                                 } catch (photoError) {
                                     console.error(`Error fetching photo for student ${adno}:`, photoError);
                                 }
@@ -67,12 +55,9 @@ export const usePasswordLogin = (): UsePasswordLoginReturn => {
                                 const classSec = s.CLASSSEC || s.classSec || '';
 
                                 // Parse for section extraction if needed
-                                let parsedClass = classSec;
                                 let parsedSection = '';
-
                                 if (classSec && classSec.includes('-')) {
                                     const parts = classSec.split('-');
-                                    parsedClass = parts[0]?.trim() || classSec;
                                     parsedSection = parts[1]?.trim() || '';
                                 }
 
@@ -88,14 +73,10 @@ export const usePasswordLogin = (): UsePasswordLoginReturn => {
                                     schoolName: s.schoolName || '',
                                     dbname: s.dbname || response.userdata?.dbname || '',
                                     classId: String(s.CLASS_ID || s.classId || ''),
+                                    examgrpid: s.examgrpid || s.EXAMGRPID || s.ExamGrpId || null,
                                 };
                             })
                         );
-
-                        console.log('=== STUDENTS WITH PHOTOS ===');
-                        students.forEach((student, i) => {
-                            console.log(`Student ${i + 1}: ${student.name}, Has Photo: ${!!student.photo}`);
-                        });
 
                         await setStudents(students);
                     }
