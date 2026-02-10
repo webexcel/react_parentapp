@@ -24,6 +24,7 @@ import { ROUTES } from '../../../core/constants';
 import { useDashboard } from '../hooks';
 import { FlashMessageModal } from '../components';
 import { useIsModuleEnabled } from '../../../core/brand/featureFlags';
+import { useCirculars } from '../../circulars/hooks/useCirculars';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -52,6 +53,8 @@ export const DashboardScreen: React.FC = () => {
   const isHomeworkEnabled = useIsModuleEnabled('homework');
   const isAttendanceEnabled = useIsModuleEnabled('attendance');
   const isTimetableEnabled = useIsModuleEnabled('timetable');
+  const isParentMessageEnabled = useIsModuleEnabled('parentMessage');
+  const isLeaveLetterEnabled = useIsModuleEnabled('leaveLetter');
 
   // Use dashboard hook for all data
   const {
@@ -64,6 +67,13 @@ export const DashboardScreen: React.FC = () => {
     error,
     refresh,
   } = useDashboard();
+
+  // Get circulars for pending acknowledge count
+  const { circulars } = useCirculars();
+  const pendingAcknowledgeCount = useMemo(
+    () => circulars.filter((c) => !c.isAcknowledged).length,
+    [circulars]
+  );
 
   const selectedStudent = students.find((s) => s.id === selectedStudentId) || students[0];
 
@@ -150,17 +160,6 @@ export const DashboardScreen: React.FC = () => {
       onPress: () => navigation.navigate(ROUTES.MARKS),
     },
     {
-      id: 'gallery',
-      enabled: isGalleryEnabled,
-      icon: 'collections',
-      title: 'Gallery',
-      subtitle: 'Event photos & memories',
-      iconBg: '#FCE7F3',
-      iconColor: '#DB2777',
-      halfWidth: true,
-      onPress: () => navigation.navigate(ROUTES.GALLERY),
-    },
-    {
       id: 'exams',
       enabled: isExamsEnabled,
       icon: 'eventNote',
@@ -170,6 +169,17 @@ export const DashboardScreen: React.FC = () => {
       iconColor: '#DC2626',
       halfWidth: true,
       onPress: () => navigation.navigate(ROUTES.EXAM_SCHEDULE),
+    },
+    {
+      id: 'gallery',
+      enabled: isGalleryEnabled,
+      icon: 'collections',
+      title: 'Gallery',
+      subtitle: 'Event photos & memories',
+      iconBg: '#FCE7F3',
+      iconColor: '#DB2777',
+      halfWidth: true,
+      onPress: () => navigation.navigate(ROUTES.GALLERY),
     },
     {
       id: 'calendar',
@@ -207,7 +217,7 @@ export const DashboardScreen: React.FC = () => {
     },
     {
       id: 'parentMessage',
-      enabled: true, // Always enabled
+      enabled: isParentMessageEnabled,
       icon: 'message',
       title: 'Write to School',
       subtitle: 'Contact school',
@@ -217,7 +227,7 @@ export const DashboardScreen: React.FC = () => {
     },
     {
       id: 'leaveLetter',
-      enabled: true, // Always enabled
+      enabled: isLeaveLetterEnabled,
       icon: 'calendar',
       title: 'Leave Letter',
       subtitle: 'Request student leave',
@@ -341,112 +351,24 @@ export const DashboardScreen: React.FC = () => {
               {(isLoading || isFetching) && !refreshing ? (
                 <ActivityIndicator size="small" color={colors.primary} style={{ marginTop: spacing.xs }} />
               ) : (
-                <Text style={styles.circularsValue}>
-                  {summary.circularsCount > 0 ? `${summary.circularsCount} New` : 'All Read'}
-                </Text>
+                <View style={{ marginTop: spacing.xs }}>
+                  {summary.circularsCount > 0 && (
+                    <Text style={styles.circularsValue}>
+                      {summary.circularsCount} New
+                    </Text>
+                  )}
+                  <Text style={[
+                    summary.circularsCount > 0 ? styles.circularsSubValue : styles.circularsValue,
+                  ]}>
+                    {pendingAcknowledgeCount > 0 ? `${pendingAcknowledgeCount} Pending` : 'All Done'}
+                  </Text>
+                </View>
               )}
             </View>
             <View style={styles.circularsIcon}>
               <Icon name="campaign" size={24} color="#2563EB" />
             </View>
           </TouchableOpacity>
-
-          {/* Attendance Card - Bigger for 2+ students, compact for 1 */}
-          {isAttendanceEnabled && (students.length >= 2 ? (
-            <View style={styles.summaryCard}>
-              <View style={styles.cardHeader}>
-                <Text style={styles.cardLabel}>Attendance</Text>
-                <View style={[styles.cardIconBadge, { backgroundColor: '#D1FAE5' }]}>
-                  <Icon name="check" size={14} color="#059669" />
-                </View>
-              </View>
-              <View style={styles.studentGrid}>
-                {attendanceData.map((student, index) => (
-                  <TouchableOpacity
-                    key={student.id}
-                    style={[
-                      styles.studentColumn,
-                      index === 0 && styles.studentColumnFirst,
-                    ]}
-                    onPress={() => navigation.navigate(ROUTES.ATTENDANCE, { studentId: student.id })}
-                  >
-                    {student.photo ? (
-                      <View
-                        style={[
-                          styles.studentAvatar,
-                          {
-                            backgroundColor: student.color.bg,
-                            borderColor: student.color.text,
-                          },
-                        ]}
-                      >
-                        <Image
-                          source={{ uri: student.photo }}
-                          style={styles.studentAvatarImage}
-                        />
-                      </View>
-                    ) : (
-                      <>
-                        <View
-                          style={[
-                            styles.studentAvatar,
-                            {
-                              backgroundColor: student.color.bg,
-                              borderColor: student.color.text,
-                            },
-                          ]}
-                        >
-                          <Text style={[styles.studentAvatarText, { color: student.color.text }]}>
-                            {getStudentInitial(student.name)}
-                          </Text>
-                        </View>
-                        <Text style={styles.studentName} numberOfLines={1}>
-                          {student.name}
-                        </Text>
-                      </>
-                    )}
-                    <Text style={styles.studentValue}>{student.leaveCount} Absent</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-          ) : (
-            <TouchableOpacity
-              style={styles.compactCard}
-              onPress={() => navigation.navigate(ROUTES.ATTENDANCE, { studentId: selectedStudentId })}
-            >
-              <View style={[styles.compactCardIcon, { backgroundColor: '#D1FAE5' }]}>
-                <Icon name="attendance" size={20} color="#059669" />
-              </View>
-              <View style={styles.compactCardContent}>
-                <Text style={styles.cardLabel}>Attendance</Text>
-                <Text style={styles.compactCardValue}>{summary.leaveCount} Absent</Text>
-              </View>
-              <View style={[
-                styles.compactCardBadge,
-                {
-                  backgroundColor: summary.todayAttendanceStatus?.toLowerCase() === 'present'
-                    ? '#D1FAE5'
-                    : summary.todayAttendanceStatus?.toLowerCase() === 'absent'
-                    ? '#FEE2E2'
-                    : '#FEF3C7'
-                }
-              ]}>
-                <Text style={[
-                  styles.compactCardBadgeText,
-                  {
-                    color: summary.todayAttendanceStatus?.toLowerCase() === 'present'
-                      ? '#059669'
-                      : summary.todayAttendanceStatus?.toLowerCase() === 'absent'
-                      ? '#DC2626'
-                      : '#D97706'
-                  }
-                ]}>
-                  {summary.todayAttendanceStatus?.toUpperCase() || 'NOT MARKED'}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          ))}
 
           {/* Homework Card - Bigger for 2+ students, compact for 1 */}
           {isHomeworkEnabled && (students.length >= 2 ? (
@@ -543,6 +465,103 @@ export const DashboardScreen: React.FC = () => {
                   </Text>
                 </View>
               )}
+            </TouchableOpacity>
+          ))}
+
+          {/* Attendance Card - Bigger for 2+ students, compact for 1 */}
+          {isAttendanceEnabled && (students.length >= 2 ? (
+            <View style={styles.summaryCard}>
+              <View style={styles.cardHeader}>
+                <Text style={styles.cardLabel}>Attendance</Text>
+                <View style={[styles.cardIconBadge, { backgroundColor: '#D1FAE5' }]}>
+                  <Icon name="check" size={14} color="#059669" />
+                </View>
+              </View>
+              <View style={styles.studentGrid}>
+                {attendanceData.map((student, index) => (
+                  <TouchableOpacity
+                    key={student.id}
+                    style={[
+                      styles.studentColumn,
+                      index === 0 && styles.studentColumnFirst,
+                    ]}
+                    onPress={() => navigation.navigate(ROUTES.ATTENDANCE, { studentId: student.id })}
+                  >
+                    {student.photo ? (
+                      <View
+                        style={[
+                          styles.studentAvatar,
+                          {
+                            backgroundColor: student.color.bg,
+                            borderColor: student.color.text,
+                          },
+                        ]}
+                      >
+                        <Image
+                          source={{ uri: student.photo }}
+                          style={styles.studentAvatarImage}
+                        />
+                      </View>
+                    ) : (
+                      <>
+                        <View
+                          style={[
+                            styles.studentAvatar,
+                            {
+                              backgroundColor: student.color.bg,
+                              borderColor: student.color.text,
+                            },
+                          ]}
+                        >
+                          <Text style={[styles.studentAvatarText, { color: student.color.text }]}>
+                            {getStudentInitial(student.name)}
+                          </Text>
+                        </View>
+                        <Text style={styles.studentName} numberOfLines={1}>
+                          {student.name}
+                        </Text>
+                      </>
+                    )}
+                    <Text style={styles.studentValue}>{student.leaveCount} Absent</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={styles.compactCard}
+              onPress={() => navigation.navigate(ROUTES.ATTENDANCE, { studentId: selectedStudentId })}
+            >
+              <View style={[styles.compactCardIcon, { backgroundColor: '#D1FAE5' }]}>
+                <Icon name="attendance" size={20} color="#059669" />
+              </View>
+              <View style={styles.compactCardContent}>
+                <Text style={styles.cardLabel}>Attendance</Text>
+                <Text style={styles.compactCardValue}>{summary.leaveCount} Absent</Text>
+              </View>
+              <View style={[
+                styles.compactCardBadge,
+                {
+                  backgroundColor: summary.todayAttendanceStatus?.toLowerCase() === 'present'
+                    ? '#D1FAE5'
+                    : summary.todayAttendanceStatus?.toLowerCase() === 'absent'
+                    ? '#FEE2E2'
+                    : '#FEF3C7'
+                }
+              ]}>
+                <Text style={[
+                  styles.compactCardBadgeText,
+                  {
+                    color: summary.todayAttendanceStatus?.toLowerCase() === 'present'
+                      ? '#059669'
+                      : summary.todayAttendanceStatus?.toLowerCase() === 'absent'
+                      ? '#DC2626'
+                      : '#D97706'
+                  }
+                ]}>
+                  {summary.todayAttendanceStatus?.toUpperCase() || 'NOT MARKED'}
+                </Text>
+              </View>
             </TouchableOpacity>
           ))}
         </View>
@@ -857,6 +876,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.textPrimary,
     marginTop: spacing.xs,
+  },
+  circularsSubValue: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: colors.textSecondary,
+    marginTop: 2,
   },
   circularsIcon: {
     width: 48,

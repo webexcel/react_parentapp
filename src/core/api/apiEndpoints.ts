@@ -6,6 +6,9 @@ export const API_ENDPOINTS = {
     GET_STUDENTS: '/auth/getMobStudentDetail',
     GET_STUDENT_PHOTO: '/auth/getMobStudentPhoto',
     UPDATE_FCM_TOKEN: '/auth/updateParentFirebaseId',
+    FORGOT_PASSWORD: '/auth/forgotPassword',
+    CREATE_PASSWORD: '/auth/createPassword',
+    CHANGE_PASSWORD: '/auth/changePassword',
   },
 
   // Dashboard
@@ -22,6 +25,7 @@ export const API_ENDPOINTS = {
   CIRCULAR: {
     GET_ALL: '/circular/getAllMessagesByMobileNumber',
     GET_BASE64: '/circular/getBase64',
+    ACKNOWLEDGE: '/circular/acknowledgeCircular',
   },
 
   // Homework

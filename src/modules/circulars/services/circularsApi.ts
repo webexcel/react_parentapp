@@ -1,4 +1,5 @@
 import { apiClient, API_ENDPOINTS } from '../../../core/api';
+import { ApiResponse } from '../../../core/api/apiTypes';
 import { CircularsResponse } from '../types/circular.types';
 
 export const circularsApi = {
@@ -33,6 +34,17 @@ export const circularsApi = {
     } catch {
       return null;
     }
+  },
+
+  /**
+   * Acknowledge a circular
+   */
+  acknowledgeCircular: async (sn: number, adno: string): Promise<ApiResponse> => {
+    const response = await apiClient.post<ApiResponse>(
+      API_ENDPOINTS.CIRCULAR.ACKNOWLEDGE,
+      { sn, adno }
+    );
+    return response.data;
   },
 
   /**

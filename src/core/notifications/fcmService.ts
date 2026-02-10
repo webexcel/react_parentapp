@@ -58,10 +58,16 @@ class FCMService {
     const token = await this.getToken();
     console.log('FCM Token:', token);
 
+    // Send token to backend
+    if (token) {
+      await this.sendTokenToBackend(token);
+    }
+
     // Set up token refresh listener
-    this.tokenRefreshUnsubscribe = messaging().onTokenRefresh(newToken => {
+    this.tokenRefreshUnsubscribe = messaging().onTokenRefresh(async newToken => {
       console.log('FCM Token refreshed:', newToken);
-      // TODO: Send new token to backend
+      // Send new token to backend
+      await this.sendTokenToBackend(newToken);
     });
 
     // Set up foreground message handler
@@ -216,6 +222,45 @@ class FCMService {
         }
       },
     );
+  }
+
+  /**
+   * Send FCM token to backend
+   */
+  private async sendTokenToBackend(fcmToken: string): Promise<void> {
+    try {
+      console.log('┌─────────────────────────────────────────┐');
+      console.log('│  FCM: Attempting to send token to backend');
+      console.log('└─────────────────────────────────────────┘');
+
+      // Get user data to retrieve mobile number
+      const { getUserData } = await import('../storage/secureStorage');
+      const userData = await getUserData();
+
+      console.log('FCM: UserData retrieved:', userData ? 'Found' : 'Not found');
+      console.log('FCM: Mobile number:', (userData as any)?.mobileNumber || 'MISSING');
+
+      if (userData && (userData as any).mobileNumber) {
+        const mobileNumber = (userData as any).mobileNumber;
+        console.log('FCM: Calling updateFcmToken API...');
+
+        // Import authService dynamically to avoid circular dependency
+        const { authService } = await import('../auth/authService');
+        const success = await authService.updateFcmToken(fcmToken, mobileNumber);
+
+        if (success) {
+          console.log('✅ FCM: Token successfully sent to backend');
+        } else {
+          console.log('❌ FCM: Failed to send token to backend');
+        }
+      } else {
+        console.log('⚠️  FCM: No mobile number found, skipping token update');
+        console.log('FCM: This is normal if user is not logged in yet');
+      }
+    } catch (error) {
+      console.error('❌ FCM: Error sending token to backend:', error);
+      // Don't throw - this is a non-critical operation
+    }
   }
 
   /**

@@ -19,6 +19,7 @@ export interface UserData {
   UserId: string;
   user_name: string;
   mobileNumber?: string;
+  mobile_number?: string;
 }
 
 // OTP Request/Response
@@ -57,6 +58,43 @@ export interface Student {
 }
 
 export interface GetStudentsResponse extends ApiResponse<Student[]> {}
+
+// Forgot Password
+export interface ForgotPasswordRequest {
+  mobile_no: string;
+  dbname: string;
+}
+
+export interface ForgotPasswordResponse {
+  status: boolean;
+  message: string;
+  data?: string;
+}
+
+// Create Password
+export interface CreatePasswordRequest {
+  password: string;
+  dbname: string;
+  mobile_no: string;
+}
+
+export interface CreatePasswordResponse {
+  status: boolean;
+  message: string;
+}
+
+// Change Password
+export interface ChangePasswordRequest {
+  old_password: string;
+  new_password: string;
+  dbname: string;
+  mobile_no: string;
+}
+
+export interface ChangePasswordResponse {
+  status: boolean;
+  message: string;
+}
 
 // Error Response
 export interface ApiError {

@@ -65,7 +65,7 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
+        versionCode 6
         versionName "1.0"
 
         // Default BuildConfig fields (overridden by flavors)
@@ -88,6 +88,8 @@ android {
         bsschool {
             dimension "brand"
             applicationId "com.schooltree.bs"
+            versionCode 1
+            versionName "1.0.0"
             resValue "string", "app_name", "B.S Nursery & Primary School Parent"
             buildConfigField "String", "BRAND_ID", "\"bsschool\""
             buildConfigField "String", "AUTH_TYPE", "\"otp\""
@@ -98,6 +100,8 @@ android {
         crescent {
             dimension "brand"
             applicationId "com.schooltree.crescentapp"
+            versionCode 1
+            versionName "1.0.0"
             resValue "string", "app_name", "Crescent Matriculation Girls Hr. Sec. School Parent"
             buildConfigField "String", "BRAND_ID", "\"crescent\""
             buildConfigField "String", "AUTH_TYPE", "\"otp\""
@@ -108,6 +112,8 @@ android {
         pssenior {
             dimension "brand"
             applicationId "com.schooltree.pssenior"
+            versionCode 6
+            versionName "1.0.6"
             resValue "string", "app_name", "P.S. Senior Secondary School Parent"
             buildConfigField "String", "BRAND_ID", "\"pssenior\""
             buildConfigField "String", "AUTH_TYPE", "\"password\""
@@ -118,6 +124,8 @@ android {
         railwaybalabhavan {
             dimension "brand"
             applicationId "com.schooltree.balabhavan"
+            versionCode 1
+            versionName "1.0.0"
             resValue "string", "app_name", "Reilway Bala Bhavan School Parent"
             buildConfigField "String", "BRAND_ID", "\"railwaybalabhavan\""
             buildConfigField "String", "AUTH_TYPE", "\"otp\""
@@ -128,6 +136,8 @@ android {
         sivakasi {
             dimension "brand"
             applicationId "com.schooltree.sivakasi"
+            versionCode 1
+            versionName "1.0.0"
             resValue "string", "app_name", "Sivakasi Nadar Mat School Parent"
             buildConfigField "String", "BRAND_ID", "\"sivakasi\""
             buildConfigField "String", "AUTH_TYPE", "\"otp\""

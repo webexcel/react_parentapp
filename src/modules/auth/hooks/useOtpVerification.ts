@@ -32,7 +32,37 @@ export const useOtpVerification = (): UseOtpVerificationReturn => {
           ...response.userdata,
           mobileNumber,
         };
-        await login(response.token, userDataWithMobile);
+        // Pass hasPassword flag to determine if password setup is needed
+        const hasPassword = response.data?.hasPassword !== undefined ? response.data.hasPassword : true;
+        await login(response.token, userDataWithMobile, hasPassword);
+
+        // Update FCM token to backend after successful login
+        try {
+          console.log('┌─────────────────────────────────────────┐');
+          console.log('│  POST-LOGIN: Updating FCM token');
+          console.log('│  Mobile:', mobileNumber);
+          console.log('└─────────────────────────────────────────┘');
+
+          const { fcmService } = await import('../../../core/notifications');
+          const fcmToken = await fcmService.getToken();
+
+          console.log('POST-LOGIN: FCM Token:', fcmToken ? `${fcmToken.substring(0, 20)}...` : 'NULL');
+
+          if (fcmToken) {
+            console.log('POST-LOGIN: Calling updateFcmToken API...');
+            const success = await authService.updateFcmToken(fcmToken, mobileNumber);
+            if (success) {
+              console.log('✅ POST-LOGIN: FCM token updated successfully');
+            } else {
+              console.log('❌ POST-LOGIN: FCM token update failed');
+            }
+          } else {
+            console.log('⚠️  POST-LOGIN: No FCM token available');
+          }
+        } catch (fcmError) {
+          console.error('❌ POST-LOGIN: Error updating FCM token:', fcmError);
+          // Don't fail login if FCM update fails
+        }
 
         // Get students list using installId
         try {

@@ -1,4 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Alert } from 'react-native';
 import { QUERY_KEYS } from '../../../core/constants';
 import { useAuth } from '../../../core/auth';
 import { circularsApi } from '../services/circularsApi';
@@ -6,6 +7,7 @@ import { Circular } from '../types/circular.types';
 
 export const useCirculars = () => {
   const { userData } = useAuth();
+  const queryClient = useQueryClient();
 
   const {
     data: circulars = [],
@@ -30,6 +32,7 @@ export const useCirculars = () => {
       if (response.status && response.data) {
         return response.data.map((item: any, index: number) => ({
           id: `${item.ADNO || 'circular'}-${index}`,
+          sn: item.sn,
           title: item.STUDENTNAME || 'Circular',
           content: item.Message || '',
           date: item.SMSdate || '',
@@ -45,6 +48,7 @@ export const useCirculars = () => {
               ]
             : [],
           isRead: true,
+          isAcknowledged: item.completed_status === '1',
           priority: 'normal',
           adno: item.ADNO || '',
         }));
@@ -52,7 +56,49 @@ export const useCirculars = () => {
       return [];
     },
     enabled: !!userData?.mobileNumber,
+    staleTime: 2 * 60 * 1000,
   });
+
+  const acknowledgeMutation = useMutation({
+    mutationFn: async ({ sn, adno }: { sn: number; adno: string }) => {
+      return circularsApi.acknowledgeCircular(sn, adno);
+    },
+    onMutate: async ({ sn }) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.CIRCULARS, userData?.mobileNumber] });
+
+      // Snapshot previous value
+      const previousCirculars = queryClient.getQueryData<Circular[]>([QUERY_KEYS.CIRCULARS, userData?.mobileNumber]);
+
+      // Optimistically update
+      queryClient.setQueryData<Circular[]>(
+        [QUERY_KEYS.CIRCULARS, userData?.mobileNumber],
+        (old) => old?.map((c) => (c.sn === sn ? { ...c, isAcknowledged: true } : c)) || []
+      );
+
+      return { previousCirculars };
+    },
+    onError: (_err, _vars, context) => {
+      // Rollback on error
+      if (context?.previousCirculars) {
+        queryClient.setQueryData(
+          [QUERY_KEYS.CIRCULARS, userData?.mobileNumber],
+          context.previousCirculars
+        );
+      }
+      Alert.alert('Error', 'Failed to acknowledge circular. Please try again.');
+    },
+    onSettled: () => {
+      // Silently refetch in background without showing loading state
+      queryClient.refetchQueries({
+        queryKey: [QUERY_KEYS.CIRCULARS, userData?.mobileNumber],
+      });
+    },
+  });
+
+  const acknowledgeCircular = (sn: number, adno: string) => {
+    acknowledgeMutation.mutate({ sn, adno });
+  };
 
   return {
     circulars,
@@ -60,6 +106,8 @@ export const useCirculars = () => {
     isFetching,
     error,
     refetch,
+    acknowledgeCircular,
+    isAcknowledging: acknowledgeMutation.isPending,
   };
 };
 

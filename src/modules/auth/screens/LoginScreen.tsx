@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert, TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, Alert, TouchableOpacity, Image, Modal, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
@@ -12,6 +12,7 @@ import {
 } from '../../../design-system';
 import { ROUTES } from '../../../core/constants';
 import { useLogin } from '../hooks/useLogin';
+import { useForgotPassword } from '../hooks/useForgotPassword';
 import {
   currentBrand,
   getCurrentBrandId,
@@ -30,10 +31,18 @@ export const LoginScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const [mobileNumber, setMobileNumber] = useState('');
   const { sendOtp, isLoading, error } = useLogin();
+  const { forgotPassword, isLoading: isForgotLoading } = useForgotPassword();
   const authType = currentBrand.auth.type;
+
+  // Forgot password modal state
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotMobile, setForgotMobile] = useState('');
 
   const isValidMobile =
     mobileNumber.length === 10 && /^[6-9]\d{9}$/.test(mobileNumber);
+
+  const isValidForgotMobile =
+    forgotMobile.length === 10 && /^[6-9]\d{9}$/.test(forgotMobile);
 
   const handleGetOtp = async () => {
         console.log(
@@ -69,6 +78,20 @@ export const LoginScreen: React.FC = () => {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!isValidForgotMobile) {
+      Alert.alert('Invalid Number', 'Please enter a valid 10-digit mobile number.');
+      return;
+    }
+    const result = await forgotPassword(forgotMobile);
+    setShowForgotModal(false);
+    if (result.success) {
+      Alert.alert('Password Sent', result.message, [{ text: 'OK' }]);
+    } else {
+      Alert.alert('Forgot Password', result.message, [{ text: 'OK' }]);
+    }
+  };
+
   const header = (
     <View style={styles.logoContainer}>
       <Image
@@ -76,8 +99,8 @@ export const LoginScreen: React.FC = () => {
         style={styles.logo}
         resizeMode="contain"
       />
-      <Text variant="h2" style={styles.title}>
-        {currentBrand.brand.shortName}
+      <Text variant="h2" center style={styles.title}>
+        {currentBrand.brand.name}
       </Text>
       <Text variant="body" color="secondary" center style={styles.subtitle}>
         {currentBrand.brand.tagline ||
@@ -122,13 +145,10 @@ export const LoginScreen: React.FC = () => {
         />
 
         <TouchableOpacity
-          onPress={() =>
-            Alert.alert(
-              'Forgot Password?hh',
-              'Please contact your school administration to reset your password.',
-              [{ text: 'OK' }],
-            )
-          }
+          onPress={() => {
+            setForgotMobile(mobileNumber);
+            setShowForgotModal(true);
+          }}
           style={styles.forgotPassword}
         >
           <Text variant="body" color="primary" center>
@@ -140,6 +160,68 @@ export const LoginScreen: React.FC = () => {
           By continuing, you agree to our Terms of Service and Privacy Policy
         </Text>
       </View>
+
+      {/* Forgot Password Modal */}
+      <Modal
+        visible={showForgotModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowForgotModal(false)}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={styles.modalOverlay}
+        >
+          <View style={styles.modalContent}>
+            <Text variant="h3" style={styles.modalTitle}>
+              Forgot Password
+            </Text>
+            <Text variant="body" color="secondary" style={styles.modalSubtitle}>
+              Enter your registered mobile number. Your password will be sent to your registered email.
+            </Text>
+
+            <View style={styles.modalInputContainer}>
+              <Text variant="body" color="secondary" style={styles.modalPrefix}>
+                +91
+              </Text>
+              <TextInput
+                style={styles.modalInput}
+                placeholder="Enter 10-digit mobile number"
+                placeholderTextColor={colors.textMuted}
+                value={forgotMobile}
+                onChangeText={setForgotMobile}
+                keyboardType="phone-pad"
+                maxLength={10}
+                autoFocus
+              />
+            </View>
+
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                onPress={() => setShowForgotModal(false)}
+                style={styles.modalCancelButton}
+              >
+                <Text variant="body" color="secondary">
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleForgotPassword}
+                disabled={!isValidForgotMobile || isForgotLoading}
+                style={[
+                  styles.modalSendButton,
+                  (!isValidForgotMobile || isForgotLoading) && styles.modalSendButtonDisabled,
+                ]}
+              >
+                <Text variant="body" style={{ color: '#fff' }}>
+                  {isForgotLoading ? 'Sending...' : 'Send'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </AuthTemplate>
   );
 };
@@ -183,5 +265,64 @@ const styles = StyleSheet.create({
   terms: {
     marginTop: spacing['2xl'],
     paddingHorizontal: spacing.base,
+  },
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: spacing.xl,
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: spacing.xl,
+    width: '100%',
+    maxWidth: 400,
+  },
+  modalTitle: {
+    marginBottom: spacing.sm,
+  },
+  modalSubtitle: {
+    marginBottom: spacing.lg,
+  },
+  modalInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 10,
+    paddingHorizontal: spacing.base,
+    height: 48,
+    marginBottom: spacing.lg,
+  },
+  modalPrefix: {
+    marginRight: spacing.sm,
+  },
+  modalInput: {
+    flex: 1,
+    fontSize: 16,
+    color: colors.textPrimary,
+    padding: 0,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: spacing.md,
+  },
+  modalCancelButton: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    borderRadius: 8,
+  },
+  modalSendButton: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    borderRadius: 8,
+    backgroundColor: colors.primary,
+  },
+  modalSendButtonDisabled: {
+    opacity: 0.5,
   },
 });

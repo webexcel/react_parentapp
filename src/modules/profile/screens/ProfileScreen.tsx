@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ScreenHeader,
   Text,
@@ -13,6 +14,7 @@ import {
   shadows,
 } from '../../../design-system';
 import { useAuth } from '../../../core/auth';
+import { useBrandName } from '../../../core/brand';
 import { ROUTES } from '../../../core/constants';
 
 interface MenuItem {
@@ -26,6 +28,7 @@ interface MenuItem {
 export const ProfileScreen: React.FC = () => {
   const { students, logout, refreshStudentPhotos } = useAuth();
   const navigation = useNavigation<any>();
+  const brandName = useBrandName();
 
   // Debug: Log student data to see what's available
   React.useEffect(() => {
@@ -75,6 +78,12 @@ export const ProfileScreen: React.FC = () => {
       onPress: handleRefreshPhotos,
     },
     {
+      id: 'change-password',
+      icon: 'lock',
+      label: 'Change Password',
+      onPress: () => navigation.navigate(ROUTES.CHANGE_PASSWORD),
+    },
+    {
       id: 'notifications',
       icon: 'notification',
       label: 'Notification Settings',
@@ -90,7 +99,7 @@ export const ProfileScreen: React.FC = () => {
       id: 'about',
       icon: 'circular',
       label: 'About App',
-      onPress: () => Alert.alert('Crescent Parent App', 'Version 1.0.0\n\nStay connected with your child\'s education.'),
+      onPress: () => Alert.alert(brandName, 'Version 1.0.0\n\nStay connected with your child\'s education.'),
     },
     {
       id: 'privacy',
@@ -114,7 +123,7 @@ export const ProfileScreen: React.FC = () => {
   ];
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <ScreenHeader title="Profile" />
 
       <ScrollView
@@ -145,10 +154,9 @@ export const ProfileScreen: React.FC = () => {
                         Adm No: {student.studentId}
                       </Text>
                     )}
-                    {(student.className || student.section) && (
+                    {student.className && (
                       <Text variant="caption" color="secondary">
-                        Class: {student.className || 'N/A'}
-                        {student.section ? ` - ${student.section}` : ''}
+                        Class: {student.className}
                       </Text>
                     )}
                     {student.rollNo && (
@@ -204,10 +212,10 @@ export const ProfileScreen: React.FC = () => {
 
         {/* App Version */}
         <Text variant="caption" color="muted" center style={styles.version}>
-          Crescent Parent App v1.0.0
+          {brandName} v1.0.0
         </Text>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 

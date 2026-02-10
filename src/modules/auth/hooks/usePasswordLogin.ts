@@ -32,7 +32,9 @@ export const usePasswordLogin = (): UsePasswordLoginReturn => {
                     ...response.userdata,
                     mobileNumber,
                 };
-                await login(response.token, userDataWithMobile);
+                // Pass hasPassword flag to determine if password setup is needed
+                const hasPassword = response.data?.hasPassword !== undefined ? response.data.hasPassword : true;
+                await login(response.token, userDataWithMobile, hasPassword);
 
                 // Get students list using installId
                 try {

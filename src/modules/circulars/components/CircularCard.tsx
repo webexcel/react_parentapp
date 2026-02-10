@@ -15,9 +15,10 @@ import { useStudentPhoto } from '../hooks/useStudentPhoto';
 interface CircularCardProps {
   circular: Circular;
   onPress: () => void;
+  onAcknowledge?: () => void;
 }
 
-export const CircularCard: React.FC<CircularCardProps> = ({ circular, onPress }) => {
+export const CircularCard: React.FC<CircularCardProps> = ({ circular, onPress, onAcknowledge }) => {
   const { photoUrl } = useStudentPhoto(circular.adno);
 
   const formatDate = (dateString: string) => {
@@ -117,10 +118,26 @@ export const CircularCard: React.FC<CircularCardProps> = ({ circular, onPress })
           </Text>
         </View>
 
-        <View style={styles.dateContainer}>
+        <View style={styles.headerRight}>
           <Text variant="caption" style={styles.date}>
             {formatDate(circular.date)}
           </Text>
+          {circular.isAcknowledged ? (
+            <View style={styles.acknowledgedIcon}>
+              <Icon name="check" size={16} color={colors.success} />
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={styles.acknowledgeIcon}
+              onPress={(e) => {
+                e.stopPropagation?.();
+                onAcknowledge?.();
+              }}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Icon name="thumbUp" size={16} color={colors.primary} />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 
@@ -159,6 +176,7 @@ export const CircularCard: React.FC<CircularCardProps> = ({ circular, onPress })
           ))}
         </View>
       )}
+
     </TouchableOpacity>
   );
 };
@@ -181,9 +199,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.sm,
   },
-  dateContainer: {
+  headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: spacing.sm,
   },
   calendarIconBg: {
     backgroundColor: '#DBEAFE',
@@ -255,5 +274,23 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: borderRadius.md,
+  },
+  acknowledgeIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  acknowledgedIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#D1FAE5',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

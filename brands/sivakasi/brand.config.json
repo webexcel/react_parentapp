@@ -2,8 +2,8 @@
   "$schema": "../brand.schema.json",
   "brand": {
     "id": "sivakasi",
-    "name": "Sivakasi Nadar Mat School",
-    "shortName": "Sivakasi Nadar",
+    "name": "Sivakasi Hindu Nadar Matriculation Higher Secondary School",
+    "shortName": "Sivakasi",
     "tagline": "Excellence in Education"
   },
   "app": {
@@ -82,16 +82,16 @@
         "enabled": true
       },
       "timetable": {
-        "enabled": true
+        "enabled": false
       },
       "chat": {
-        "enabled": true
+        "enabled": false
       },
       "profile": {
         "enabled": true
       },
       "parentMessage": {
-        "enabled": true
+        "enabled": false
       },
       "leaveLetter": {
         "enabled": true

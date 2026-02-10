@@ -10,5 +10,9 @@ export type {
   VerifyOtpResponse,
   Student,
   GetStudentsResponse,
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
+  CreatePasswordRequest,
+  CreatePasswordResponse,
   ApiError,
 } from './apiTypes';

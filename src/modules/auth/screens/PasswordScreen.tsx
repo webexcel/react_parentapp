@@ -10,6 +10,7 @@ import {
     spacing,
 } from '../../../design-system';
 import { usePasswordLogin } from '../hooks/usePasswordLogin';
+import { useForgotPassword } from '../hooks/useForgotPassword';
 
 type RootStackParamList = {
     Password: { mobileNumber: string; installId?: string };
@@ -26,6 +27,7 @@ export const PasswordScreen: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
 
     const { verifyPassword, isLoading, error } = usePasswordLogin();
+    const { forgotPassword, isLoading: isForgotLoading } = useForgotPassword();
 
     const handleVerify = async () => {
         if (password.length === 0) {
@@ -81,15 +83,19 @@ export const PasswordScreen: React.FC = () => {
                 </View>
 
                 <TouchableOpacity
-                    onPress={() => Alert.alert(
-                        'Forgot Password?',
-                        'Please contact your school administration to reset your password.',
-                        [{ text: 'OK' }]
-                    )}
+                    onPress={async () => {
+                        const result = await forgotPassword(mobileNumber);
+                        if (result.success) {
+                            Alert.alert('Password Sent', result.message, [{ text: 'OK' }]);
+                        } else {
+                            Alert.alert('Forgot Password', result.message, [{ text: 'OK' }]);
+                        }
+                    }}
+                    disabled={isForgotLoading}
                     style={styles.forgotPassword}
                 >
                     <Text variant="body" color="primary">
-                        Forgot Password?
+                        {isForgotLoading ? 'Sending...' : 'Forgot Password?'}
                     </Text>
                 </TouchableOpacity>
 

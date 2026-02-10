@@ -14,6 +14,7 @@ import {
   shadows,
 } from '../../../design-system';
 import { Circular, Attachment } from '../types/circular.types';
+import { useCirculars } from '../hooks/useCirculars';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -24,7 +25,11 @@ type RouteParams = {
 export const CircularDetailScreen: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RouteParams, 'CircularDetail'>>();
-  const { circular } = route.params;
+  const { circular: routeCircular } = route.params;
+  const { circulars, acknowledgeCircular, isAcknowledging } = useCirculars();
+
+  // Get the latest circular data from the query cache (for live isAcknowledged state)
+  const circular = circulars.find((c) => c.sn === routeCircular.sn) || routeCircular;
 
   const formatDate = (dateString: string) => {
     // API returns format like "10,Jan-14:30"
@@ -37,6 +42,12 @@ export const CircularDetailScreen: React.FC = () => {
       await Linking.openURL(attachment.url);
     } catch (error) {
       console.error('Error opening attachment:', error);
+    }
+  };
+
+  const handleAcknowledge = () => {
+    if (circular.sn && circular.adno) {
+      acknowledgeCircular(circular.sn, circular.adno);
     }
   };
 
@@ -162,6 +173,28 @@ export const CircularDetailScreen: React.FC = () => {
             ))}
           </View>
         )}
+
+        {/* Acknowledge Button */}
+        {circular.isAcknowledged ? (
+          <View style={styles.acknowledgedContainer}>
+            <Icon name="check" size={22} color={colors.success} />
+            <Text variant="body" style={styles.acknowledgedText}>
+              Acknowledged
+            </Text>
+          </View>
+        ) : (
+          <TouchableOpacity
+            style={styles.acknowledgeButton}
+            onPress={handleAcknowledge}
+            activeOpacity={0.7}
+            disabled={isAcknowledging}
+          >
+            <Icon name="thumbUp" size={20} color="#FFFFFF" />
+            <Text variant="body" style={styles.acknowledgeButtonText}>
+              {isAcknowledging ? 'Acknowledging...' : 'Acknowledge'}
+            </Text>
+          </TouchableOpacity>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -224,6 +257,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceLight,
     borderRadius: borderRadius.xl,
     padding: spacing.base,
+    marginBottom: spacing.md,
     ...shadows.sm,
   },
   sectionTitle: {
@@ -246,5 +280,36 @@ const styles = StyleSheet.create({
   },
   attachmentInfo: {
     flex: 1,
+  },
+  acknowledgeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.xl,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xl,
+    marginTop: spacing.md,
+    ...shadows.sm,
+  },
+  acknowledgeButtonText: {
+    marginLeft: spacing.sm,
+    color: '#FFFFFF',
+    fontWeight: '700',
+  },
+  acknowledgedContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#D1FAE5',
+    borderRadius: borderRadius.xl,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xl,
+    marginTop: spacing.md,
+  },
+  acknowledgedText: {
+    marginLeft: spacing.sm,
+    color: colors.success,
+    fontWeight: '700',
   },
 });

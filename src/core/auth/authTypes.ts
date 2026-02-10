@@ -7,15 +7,17 @@ export interface AuthState {
   userData: UserData | null;
   students: Student[];
   selectedStudentId: string | null;
+  requiresPasswordSetup: boolean;
 }
 
 export interface AuthContextType extends AuthState {
-  login: (token: string, userData: UserData) => Promise<void>;
+  login: (token: string, userData: UserData, hasPassword?: boolean) => Promise<void>;
   logout: () => Promise<void>;
   setStudents: (students: Student[]) => Promise<void>;
   selectStudent: (studentId: string) => Promise<void>;
   checkAuth: () => Promise<void>;
   refreshStudentPhotos: () => Promise<void>;
+  completePasswordSetup: () => void;
 }
 
 export interface LoginCredentials {

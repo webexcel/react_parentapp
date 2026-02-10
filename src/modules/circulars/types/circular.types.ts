@@ -8,12 +8,14 @@ export interface Attachment {
 
 export interface Circular {
   id: string;
+  sn?: number;
   title: string;
   content: string;
   date: string;
   category?: string;
   attachments: Attachment[];
   isRead?: boolean;
+  isAcknowledged?: boolean;
   priority?: 'normal' | 'high' | 'urgent';
   senderName?: string;
   senderRole?: string;

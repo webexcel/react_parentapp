@@ -79,16 +79,19 @@
         "enabled": false
       },
       "gallery": {
-        "enabled": false
+        "enabled": true
       },
       "timetable": {
         "enabled": false
       },
       "chat": {
-        "enabled": true
+        "enabled": false
       },
       "profile": {
         "enabled": true
+      },
+      "parentMessage": {
+        "enabled": false
       }
     },
     "notifications": {

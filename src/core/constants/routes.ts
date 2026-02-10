@@ -3,6 +3,7 @@ export const ROUTES = {
   LOGIN: 'Login',
   OTP: 'OTP',
   PASSWORD: 'Password',
+  CREATE_PASSWORD: 'CreatePassword',
 
   // Main App
   MAIN_TABS: 'MainTabs',
@@ -29,6 +30,9 @@ export const ROUTES = {
 
   // Leave Letter
   LEAVE_LETTER: 'LeaveLetter',
+
+  // Change Password
+  CHANGE_PASSWORD: 'ChangePassword',
 } as const;
 
 export type RouteName = (typeof ROUTES)[keyof typeof ROUTES];

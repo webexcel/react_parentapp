@@ -6,6 +6,9 @@ import {
   VerifyOtpRequest,
   VerifyOtpResponse,
   GetStudentsResponse,
+  ForgotPasswordResponse,
+  CreatePasswordResponse,
+  ChangePasswordResponse,
 } from '../api/apiTypes';
 import { currentBrand } from '../brand/BrandConfig';
 
@@ -14,6 +17,10 @@ export const authService = {
    * Send OTP to mobile number
    */
   sendOtp: async (data: SendOtpRequest): Promise<SendOtpResponse> => {
+    // Get version code from package.json
+    const packageJson = require('../../../package.json');
+    const versionCode = packageJson.version.split('.').pop() || '1';
+
     // Transform to API expected format
     const requestBody = {
       mobile_no: data.mobileNumber,
@@ -21,7 +28,7 @@ export const authService = {
       manufacturer_name: 'React Native',
       manufacturer_model: Platform.OS,
       os_version: Platform.Version?.toString() || '',
-      app_version_code: '100',
+      app_version_code: versionCode,
       dbname: currentBrand.api.databaseName,
     };
     console.log('=== SEND OTP REQUEST ===');
@@ -72,6 +79,7 @@ export const authService = {
       message: response.data.message,
       token: response.data.data?.token,
       userdata: response.data.userdata,
+      data: response.data.data,
     };
   },
 
@@ -145,12 +153,159 @@ export const authService = {
   },
 
   /**
+   * Forgot password - sends password to registered email
+   */
+  forgotPassword: async (mobileNumber: string): Promise<ForgotPasswordResponse> => {
+    const requestBody = {
+      mobile_no: mobileNumber,
+      dbname: currentBrand.api.databaseName,
+    };
+    console.log('=== FORGOT PASSWORD REQUEST ===');
+    console.log('URL:', API_ENDPOINTS.AUTH.FORGOT_PASSWORD);
+    console.log('Body:', JSON.stringify(requestBody));
+    try {
+      const response = await apiClient.post<ForgotPasswordResponse>(
+        API_ENDPOINTS.AUTH.FORGOT_PASSWORD,
+        requestBody
+      );
+      console.log('=== FORGOT PASSWORD RESPONSE ===');
+      console.log('Response:', JSON.stringify(response.data));
+      return {
+        status: response.data.status,
+        message: response.data.message,
+        data: response.data.data,
+      };
+    } catch (error: any) {
+      console.log('=== FORGOT PASSWORD ERROR ===');
+      console.log('Error:', error.message);
+      console.log('Response:', JSON.stringify(error.response?.data));
+      // Return the error response from backend if available
+      if (error.response?.data) {
+        return {
+          status: error.response.data.status ?? false,
+          message: error.response.data.message || 'Something went wrong',
+          data: error.response.data.data,
+        };
+      }
+      return {
+        status: false,
+        message: 'Network error. Please try again.',
+      };
+    }
+  },
+
+  /**
+   * Create password for first-time parent login
+   */
+  createPassword: async (password: string, mobileNumber: string): Promise<CreatePasswordResponse> => {
+    const requestBody = {
+      password,
+      mobile_no: mobileNumber,
+      dbname: currentBrand.api.databaseName,
+    };
+    console.log('=== CREATE PASSWORD REQUEST ===');
+    console.log('URL:', API_ENDPOINTS.AUTH.CREATE_PASSWORD);
+    console.log('Body:', JSON.stringify({ ...requestBody, password: '***' }));
+    try {
+      const response = await apiClient.post<CreatePasswordResponse>(
+        API_ENDPOINTS.AUTH.CREATE_PASSWORD,
+        requestBody
+      );
+      console.log('=== CREATE PASSWORD RESPONSE ===');
+      console.log('Response:', JSON.stringify(response.data));
+      return {
+        status: response.data.status,
+        message: response.data.message,
+      };
+    } catch (error: any) {
+      console.log('=== CREATE PASSWORD ERROR ===');
+      console.log('Error:', error.message);
+      console.log('Response:', JSON.stringify(error.response?.data));
+      if (error.response?.data) {
+        return {
+          status: error.response.data.status ?? false,
+          message: error.response.data.message || 'Something went wrong',
+        };
+      }
+      return {
+        status: false,
+        message: 'Network error. Please try again.',
+      };
+    }
+  },
+
+  /**
+   * Change password for authenticated parent
+   */
+  changePassword: async (oldPassword: string, newPassword: string, mobileNumber: string): Promise<ChangePasswordResponse> => {
+    const requestBody = {
+      old_password: oldPassword,
+      new_password: newPassword,
+      mobile_no: mobileNumber,
+      dbname: currentBrand.api.databaseName,
+    };
+    console.log('=== CHANGE PASSWORD REQUEST ===');
+    console.log('URL:', API_ENDPOINTS.AUTH.CHANGE_PASSWORD);
+    console.log('Body:', JSON.stringify({ ...requestBody, old_password: '***', new_password: '***' }));
+    try {
+      const response = await apiClient.post<ChangePasswordResponse>(
+        API_ENDPOINTS.AUTH.CHANGE_PASSWORD,
+        requestBody
+      );
+      console.log('=== CHANGE PASSWORD RESPONSE ===');
+      console.log('Response:', JSON.stringify(response.data));
+      return {
+        status: response.data.status,
+        message: response.data.message,
+      };
+    } catch (error: any) {
+      console.log('=== CHANGE PASSWORD ERROR ===');
+      console.log('Error:', error.message);
+      console.log('Response:', JSON.stringify(error.response?.data));
+      if (error.response?.data) {
+        return {
+          status: error.response.data.status ?? false,
+          message: error.response.data.message || 'Something went wrong',
+        };
+      }
+      return {
+        status: false,
+        message: 'Network error. Please try again.',
+      };
+    }
+  },
+
+  /**
    * Update FCM token for push notifications
    */
-  updateFcmToken: async (fcmToken: string, mobileNumber: string): Promise<void> => {
-    await apiClient.post(API_ENDPOINTS.AUTH.UPDATE_FCM_TOKEN, {
-      firebaseId: fcmToken,
-      mobileNumber,
-    });
+  updateFcmToken: async (fcmToken: string, mobileNumber: string): Promise<boolean> => {
+    const requestBody = {
+      firebase_id: fcmToken,
+      mobile_no: mobileNumber,
+      dbname: currentBrand.api.databaseName,
+    };
+    console.log('===========================================');
+    console.log('=== UPDATE FCM TOKEN REQUEST ===');
+    console.log('Endpoint:', API_ENDPOINTS.AUTH.UPDATE_FCM_TOKEN);
+    console.log('Database:', currentBrand.api.databaseName);
+    console.log('Body:', JSON.stringify(requestBody, null, 2));
+    console.log('===========================================');
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.AUTH.UPDATE_FCM_TOKEN, requestBody);
+      console.log('===========================================');
+      console.log('=== UPDATE FCM TOKEN SUCCESS ===');
+      console.log('Response:', JSON.stringify(response.data, null, 2));
+      console.log('===========================================');
+      return true;
+    } catch (error: any) {
+      console.log('===========================================');
+      console.log('=== UPDATE FCM TOKEN ERROR ===');
+      console.log('Error:', error.message);
+      console.log('Status:', error.response?.status);
+      console.log('Response:', JSON.stringify(error.response?.data, null, 2));
+      console.log('===========================================');
+      // Don't throw - just return false
+      return false;
+    }
   },
 };

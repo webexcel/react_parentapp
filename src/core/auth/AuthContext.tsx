@@ -20,6 +20,7 @@ const initialState: AuthState = {
   userData: null,
   students: [],
   selectedStudentId: null,
+  requiresPasswordSetup: false,
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -64,7 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     checkAuth();
   }, [checkAuth]);
 
-  const login = async (token: string, userData: UserData) => {
+  const login = async (token: string, userData: UserData, hasPassword?: boolean) => {
     await setAuthToken(token);
     await storeUserData(userData);
 
@@ -73,6 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isAuthenticated: true,
       token,
       userData,
+      requiresPasswordSetup: hasPassword === false,
     }));
   };
 
@@ -103,6 +105,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setState((prev) => ({
       ...prev,
       selectedStudentId: studentId,
+    }));
+  };
+
+  const completePasswordSetup = () => {
+    setState((prev) => ({
+      ...prev,
+      requiresPasswordSetup: false,
     }));
   };
 
@@ -137,6 +146,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     selectStudent,
     checkAuth,
     refreshStudentPhotos,
+    completePasswordSetup,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -9,12 +9,12 @@ import {useTheme} from '../design-system/theme/ThemeContext';
 import {useBrand, useAuthType} from '../core/brand';
 
 // Auth Screens
-import {LoginScreen, OtpScreen, PasswordScreen} from '../modules/auth';
+import {LoginScreen, OtpScreen, PasswordScreen, CreatePasswordScreen} from '../modules/auth';
 
 // Main Screens
 import {DashboardScreen} from '../modules/dashboard';
 import {HomeworkScreen} from '../modules/homework';
-import {ProfileScreen, NotificationSettingsScreen} from '../modules/profile';
+import {ProfileScreen, NotificationSettingsScreen, ChangePasswordScreen} from '../modules/profile';
 
 // Feature Screens
 import {CircularsListScreen, CircularDetailScreen} from '../modules/circulars';
@@ -38,6 +38,7 @@ if (__DEV__) {
 // Stack and Tab navigators
 const AuthStack = createNativeStackNavigator();
 const MainStack = createNativeStackNavigator();
+const PasswordSetupStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 /**
@@ -242,13 +243,36 @@ const MainNavigator = () => {
         name={ROUTES.NOTIFICATION_SETTINGS}
         component={NotificationSettingsScreen}
       />
+
+      {/* Change Password - Always available (part of profile) */}
+      <MainStack.Screen
+        name={ROUTES.CHANGE_PASSWORD}
+        component={ChangePasswordScreen}
+      />
     </MainStack.Navigator>
+  );
+};
+
+/**
+ * Password Setup Navigator - Shown when first-time user needs to create password
+ */
+const PasswordSetupNavigator = () => {
+  return (
+    <PasswordSetupStack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <PasswordSetupStack.Screen
+        name={ROUTES.CREATE_PASSWORD}
+        component={CreatePasswordScreen}
+      />
+    </PasswordSetupStack.Navigator>
   );
 };
 
 // Root Navigator
 export const Navigation = () => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, requiresPasswordSetup } = useAuth();
 
   if (isLoading) {
     return <Spinner fullScreen message="Loading..." />;
@@ -256,7 +280,13 @@ export const Navigation = () => {
 
   return (
     <NavigationContainer>
-      {isAuthenticated ? <MainNavigator /> : <AuthNavigator />}
+      {isAuthenticated && requiresPasswordSetup ? (
+        <PasswordSetupNavigator />
+      ) : isAuthenticated ? (
+        <MainNavigator />
+      ) : (
+        <AuthNavigator />
+      )}
     </NavigationContainer>
   );
 };
