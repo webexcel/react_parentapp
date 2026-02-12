@@ -82,16 +82,16 @@
         "enabled": true
       },
       "timetable": {
-        "enabled": false
+        "enabled": true
       },
       "chat": {
-        "enabled": false
+        "enabled": true
       },
       "profile": {
         "enabled": true
       },
       "parentMessage": {
-        "enabled": false
+        "enabled": true
       },
       "leaveLetter": {
         "enabled": true
