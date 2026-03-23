@@ -35,7 +35,10 @@
     "build:railwaybalabhavan:android:debug": "node scripts/brand-builder.js railwaybalabhavan android debug",
     "android:sivakasi": "react-native run-android --mode sivakasiDebug",
     "build:sivakasi:android": "node scripts/brand-builder.js sivakasi android release",
-    "build:sivakasi:android:debug": "node scripts/brand-builder.js sivakasi android debug"
+    "build:sivakasi:android:debug": "node scripts/brand-builder.js sivakasi android debug",
+    "android:littleflower": "react-native run-android --mode littleflowerDebug",
+    "build:littleflower:android": "node scripts/brand-builder.js littleflower android release",
+    "build:littleflower:android:debug": "node scripts/brand-builder.js littleflower android debug"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -49,9 +52,11 @@
     "@react-navigation/native-stack": "^7.9.0",
     "@tanstack/react-query": "^5.90.16",
     "axios": "^1.13.2",
+    "is-stream": "^4.0.1",
     "react": "19.2.0",
     "react-native": "0.83.1",
     "react-native-config": "^1.6.1",
+    "react-native-device-info": "^15.0.2",
     "react-native-gesture-handler": "^2.30.0",
     "react-native-image-picker": "^8.2.1",
     "react-native-linear-gradient": "^2.8.3",

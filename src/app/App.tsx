@@ -6,9 +6,12 @@ import {AppProviders} from './AppProviders';
 import {Navigation} from './Navigation';
 import {fcmService} from '../core/notifications';
 import {SplashScreen} from '../design-system/atoms';
+import {ForceUpdateScreen} from '../design-system/organisms';
+import {useForceUpdate} from '../core/hooks/useForceUpdate';
 
-const App = () => {
+const AppContent = () => {
   const [showSplash, setShowSplash] = useState(true);
+  const {needsUpdate, playStoreUrl, isChecking} = useForceUpdate();
 
   useEffect(() => {
     // Initialize FCM
@@ -40,23 +43,27 @@ const App = () => {
     };
   }, []);
 
-  if (showSplash) {
-    return (
-      <GestureHandlerRootView style={styles.container}>
-        <AppProviders>
-          <SplashScreen onAnimationComplete={() => setShowSplash(false)} />
-        </AppProviders>
-      </GestureHandlerRootView>
-    );
+  if (showSplash || isChecking) {
+    return <SplashScreen onAnimationComplete={() => setShowSplash(false)} />;
+  }
+
+  if (needsUpdate) {
+    return <ForceUpdateScreen playStoreUrl={playStoreUrl} />;
   }
 
   return (
+    <SafeAreaProvider>
+      <Navigation />
+    </SafeAreaProvider>
+  );
+};
+
+const App = () => {
+  return (
     <GestureHandlerRootView style={styles.container}>
-      <SafeAreaProvider>
-        <AppProviders>
-          <Navigation />
-        </AppProviders>
-      </SafeAreaProvider>
+      <AppProviders>
+        <AppContent />
+      </AppProviders>
     </GestureHandlerRootView>
   );
 };

@@ -12,3 +12,5 @@ export type { BottomNavigationProps, NavItem } from './BottomNavigation';
 
 export { StudentCardSelector } from "./StudentCardSelector";
 export type { StudentCardSelectorProps } from "./StudentCardSelector";
+
+export { ForceUpdateScreen } from "./ForceUpdateScreen";

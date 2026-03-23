@@ -70,6 +70,7 @@ export const API_ENDPOINTS = {
     GET_YEAR_ID: '/payments/getYearId',
     CHECK_FEES_DEFAULTER: '/payments/checkFeesDefaulter',
     GET_MOB_FEES_STUDENT_DETAIL: '/payments/getMobFeesStudentDetail',
+    CHECK_PAYMENT_STATUS: '/payments/checkPaymentStatus',
   },
   // Chatbot - Dialogflow CX
   CHATBOT: {
@@ -90,5 +91,15 @@ export const API_ENDPOINTS = {
     INSERT: '/leaveletter/insertLeaveRequest',
     UPDATE: '/leaveletter/updateLeaveRequest',
     DELETE: '/leaveLetter/deleteLeaveRequest',
+  },
+
+  // Timetable
+  TIMETABLE: {
+    GET_STUDENT: '/timetable/getStudentTimetable',
+  },
+
+  // App Version
+  APP_VERSION: {
+    CHECK: '/appVersion/check',
   },
 } as const;

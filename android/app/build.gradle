@@ -19,6 +19,8 @@ project.ext.envConfigFiles = [
     railwaybalabhavanrelease: "brands/railwaybalabhavan/env/.env.production",
     sivakasidebug: "brands/sivakasi/env/.env.development",
     sivakasirelease: "brands/sivakasi/env/.env.production",
+    littleflowerdebug: "brands/littleflower/env/.env.development",
+    littleflowerrelease: "brands/littleflower/env/.env.production",
 ]
 
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
@@ -31,7 +33,7 @@ apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
 react {
     /* Variants */
     // List debuggable variants for all flavors
-    debuggableVariants = ["bsschoolDebug", "crescentDebug", "psseniorDebug", "railwaybalabhavanDebug", "sivakasiDebug"]
+    debuggableVariants = ["bsschoolDebug", "crescentDebug", "psseniorDebug", "railwaybalabhavanDebug", "sivakasiDebug", "littleflowerDebug"]
 
     /* Autolinking */
     autolinkLibrariesWithApp()
@@ -144,6 +146,18 @@ android {
             buildConfigField "String", "DB_NAME", "\"sivakasi_nadar\""
         }
 
+        // Little Flower Nursery and Primary School
+        littleflower {
+            dimension "brand"
+            applicationId "com.schooltree.little_flowers"
+            versionCode 1
+            versionName "1.0.0"
+            resValue "string", "app_name", "Little Flower Nursery and Primary School Parent"
+            buildConfigField "String", "BRAND_ID", "\"littleflower\""
+            buildConfigField "String", "AUTH_TYPE", "\"otp\""
+            buildConfigField "String", "DB_NAME", "\"little_flowers\""
+        }
+
         // Add more school flavors using: npm run school:add
     }
 
@@ -154,13 +168,12 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
-        // Add release signing configs per brand as needed
-        // crescentRelease {
-        //     storeFile file('keystores/crescent.keystore')
-        //     storePassword System.getenv("CRESCENT_STORE_PASSWORD")
-        //     keyAlias 'crescent'
-        //     keyPassword System.getenv("CRESCENT_KEY_PASSWORD")
-        // }
+        bsschoolRelease {
+            storeFile file('../../brands/bsschool/assets/bs_school.jks')
+            storePassword 'bsschool123'
+            keyAlias 'bs'
+            keyPassword 'bsschool123'
+        }
     }
 
     buildTypes {
@@ -168,11 +181,11 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+
+            // Per-brand signing
+            productFlavors.bsschool.signingConfig signingConfigs.bsschoolRelease
         }
     }
 
@@ -196,6 +209,9 @@ android {
         }
         sivakasi {
             res.srcDirs = ['src/sivakasi/res']
+        }
+        littleflower {
+            res.srcDirs = ['src/littleflower/res']
         }
     }
 }
