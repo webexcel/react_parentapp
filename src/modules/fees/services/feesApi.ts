@@ -13,6 +13,7 @@ import {
   PrintBillResponse,
   AcademicYearResponse,
   FeeDefaulterResponse,
+  CheckPaymentStatusResponse,
 } from '../types/fees.types';
 
 export const feesApi = {
@@ -159,6 +160,20 @@ export const feesApi = {
     const response = await apiClient.post<FeeDefaulterResponse>(
       API_ENDPOINTS.PAYMENTS.CHECK_FEES_DEFAULTER,
       { yearid, adno }
+    );
+    return response.data;
+  },
+
+  /**
+   * Check payment status (for UPI intent flow)
+   * Polls the razorpay table status after user returns from UPI app
+   */
+  checkPaymentStatus: async (
+    merchantOrderId: number
+  ): Promise<CheckPaymentStatusResponse> => {
+    const response = await apiClient.post<CheckPaymentStatusResponse>(
+      API_ENDPOINTS.PAYMENTS.CHECK_PAYMENT_STATUS,
+      { merchantOrderId }
     );
     return response.data;
   },

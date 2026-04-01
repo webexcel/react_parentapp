@@ -20,7 +20,7 @@ import {ProfileScreen, NotificationSettingsScreen, ChangePasswordScreen} from '.
 import {CircularsListScreen, CircularDetailScreen} from '../modules/circulars';
 import {AttendanceScreen} from '../modules/attendance';
 import {ExamScheduleScreen} from '../modules/exams';
-import {FeeDetailsScreen} from '../modules/fees';
+import {FeeDetailsScreen, PaymentWebViewScreen, PaymentProcessingScreen, PaymentResultScreen} from '../modules/fees';
 import {CalendarScreen} from '../modules/calendar';
 import {GalleryScreen} from '../modules/gallery';
 import {TimetableScreen} from '../modules/timetable';
@@ -201,10 +201,24 @@ const MainNavigator = () => {
 
       {/* Fee Details - Conditional */}
       {isModuleEnabled('fees') && (
-        <MainStack.Screen
-          name={ROUTES.FEE_DETAILS}
-          component={FeeDetailsScreen}
-        />
+        <>
+          <MainStack.Screen
+            name={ROUTES.FEE_DETAILS}
+            component={FeeDetailsScreen}
+          />
+          <MainStack.Screen
+            name={ROUTES.PAYMENT_WEBVIEW}
+            component={PaymentWebViewScreen}
+          />
+          <MainStack.Screen
+            name={ROUTES.PAYMENT_PROCESSING}
+            component={PaymentProcessingScreen}
+          />
+          <MainStack.Screen
+            name={ROUTES.PAYMENT_RESULT}
+            component={PaymentResultScreen}
+          />
+        </>
       )}
 
       {/* Gallery - Conditional */}
@@ -273,14 +287,18 @@ const PasswordSetupNavigator = () => {
 // Root Navigator
 export const Navigation = () => {
   const { isAuthenticated, isLoading, requiresPasswordSetup } = useAuth();
+  const authType = useAuthType();
 
   if (isLoading) {
     return <Spinner fullScreen message="Loading..." />;
   }
 
+  // Only show password setup for brands that use password auth (e.g. pssenior)
+  const showPasswordSetup = requiresPasswordSetup && (authType === 'password' || authType === 'both');
+
   return (
     <NavigationContainer>
-      {isAuthenticated && requiresPasswordSetup ? (
+      {isAuthenticated && showPasswordSetup ? (
         <PasswordSetupNavigator />
       ) : isAuthenticated ? (
         <MainNavigator />

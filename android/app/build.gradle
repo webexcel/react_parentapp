@@ -9,18 +9,22 @@ apply plugin: "com.google.gms.google-services"
  * Maps each flavor+buildType combination to its environment file
  */
 project.ext.envConfigFiles = [
+    aaimathajidebug: "brands/aaimathaji/env/.env.development",
+    aaimathajirelease: "brands/aaimathaji/env/.env.production",
     bsschooldebug: "brands/bsschool/env/.env.development",
     bsschoolrelease: "brands/bsschool/env/.env.production",
     crescentdebug: "brands/crescent/env/.env.development",
     crescentrelease: "brands/crescent/env/.env.production",
+    littleflowerdebug: "brands/littleflower/env/.env.development",
+    littleflowerrelease: "brands/littleflower/env/.env.production",
     psseniordebug: "brands/pssenior/env/.env.development",
     psseniorrelease: "brands/pssenior/env/.env.production",
     railwaybalabhavandebug: "brands/railwaybalabhavan/env/.env.development",
     railwaybalabhavanrelease: "brands/railwaybalabhavan/env/.env.production",
     sivakasidebug: "brands/sivakasi/env/.env.development",
     sivakasirelease: "brands/sivakasi/env/.env.production",
-    littleflowerdebug: "brands/littleflower/env/.env.development",
-    littleflowerrelease: "brands/littleflower/env/.env.production",
+    stdominicsdebug: "brands/stdominics/env/.env.development",
+    stdominicsrelease: "brands/stdominics/env/.env.production",
 ]
 
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
@@ -33,7 +37,7 @@ apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
 react {
     /* Variants */
     // List debuggable variants for all flavors
-    debuggableVariants = ["bsschoolDebug", "crescentDebug", "psseniorDebug", "railwaybalabhavanDebug", "sivakasiDebug", "littleflowerDebug"]
+    debuggableVariants = ["aaimathajiDebug", "bsschoolDebug", "crescentDebug", "littleflowerDebug", "psseniorDebug", "railwaybalabhavanDebug", "sivakasiDebug", "stdominicsDebug"]
 
     /* Autolinking */
     autolinkLibrariesWithApp()
@@ -86,12 +90,20 @@ android {
     flavorDimensions "brand"
 
     productFlavors {
+        // Sri Aai Mathaji Matriculation School
+        aaimathaji {
+            dimension "brand"
+            applicationId "com.schooltree.aaimathaji"
+            resValue "string", "app_name", "Sri Aai Mathaji Matriculation School Parent"
+            buildConfigField "String", "BRAND_ID", "\"aaimathaji\""
+            buildConfigField "String", "AUTH_TYPE", "\"otp\""
+            buildConfigField "String", "DB_NAME", "\"aaimathaji\""
+        }
+
         // B.S Nursery & Primary School
         bsschool {
             dimension "brand"
             applicationId "com.schooltree.bs"
-            versionCode 1
-            versionName "1.0.0"
             resValue "string", "app_name", "B.S Nursery & Primary School Parent"
             buildConfigField "String", "BRAND_ID", "\"bsschool\""
             buildConfigField "String", "AUTH_TYPE", "\"otp\""
@@ -102,20 +114,26 @@ android {
         crescent {
             dimension "brand"
             applicationId "com.schooltree.crescentapp"
-            versionCode 1
-            versionName "1.0.0"
             resValue "string", "app_name", "Crescent Matriculation Girls Hr. Sec. School Parent"
             buildConfigField "String", "BRAND_ID", "\"crescent\""
             buildConfigField "String", "AUTH_TYPE", "\"otp\""
             buildConfigField "String", "DB_NAME", "\"cresent\""
         }
 
+        // Little Flower Nursery and Primary School
+        littleflower {
+            dimension "brand"
+            applicationId "com.schooltree.little_flowers"
+            resValue "string", "app_name", "Little Flower Nursery and Primary School Parent"
+            buildConfigField "String", "BRAND_ID", "\"littleflower\""
+            buildConfigField "String", "AUTH_TYPE", "\"otp\""
+            buildConfigField "String", "DB_NAME", "\"little_flowers\""
+        }
+
         // P.S. Senior Secondary School
         pssenior {
             dimension "brand"
             applicationId "com.schooltree.pssenior"
-            versionCode 6
-            versionName "1.0.6"
             resValue "string", "app_name", "P.S. Senior Secondary School Parent"
             buildConfigField "String", "BRAND_ID", "\"pssenior\""
             buildConfigField "String", "AUTH_TYPE", "\"password\""
@@ -126,36 +144,30 @@ android {
         railwaybalabhavan {
             dimension "brand"
             applicationId "com.schooltree.balabhavan"
-            versionCode 1
-            versionName "1.0.0"
             resValue "string", "app_name", "Reilway Bala Bhavan School Parent"
             buildConfigField "String", "BRAND_ID", "\"railwaybalabhavan\""
             buildConfigField "String", "AUTH_TYPE", "\"otp\""
             buildConfigField "String", "DB_NAME", "\"rlybalabhavans\""
         }
 
-        // Sivakasi Nadar Mat School
+        // Sivakasi Hindu Nadar Matriculation Higher Secondary School
         sivakasi {
             dimension "brand"
             applicationId "com.schooltree.sivakasi"
-            versionCode 1
-            versionName "1.0.0"
-            resValue "string", "app_name", "Sivakasi Nadar Mat School Parent"
+            resValue "string", "app_name", "Sivakasi Hindu Nadar Matriculation Higher Secondary School Parent"
             buildConfigField "String", "BRAND_ID", "\"sivakasi\""
             buildConfigField "String", "AUTH_TYPE", "\"otp\""
             buildConfigField "String", "DB_NAME", "\"sivakasi_nadar\""
         }
 
-        // Little Flower Nursery and Primary School
-        littleflower {
+        // St. Dominic's anglo-indian Hr. Sec. School
+        stdominics {
             dimension "brand"
-            applicationId "com.schooltree.little_flowers"
-            versionCode 1
-            versionName "1.0.0"
-            resValue "string", "app_name", "Little Flower Nursery and Primary School Parent"
-            buildConfigField "String", "BRAND_ID", "\"littleflower\""
+            applicationId "com.schooltree.dominics"
+            resValue "string", "app_name", "St. Dominic\\'s anglo-indian Hr. Sec. School Parent"
+            buildConfigField "String", "BRAND_ID", "\"stdominics\""
             buildConfigField "String", "AUTH_TYPE", "\"otp\""
-            buildConfigField "String", "DB_NAME", "\"little_flowers\""
+            buildConfigField "String", "DB_NAME", "\"dominic\""
         }
 
         // Add more school flavors using: npm run school:add
@@ -174,6 +186,18 @@ android {
             keyAlias 'bs'
             keyPassword 'bsschool123'
         }
+        aaimathajiRelease {
+            storeFile file('../../brands/aaimathaji/assets/aaimathaji.jks')
+            storePassword 'aaimathaji123'
+            keyAlias 'aaimathaji'
+            keyPassword 'aaimathaji123'
+        }
+        stdominicsRelease {
+            storeFile file('../../brands/stdominics/assets/stdominics.jks')
+            storePassword 'stdominics123'
+            keyAlias 'stdominics'
+            keyPassword 'stdominics123'
+        }
     }
 
     buildTypes {
@@ -186,6 +210,8 @@ android {
 
             // Per-brand signing
             productFlavors.bsschool.signingConfig signingConfigs.bsschoolRelease
+            productFlavors.aaimathaji.signingConfig signingConfigs.aaimathajiRelease
+            productFlavors.stdominics.signingConfig signingConfigs.stdominicsRelease
         }
     }
 
@@ -195,11 +221,17 @@ android {
      * Place resources in: android/app/src/{brandName}/res/
      */
     sourceSets {
+        aaimathaji {
+            res.srcDirs = ['src/aaimathaji/res']
+        }
         bsschool {
             res.srcDirs = ['src/bsschool/res']
         }
         crescent {
             res.srcDirs = ['src/crescent/res']
+        }
+        littleflower {
+            res.srcDirs = ['src/littleflower/res']
         }
         pssenior {
             res.srcDirs = ['src/pssenior/res']
@@ -210,8 +242,8 @@ android {
         sivakasi {
             res.srcDirs = ['src/sivakasi/res']
         }
-        littleflower {
-            res.srcDirs = ['src/littleflower/res']
+        stdominics {
+            res.srcDirs = ['src/stdominics/res']
         }
     }
 }

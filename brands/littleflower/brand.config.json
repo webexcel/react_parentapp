@@ -1,0 +1,83 @@
+{
+  "$schema": "../brand.schema.json",
+  "brand": {
+    "id": "littleflower",
+    "name": "Little Flower Nursery and Primary School",
+    "shortName": "Little Flower",
+    "tagline": "Nurturing Young Minds"
+  },
+  "app": {
+    "android": {
+      "applicationId": "com.schooltree.little_flowers",
+      "versionCode": 1,
+      "versionName": "1.0.0"
+    },
+    "ios": {
+      "bundleId": "com.schooltree.littleflower",
+      "version": "1.0.0",
+      "buildNumber": "1"
+    }
+  },
+  "api": {
+    "baseUrl": "https://dev1.schooltree.in/api",
+    "databaseName": "little_flowers"
+  },
+  "firebase": {
+    "projectId": "schooltrees-69f4b",
+    "configGroup": "group-a"
+  },
+  "auth": {
+    "type": "otp",
+    "otpLength": 6,
+    "countryCode": "+91"
+  },
+  "theme": {
+    "colors": {
+      "primary": "#e91e8c",
+      "primaryDark": "#b5136d",
+      "primarySoft": "#fce4f3",
+      "accent": "#ff9800",
+      "background": "#fff8fc",
+      "surface": "#ffffff",
+      "text": "#1a1a2e",
+      "textSecondary": "#6b5b72",
+      "success": "#10b981",
+      "warning": "#f59e0b",
+      "error": "#ef4444",
+      "info": "#3b82f6"
+    },
+    "fonts": {
+      "primary": "Lexend",
+      "secondary": "Inter"
+    }
+  },
+  "features": {
+    "modules": {
+      "dashboard": { "enabled": true },
+      "circulars": { "enabled": true },
+      "homework": { "enabled": true },
+      "attendance": { "enabled": true },
+      "exams": { "enabled": true },
+      "marks": { "enabled": true },
+      "fees": { "enabled": true, "showPaymentGateway": false },
+      "calendar": { "enabled": true },
+      "gallery": { "enabled": true },
+      "timetable": {
+        "enabled": true,
+        "breaks": [
+          { "afterPeriod": 2, "label": "Short Break", "startTime": "10:00", "endTime": "10:15" },
+          { "afterPeriod": 4, "label": "Lunch Break", "startTime": "11:45", "endTime": "12:30" }
+        ]
+      },
+      "chat": { "enabled": false },
+      "profile": { "enabled": true },
+      "parentMessage": { "enabled": true }
+    },
+    "notifications": {
+      "enabled": true,
+      "topics": ["circulars", "homework", "attendance"]
+    },
+    "offlineMode": true,
+    "darkMode": false
+  }
+}

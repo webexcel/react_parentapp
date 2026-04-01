@@ -3,11 +3,14 @@ import {ImageSourcePropType} from 'react-native';
 // Brand logos - pre-required for React Native bundler
 // Each brand's icon.png from brands/{brandId}/assets/
 const brandLogos: Record<string, ImageSourcePropType> = {
+  aaimathaji: require('../../../brands/aaimathaji/assets/icon.png'),
   bsschool: require('../../../brands/bsschool/assets/icon.png'),
   crescent: require('../../../brands/crescent/assets/icon.png'),
+  littleflower: require('../../../brands/littleflower/assets/icon.png'),
   pssenior: require('../../../brands/pssenior/assets/icon.png'),
   railwaybalabhavan: require('../../../brands/railwaybalabhavan/assets/icon.png'),
   sivakasi: require('../../../brands/sivakasi/assets/icon.png'),
+  stdominics: require('../../../brands/stdominics/assets/icon.png'),
 };
 
 // Default fallback logo

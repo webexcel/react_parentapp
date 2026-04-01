@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { Text, Icon, colors, spacing } from '../../../../design-system';
 
 interface PaymentSummaryBarProps {
@@ -8,6 +8,7 @@ interface PaymentSummaryBarProps {
   selectedAmount: number;
   onPayPress: () => void;
   disabled?: boolean;
+  isProcessing?: boolean;
 }
 
 export const PaymentSummaryBar: React.FC<PaymentSummaryBarProps> = ({
@@ -16,6 +17,7 @@ export const PaymentSummaryBar: React.FC<PaymentSummaryBarProps> = ({
   selectedAmount,
   onPayPress,
   disabled = false,
+  isProcessing = false,
 }) => {
   if (selectedCount === 0) {
     return (
@@ -50,11 +52,20 @@ export const PaymentSummaryBar: React.FC<PaymentSummaryBarProps> = ({
       <TouchableOpacity
         style={[styles.payButton, disabled && styles.payButtonDisabled]}
         onPress={onPayPress}
-        disabled={disabled}
+        disabled={disabled || isProcessing}
         activeOpacity={0.8}
       >
-        <Icon name="payments" size={20} color="#FFFFFF" />
-        <Text style={styles.payButtonText}>Pay Now</Text>
+        {isProcessing ? (
+          <>
+            <ActivityIndicator size="small" color="#FFFFFF" />
+            <Text style={styles.payButtonText}>Processing...</Text>
+          </>
+        ) : (
+          <>
+            <Icon name="payments" size={20} color="#FFFFFF" />
+            <Text style={styles.payButtonText}>Pay Now</Text>
+          </>
+        )}
       </TouchableOpacity>
     </View>
   );

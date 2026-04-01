@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { authService } from '../../../core/auth/authService';
 import { useAuth } from '../../../core/auth';
 import { Student } from '../../../core/api/apiTypes';
+import { getBrandConfig } from '../../../core/brand';
 
 interface UsePasswordLoginReturn {
     verifyPassword: (mobileNumber: string, password: string, installId?: string) => Promise<{ success: boolean; message?: string }>;
@@ -32,8 +33,12 @@ export const usePasswordLogin = (): UsePasswordLoginReturn => {
                     ...response.userdata,
                     mobileNumber,
                 };
-                // Pass hasPassword flag to determine if password setup is needed
-                const hasPassword = response.data?.hasPassword !== undefined ? response.data.hasPassword : true;
+                // Only require password setup for brands that use password auth (e.g. pssenior)
+                const brandConfig = getBrandConfig();
+                const authType = brandConfig.auth.type;
+                const hasPassword = authType === 'password' || authType === 'both'
+                    ? (response.data?.hasPassword !== undefined ? response.data.hasPassword : true)
+                    : true; // OTP-only brands never need password setup
                 await login(response.token, userDataWithMobile, hasPassword);
 
                 // Get students list using installId

@@ -21,6 +21,9 @@ export const ROUTES = {
   EXAM_SCHEDULE: 'ExamSchedule',
   CALENDAR: 'Calendar',
   FEE_DETAILS: 'FeeDetails',
+  PAYMENT_WEBVIEW: 'PaymentWebView',
+  PAYMENT_PROCESSING: 'PaymentProcessing',
+  PAYMENT_RESULT: 'PaymentResult',
   GALLERY: 'Gallery',
   TIMETABLE: 'Timetable',
 

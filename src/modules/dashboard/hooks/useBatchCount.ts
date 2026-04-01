@@ -73,6 +73,7 @@ export const useBatchCount = (studentId?: string): UseBatchCountResult => {
     },
     enabled: !!adno,
     staleTime: 2 * 60 * 1000, // 2 minutes - dashboard data changes frequently
+    retry: 1, // Limit retries to avoid blocking the dashboard on persistent errors
   });
 
   return {

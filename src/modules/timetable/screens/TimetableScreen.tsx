@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   View,
   FlatList,
@@ -6,12 +6,13 @@ import {
   TouchableOpacity,
   RefreshControl,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import {
   ListTemplate,
   Text,
   Badge,
   Icon,
+  Spinner,
   EmptyState,
   colors,
   spacing,
@@ -19,236 +20,202 @@ import {
   shadows,
 } from '../../../design-system';
 import { useAuth } from '../../../core/auth';
+import { useBrand } from '../../../core/brand';
+import { useTimetable } from '../hooks/useTimetable';
+import {
+  TimetableEntry,
+  DAY_MAP,
+  DAY_FULL_MAP,
+  PERIOD_MAP,
+  TT_TYPE_LABEL,
+  TimetableType,
+} from '../types/timetable.types';
 
-interface Period {
-  id: string;
-  periodNumber: number;
-  subject: string;
-  teacher: string;
+interface BreakConfig {
+  afterPeriod: number;
+  label: string;
   startTime: string;
   endTime: string;
-  room?: string;
 }
 
-interface DaySchedule {
-  day: string;
-  dayShort: string;
-  periods: Period[];
-}
+type ListItem =
+  | { type: 'period'; data: TimetableEntry }
+  | { type: 'break'; data: BreakConfig };
 
-const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const DAYS_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const DAY_IDS = [1, 2, 3, 4, 5, 6]; // Mon–Sat
 
-// Mock data - replace with API call
-const MOCK_TIMETABLE: Record<string, Period[]> = {
-  Monday: [
-    { id: 'm1', periodNumber: 1, subject: 'Mathematics', teacher: 'Mrs. Sharma', startTime: '08:30', endTime: '09:15', room: 'Room 101' },
-    { id: 'm2', periodNumber: 2, subject: 'English', teacher: 'Mr. Kumar', startTime: '09:15', endTime: '10:00', room: 'Room 101' },
-    { id: 'm3', periodNumber: 3, subject: 'Science', teacher: 'Mrs. Reddy', startTime: '10:15', endTime: '11:00', room: 'Lab 1' },
-    { id: 'm4', periodNumber: 4, subject: 'Hindi', teacher: 'Mr. Singh', startTime: '11:00', endTime: '11:45', room: 'Room 101' },
-    { id: 'm5', periodNumber: 5, subject: 'Social Studies', teacher: 'Mrs. Patel', startTime: '12:30', endTime: '13:15', room: 'Room 101' },
-    { id: 'm6', periodNumber: 6, subject: 'Computer Science', teacher: 'Mr. Das', startTime: '13:15', endTime: '14:00', room: 'Lab 2' },
-  ],
-  Tuesday: [
-    { id: 't1', periodNumber: 1, subject: 'English', teacher: 'Mr. Kumar', startTime: '08:30', endTime: '09:15', room: 'Room 101' },
-    { id: 't2', periodNumber: 2, subject: 'Mathematics', teacher: 'Mrs. Sharma', startTime: '09:15', endTime: '10:00', room: 'Room 101' },
-    { id: 't3', periodNumber: 3, subject: 'Physical Education', teacher: 'Mr. Verma', startTime: '10:15', endTime: '11:00', room: 'Ground' },
-    { id: 't4', periodNumber: 4, subject: 'Science', teacher: 'Mrs. Reddy', startTime: '11:00', endTime: '11:45', room: 'Lab 1' },
-    { id: 't5', periodNumber: 5, subject: 'Art', teacher: 'Mrs. Gupta', startTime: '12:30', endTime: '13:15', room: 'Art Room' },
-    { id: 't6', periodNumber: 6, subject: 'Hindi', teacher: 'Mr. Singh', startTime: '13:15', endTime: '14:00', room: 'Room 101' },
-  ],
-  Wednesday: [
-    { id: 'w1', periodNumber: 1, subject: 'Science', teacher: 'Mrs. Reddy', startTime: '08:30', endTime: '09:15', room: 'Lab 1' },
-    { id: 'w2', periodNumber: 2, subject: 'Mathematics', teacher: 'Mrs. Sharma', startTime: '09:15', endTime: '10:00', room: 'Room 101' },
-    { id: 'w3', periodNumber: 3, subject: 'English', teacher: 'Mr. Kumar', startTime: '10:15', endTime: '11:00', room: 'Room 101' },
-    { id: 'w4', periodNumber: 4, subject: 'Social Studies', teacher: 'Mrs. Patel', startTime: '11:00', endTime: '11:45', room: 'Room 101' },
-    { id: 'w5', periodNumber: 5, subject: 'Music', teacher: 'Mr. Iyer', startTime: '12:30', endTime: '13:15', room: 'Music Room' },
-    { id: 'w6', periodNumber: 6, subject: 'Computer Science', teacher: 'Mr. Das', startTime: '13:15', endTime: '14:00', room: 'Lab 2' },
-  ],
-  Thursday: [
-    { id: 'th1', periodNumber: 1, subject: 'Hindi', teacher: 'Mr. Singh', startTime: '08:30', endTime: '09:15', room: 'Room 101' },
-    { id: 'th2', periodNumber: 2, subject: 'Science', teacher: 'Mrs. Reddy', startTime: '09:15', endTime: '10:00', room: 'Lab 1' },
-    { id: 'th3', periodNumber: 3, subject: 'Mathematics', teacher: 'Mrs. Sharma', startTime: '10:15', endTime: '11:00', room: 'Room 101' },
-    { id: 'th4', periodNumber: 4, subject: 'English', teacher: 'Mr. Kumar', startTime: '11:00', endTime: '11:45', room: 'Room 101' },
-    { id: 'th5', periodNumber: 5, subject: 'Physical Education', teacher: 'Mr. Verma', startTime: '12:30', endTime: '13:15', room: 'Ground' },
-    { id: 'th6', periodNumber: 6, subject: 'Social Studies', teacher: 'Mrs. Patel', startTime: '13:15', endTime: '14:00', room: 'Room 101' },
-  ],
-  Friday: [
-    { id: 'f1', periodNumber: 1, subject: 'Mathematics', teacher: 'Mrs. Sharma', startTime: '08:30', endTime: '09:15', room: 'Room 101' },
-    { id: 'f2', periodNumber: 2, subject: 'Hindi', teacher: 'Mr. Singh', startTime: '09:15', endTime: '10:00', room: 'Room 101' },
-    { id: 'f3', periodNumber: 3, subject: 'English', teacher: 'Mr. Kumar', startTime: '10:15', endTime: '11:00', room: 'Room 101' },
-    { id: 'f4', periodNumber: 4, subject: 'Computer Science', teacher: 'Mr. Das', startTime: '11:00', endTime: '11:45', room: 'Lab 2' },
-    { id: 'f5', periodNumber: 5, subject: 'Science', teacher: 'Mrs. Reddy', startTime: '12:30', endTime: '13:15', room: 'Lab 1' },
-    { id: 'f6', periodNumber: 6, subject: 'Library', teacher: 'Mrs. Joshi', startTime: '13:15', endTime: '14:00', room: 'Library' },
-  ],
-  Saturday: [
-    { id: 's1', periodNumber: 1, subject: 'Mathematics', teacher: 'Mrs. Sharma', startTime: '08:30', endTime: '09:15', room: 'Room 101' },
-    { id: 's2', periodNumber: 2, subject: 'Science', teacher: 'Mrs. Reddy', startTime: '09:15', endTime: '10:00', room: 'Lab 1' },
-    { id: 's3', periodNumber: 3, subject: 'English', teacher: 'Mr. Kumar', startTime: '10:15', endTime: '11:00', room: 'Room 101' },
-    { id: 's4', periodNumber: 4, subject: 'Activity Period', teacher: 'Various', startTime: '11:00', endTime: '11:45', room: 'Various' },
-  ],
-};
+const SUBJECT_COLORS: string[] = [
+  '#137fec', '#10b981', '#f59e0b', '#ef4444', '#9333EA',
+  '#06B6D4', '#EC4899', '#6366F1', '#14B8A6', '#F97316',
+];
 
-const SUBJECT_COLORS: Record<string, string> = {
-  Mathematics: colors.primary,
-  English: colors.info,
-  Science: colors.success,
-  Hindi: colors.warning,
-  'Social Studies': '#9333EA',
-  'Computer Science': '#06B6D4',
-  'Physical Education': colors.error,
-  Art: '#EC4899',
-  Music: '#F59E0B',
-  Library: '#6B7280',
-  'Activity Period': '#10B981',
+const getSubjectColor = (subject: string): string => {
+  let hash = 0;
+  for (let i = 0; i < subject.length; i++) {
+    hash = subject.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return SUBJECT_COLORS[Math.abs(hash) % SUBJECT_COLORS.length];
 };
 
 export const TimetableScreen: React.FC = () => {
   const navigation = useNavigation();
   const { students, selectedStudentId, selectStudent } = useAuth();
+  const { getModuleConfig } = useBrand();
 
-  const today = new Date().getDay();
-  const currentDayIndex = today === 0 ? 0 : today - 1; // Sunday returns 0, adjust for Monday start
+  const timetableConfig = getModuleConfig('timetable');
+  const breaks: BreakConfig[] = timetableConfig?.breaks || [];
 
-  const [selectedDay, setSelectedDay] = useState(currentDayIndex < 6 ? currentDayIndex : 0);
+  const today = new Date().getDay(); // 0=Sun, 1=Mon..6=Sat
+  const currentDayId = today >= 1 && today <= 6 ? today : 1;
+
+  const [selectedDayId, setSelectedDayId] = useState(currentDayId);
   const [refreshing, setRefreshing] = useState(false);
 
-  const currentSchedule = useMemo(() => {
-    return MOCK_TIMETABLE[DAYS[selectedDay]] || [];
-  }, [selectedDay]);
+  const { timetableByDay, isLoading, isFetching, refetch } = useTimetable();
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch]),
+  );
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    // Fetch timetable from API
-    setTimeout(() => setRefreshing(false), 1000);
+    await refetch();
+    setRefreshing(false);
   };
 
-  const getSubjectColor = (subject: string) => {
-    return SUBJECT_COLORS[subject] || colors.textMuted;
-  };
+  const currentPeriods = useMemo(() => {
+    return timetableByDay[selectedDayId] || [];
+  }, [timetableByDay, selectedDayId]);
 
-  const isCurrentPeriod = (period: Period) => {
-    const now = new Date();
-    const dayOfWeek = now.getDay();
+  // Build list with breaks inserted after configured periods
+  const listData = useMemo(() => {
+    const breakMap = new Map<number, BreakConfig>();
+    breaks.forEach((b) => breakMap.set(b.afterPeriod, b));
 
-    // Check if it's the selected day (Sunday = 0, so Monday = 1, etc.)
-    if (dayOfWeek !== selectedDay + 1) return false;
+    const items: ListItem[] = [];
+    currentPeriods.forEach((entry) => {
+      items.push({ type: 'period', data: entry });
 
-    const currentTime = now.getHours() * 60 + now.getMinutes();
-    const [startHour, startMin] = period.startTime.split(':').map(Number);
-    const [endHour, endMin] = period.endTime.split(':').map(Number);
-    const startTime = startHour * 60 + startMin;
-    const endTime = endHour * 60 + endMin;
+      const breakAfter = breakMap.get(entry.period_id);
+      if (breakAfter) {
+        items.push({ type: 'break', data: breakAfter });
+      }
+    });
 
-    return currentTime >= startTime && currentTime < endTime;
+    return items;
+  }, [currentPeriods, breaks]);
+
+  const renderTypeBadge = (ttType: TimetableType, groupId: string | null) => {
+    if (ttType === 0) return null;
+
+    const label =
+      ttType === 2 && groupId
+        ? `Split ${groupId}`
+        : TT_TYPE_LABEL[ttType];
+
+    return (
+      <Badge
+        label={label}
+        variant={ttType === 1 ? 'info' : 'warning'}
+        size="sm"
+      />
+    );
   };
 
   const renderDaySelector = () => (
     <View style={styles.daySelectorContainer}>
-      {DAYS.map((day, index) => (
+      {DAY_IDS.map((dayId) => (
         <TouchableOpacity
-          key={day}
+          key={dayId}
           style={[
             styles.dayButton,
-            selectedDay === index && styles.dayButtonActive,
+            selectedDayId === dayId && styles.dayButtonActive,
           ]}
-          onPress={() => setSelectedDay(index)}
+          onPress={() => setSelectedDayId(dayId)}
         >
           <Text
             variant="caption"
             semibold
             style={[
               styles.dayText,
-              selectedDay === index && styles.dayTextActive,
+              selectedDayId === dayId && styles.dayTextActive,
             ]}
           >
-            {DAYS_SHORT[index]}
+            {DAY_MAP[dayId]}
           </Text>
         </TouchableOpacity>
       ))}
     </View>
   );
 
-  const renderPeriod = ({ item }: { item: Period }) => {
-    const isCurrent = isCurrentPeriod(item);
-    const subjectColor = getSubjectColor(item.subject);
+  const renderBreak = (breakConfig: BreakConfig) => (
+    <View style={styles.breakCard}>
+      <Icon name="calendar" size={16} color={colors.textMuted} />
+      <Text variant="caption" color="muted" style={styles.breakText}>
+        {breakConfig.label} ({breakConfig.startTime} - {breakConfig.endTime})
+      </Text>
+    </View>
+  );
+
+  const renderPeriod = (entry: TimetableEntry) => {
+    const subjectColor = getSubjectColor(entry.subject_name);
 
     return (
-      <View style={[styles.periodCard, isCurrent && styles.periodCardCurrent]}>
+      <View style={styles.periodCard}>
         <View style={[styles.periodIndicator, { backgroundColor: subjectColor }]} />
 
-        <View style={styles.periodTime}>
-          <Text variant="bodySmall" semibold>
-            {item.startTime}
-          </Text>
+        <View style={styles.periodNumber}>
           <Text variant="caption" color="muted">
-            {item.endTime}
+            {PERIOD_MAP[entry.period_id]}
           </Text>
         </View>
 
         <View style={styles.periodDetails}>
           <View style={styles.periodHeader}>
             <Text variant="body" semibold numberOfLines={1} style={styles.subjectName}>
-              {item.subject}
+              {entry.subject_name}
             </Text>
-            {isCurrent && (
-              <Badge label="NOW" variant="primary" size="sm" />
-            )}
+            {renderTypeBadge(entry.tt_type, entry.group_id)}
           </View>
 
           <View style={styles.periodMeta}>
             <View style={styles.metaItem}>
               <Icon name="profile" size={12} color={colors.textMuted} />
               <Text variant="caption" color="secondary" style={styles.metaText}>
-                {item.teacher}
+                {entry.staff_name}
               </Text>
             </View>
           </View>
-        </View>
-
-        <View style={styles.periodNumber}>
-          <Text variant="caption" color="muted">
-            P{item.periodNumber}
-          </Text>
         </View>
       </View>
     );
   };
 
-  const renderBreak = (afterPeriod: number) => {
-    if (afterPeriod === 2) {
-      return (
-        <View style={styles.breakCard}>
-          <Icon name="calendar" size={16} color={colors.textMuted} />
-          <Text variant="caption" color="muted" style={styles.breakText}>
-            Short Break (10:00 - 10:15)
-          </Text>
-        </View>
-      );
+  const renderItem = ({ item }: { item: ListItem }) => {
+    if (item.type === 'break') {
+      return renderBreak(item.data);
     }
-    if (afterPeriod === 4) {
-      return (
-        <View style={styles.breakCard}>
-          <Icon name="calendar" size={16} color={colors.textMuted} />
-          <Text variant="caption" color="muted" style={styles.breakText}>
-            Lunch Break (11:45 - 12:30)
-          </Text>
-        </View>
-      );
-    }
-    return null;
+    return renderPeriod(item.data);
   };
 
-  const dataWithBreaks = useMemo(() => {
-    const result: (Period | { type: 'break'; afterPeriod: number })[] = [];
-    currentSchedule.forEach((period) => {
-      result.push(period);
-      if (period.periodNumber === 2 || period.periodNumber === 4) {
-        result.push({ type: 'break', afterPeriod: period.periodNumber });
-      }
-    });
-    return result;
-  }, [currentSchedule]);
+  if ((isLoading || isFetching) && !refreshing) {
+    return (
+      <ListTemplate
+        headerProps={{
+          title: 'Timetable',
+          showBack: true,
+          onBack: () => navigation.goBack(),
+        }}
+        students={students}
+        selectedStudentId={selectedStudentId || ''}
+        onSelectStudent={selectStudent}
+      >
+        <Spinner fullScreen message="Loading timetable..." />
+      </ListTemplate>
+    );
+  }
 
   return (
     <ListTemplate
@@ -262,22 +229,19 @@ export const TimetableScreen: React.FC = () => {
       onSelectStudent={selectStudent}
     >
       <FlatList
-        data={dataWithBreaks}
+        data={listData}
         keyExtractor={(item, index) =>
-          'type' in item ? `break-${item.afterPeriod}` : item.id
+          item.type === 'break'
+            ? `break-${item.data.afterPeriod}`
+            : `${item.data.day_id}-${item.data.period_id}-${item.data.group_id || ''}`
         }
-        renderItem={({ item }) => {
-          if ('type' in item) {
-            return renderBreak(item.afterPeriod);
-          }
-          return renderPeriod({ item });
-        }}
+        renderItem={renderItem}
         ListHeaderComponent={renderDaySelector}
         ListEmptyComponent={
           <EmptyState
             icon="calendar"
             title="No Classes"
-            description={`No classes scheduled for ${DAYS[selectedDay]}.`}
+            description={`No classes scheduled for ${DAY_FULL_MAP[selectedDayId]}.`}
           />
         }
         contentContainerStyle={styles.listContent}
@@ -327,17 +291,11 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     ...shadows.sm,
   },
-  periodCardCurrent: {
-    borderWidth: 2,
-    borderColor: colors.primary,
-  },
   periodIndicator: {
     width: 4,
   },
-  periodTime: {
-    width: 55,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.sm,
+  periodNumber: {
+    width: 40,
     alignItems: 'center',
     justifyContent: 'center',
     borderRightWidth: 1,
@@ -368,10 +326,6 @@ const styles = StyleSheet.create({
   },
   metaText: {
     marginLeft: spacing.xs,
-  },
-  periodNumber: {
-    paddingHorizontal: spacing.md,
-    justifyContent: 'center',
   },
   breakCard: {
     flexDirection: 'row',

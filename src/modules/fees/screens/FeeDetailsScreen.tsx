@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Alert,
   TouchableOpacity,
+  Linking,
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import {
@@ -19,16 +20,21 @@ import {
   ListTemplate,
 } from '../../../design-system';
 import { useAuth } from '../../../core/auth';
+import { ROUTES } from '../../../core/constants';
 import { useFeeDetails, useFeeSelection, usePaymentHistory } from '../hooks';
+import { usePayOnline } from '../hooks/usePayOnline';
 import { FeeItemCard, PaymentSummaryBar } from '../components';
 
 type TabType = 'pending' | 'history';
 
 export const FeeDetailsScreen: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const { students, selectedStudentId, selectStudent } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>('pending');
+
+  // Payment initiation
+  const { initiatePayment, isProcessing, error: paymentError } = usePayOnline();
 
   // Fetch fee details
   const {
@@ -99,22 +105,58 @@ export const FeeDetailsScreen: React.FC = () => {
       return;
     }
 
-    // Navigate to payment screen with selected fees
     Alert.alert(
       'Proceed to Payment',
-      `You are about to pay ₹${selectedAmount.toLocaleString('en-IN')} for ${selectedCount} fee(s).`,
+      `You are about to pay \u20B9${selectedAmount.toLocaleString('en-IN')} for ${selectedCount} fee(s).`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Continue',
-          onPress: () => {
-            // TODO: Navigate to payment gateway
-            console.log('Selected fees for payment:', selectedFees);
+          onPress: async () => {
+            try {
+              const result = await initiatePayment(selectedFees, selectedAmount);
+
+              if (result.paymentFlowType === 'INTENT') {
+                // UPI Intent flow: open PhonePe/UPI app directly
+                const canOpen = await Linking.canOpenURL(result.redirectUrl);
+                if (canOpen) {
+                  // Navigate to processing screen first, then open UPI app
+                  navigation.navigate(ROUTES.PAYMENT_PROCESSING, {
+                    orderId: result.orderId,
+                    merchantId: result.merchantId,
+                    amount: selectedAmount,
+                  });
+                  await Linking.openURL(result.redirectUrl);
+                } else {
+                  // Fallback: try WebView if UPI app not available
+                  navigation.navigate(ROUTES.PAYMENT_WEBVIEW, {
+                    redirectUrl: result.redirectUrl,
+                    orderId: result.orderId,
+                    merchantId: result.merchantId,
+                    amount: selectedAmount,
+                  });
+                }
+              } else {
+                // PG_CHECKOUT flow: open in WebView
+                navigation.navigate(ROUTES.PAYMENT_WEBVIEW, {
+                  redirectUrl: result.redirectUrl,
+                  orderId: result.orderId,
+                  merchantId: result.merchantId,
+                  amount: selectedAmount,
+                });
+              }
+            } catch {
+              Alert.alert(
+                'Payment Error',
+                paymentError || 'Unable to initiate payment. Please try again.',
+                [{ text: 'OK' }]
+              );
+            }
           },
         },
       ]
     );
-  }, [canProceedToPayment, selectedAmount, selectedCount, selectedFees]);
+  }, [canProceedToPayment, selectedAmount, selectedCount, selectedFees, initiatePayment, navigation, paymentError]);
 
   const handleFeePress = useCallback(
     (feeheadId: number) => {
@@ -357,7 +399,8 @@ export const FeeDetailsScreen: React.FC = () => {
           totalFees={fees.length}
           selectedAmount={selectedAmount}
           onPayPress={handlePayPress}
-          disabled={!canProceedToPayment}
+          disabled={!canProceedToPayment || isProcessing}
+          isProcessing={isProcessing}
         />
       )}
     </ListTemplate>

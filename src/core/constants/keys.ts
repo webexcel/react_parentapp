@@ -27,4 +27,5 @@ export const QUERY_KEYS = {
   STUDENT_PHOTO: 'studentPhoto',
   GALLERY: 'gallery',
   LEAVE_LETTER: 'leaveLetter',
+  TIMETABLE: 'timetable',
 } as const;

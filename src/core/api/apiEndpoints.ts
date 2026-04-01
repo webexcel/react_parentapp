@@ -53,8 +53,8 @@ export const API_ENDPOINTS = {
 
   // Marks/Report Card
   MARKS: {
-    GET_BY_ADNO: '/reportcard/getMarksOnAdno',
-    SELECT_EXAM_NAME: '/reportcard/selectExamName',
+    GET_BY_ADNO: '/reportCard/getMarksOnAdno',
+    SELECT_EXAM_NAME: '/reportCard/selectExamName',
     GET_TERM_REPORTCARD: '/reportCard/getTermReportcardAdno',
   },
 
@@ -87,9 +87,9 @@ export const API_ENDPOINTS = {
 
   // Leave Letter - Request leaves for students
   LEAVE_LETTER: {
-    GET: '/leaveletter/getLeaveRequest',
-    INSERT: '/leaveletter/insertLeaveRequest',
-    UPDATE: '/leaveletter/updateLeaveRequest',
+    GET: '/leaveLetter/getLeaveRequest',
+    INSERT: '/leaveLetter/insertLeaveRequest',
+    UPDATE: '/leaveLetter/updateLeaveRequest',
     DELETE: '/leaveLetter/deleteLeaveRequest',
   },
 

@@ -170,7 +170,7 @@ export const LeaveLetterScreen: React.FC = () => {
       students={students}
       selectedStudentId={selectedStudentId || ''}
       onSelectStudent={handleSelectStudent}>
-      {(isLoading || isFetching) && !refreshing ? (
+      {isLoading && !refreshing ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
           <Text variant="body" color="secondary" style={{marginTop: spacing.md}}>

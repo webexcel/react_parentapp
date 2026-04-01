@@ -143,7 +143,13 @@ const defaultFeatures: BrandFeatures = {
     fees: { enabled: true, showPaymentGateway: false },
     calendar: { enabled: true },
     gallery: { enabled: true },
-    timetable: { enabled: true },
+    timetable: {
+      enabled: true,
+      breaks: [
+        { afterPeriod: 2, label: 'Short Break', startTime: '10:00', endTime: '10:15' },
+        { afterPeriod: 4, label: 'Lunch Break', startTime: '11:45', endTime: '12:30' },
+      ],
+    },
     chat: { enabled: false },
     profile: { enabled: true },
     parentMessage: { enabled: true },
