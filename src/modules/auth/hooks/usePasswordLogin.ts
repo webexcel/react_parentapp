@@ -101,7 +101,7 @@ export const usePasswordLogin = (): UsePasswordLoginReturn => {
                 };
             }
         } catch (err: any) {
-            const errorMessage = err.response?.data?.message || 'Login failed. Please try again.';
+            const errorMessage = err.response?.data?.message || err.message || 'Login failed. Please try again.';
             setError(errorMessage);
             return {
                 success: false,

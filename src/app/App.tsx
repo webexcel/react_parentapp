@@ -5,6 +5,7 @@ import {StyleSheet, Alert} from 'react-native';
 import {AppProviders} from './AppProviders';
 import {Navigation} from './Navigation';
 import {fcmService} from '../core/notifications';
+import crashlytics from '@react-native-firebase/crashlytics';
 import {SplashScreen} from '../design-system/atoms';
 import {ForceUpdateScreen} from '../design-system/organisms';
 import {useForceUpdate} from '../core/hooks/useForceUpdate';
@@ -37,6 +38,13 @@ const AppContent = () => {
     };
 
     initFCM();
+
+    crashlytics().log('App opened');
+    const previousHandler = ErrorUtils.getGlobalHandler();
+    ErrorUtils.setGlobalHandler((error, isFatal) => {
+      crashlytics().recordError(error);
+      previousHandler(error, isFatal);
+    });
 
     return () => {
       fcmService.cleanup();

@@ -49,6 +49,14 @@ apiClient.interceptors.response.use(
     return response;
   },
   async (error: AxiosError) => {
+    if (!error.response) {
+      const isTimeout = error.code === 'ECONNABORTED';
+      error.message = isTimeout
+        ? 'Network is too slow. Please check your internet connection.'
+        : 'Please enable internet to access the app.';
+      console.error('❌ NETWORK ERROR:', error.message);
+      return Promise.reject(error);
+    }
     // Don't log 400 errors as errors - backend often returns 400 for "no data" scenarios
     // These are handled gracefully by individual API services
     if (error.response?.status === 400) {

@@ -133,7 +133,7 @@ export const useOtpVerification = (): UseOtpVerificationReturn => {
         };
       }
     } catch (err: any) {
-      const errorMessage = err.response?.data?.message || 'Verification failed. Please try again.';
+      const errorMessage = err.response?.data?.message || err.message || 'Verification failed. Please try again.';
       setError(errorMessage);
       return {
         success: false,

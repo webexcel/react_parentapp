@@ -5,7 +5,7 @@ import {
   AuthTemplate,
   Text,
   Button,
-  OtpInput,
+  Input,
   colors,
   spacing,
 } from '../../../design-system';
@@ -23,7 +23,7 @@ export const OtpScreen: React.FC = () => {
   const route = useRoute<OtpScreenRouteProp>();
   const { mobileNumber, installId } = route.params;
 
-  const [otp, setOtp] = useState('');
+  const [credential, setCredential] = useState('');
   const [countdown, setCountdown] = useState(30);
   const [canResend, setCanResend] = useState(false);
 
@@ -41,16 +41,16 @@ export const OtpScreen: React.FC = () => {
   }, [countdown]);
 
   const handleVerify = async () => {
-    if (otp.length !== 4) {
-      Alert.alert('Invalid OTP', 'Please enter the 4-digit OTP');
+    const value = credential.trim();
+    if (!value) {
+      Alert.alert('Required', 'Please enter your OTP, password, or admission number');
       return;
     }
 
-    const result = await verifyOtp(mobileNumber, otp, installId);
+    const result = await verifyOtp(mobileNumber, value, installId);
     if (!result.success) {
-      Alert.alert('Verification Failed', result.message || 'Invalid OTP');
+      Alert.alert('Verification Failed', result.message || 'Invalid credentials');
     }
-    // If success, AuthContext will update and navigation will handle the redirect
   };
 
   const handleResend = async () => {
@@ -58,7 +58,7 @@ export const OtpScreen: React.FC = () => {
 
     const result = await sendOtp(mobileNumber);
     if (result.success) {
-      setOtp('');
+      setCredential('');
       setCountdown(30);
       setCanResend(false);
       Alert.alert('OTP Sent', 'A new OTP has been sent to your mobile number');
@@ -70,10 +70,10 @@ export const OtpScreen: React.FC = () => {
   const header = (
     <View style={styles.headerContainer}>
       <Text variant="h2" center>
-        Verify OTP
+        Verify
       </Text>
       <Text variant="body" color="secondary" center style={styles.subtitle}>
-        Enter the 4-digit code sent to
+        Login with OTP, password, or admission number for
       </Text>
       <Text variant="body" semibold center style={styles.mobileNumber}>
         +91 {mobileNumber}
@@ -84,25 +84,23 @@ export const OtpScreen: React.FC = () => {
   return (
     <AuthTemplate header={header}>
       <View style={styles.formContainer}>
-        <OtpInput
-          value={otp}
-          onChange={setOtp}
-          length={4}
-          error={!!error}
+        <Input
+          label="OTP / Password / Admission No."
+          value={credential}
+          onChangeText={setCredential}
+          placeholder="Enter OTP, password, or admission number"
+          autoCapitalize="none"
+          autoCorrect={false}
+          secureTextEntry
+          error={error || undefined}
           autoFocus
         />
 
-        {error && (
-          <Text variant="caption" color="error" center style={styles.error}>
-            {error}
-          </Text>
-        )}
-
         <Button
-          title="Verify OTP"
+          title="Verify"
           onPress={handleVerify}
           loading={isLoading}
-          disabled={otp.length !== 4 || isLoading}
+          disabled={!credential.trim() || isLoading}
           fullWidth
           style={styles.button}
         />
@@ -147,9 +145,6 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     marginTop: spacing.xl,
-  },
-  error: {
-    marginTop: spacing.base,
   },
   button: {
     marginTop: spacing['2xl'],

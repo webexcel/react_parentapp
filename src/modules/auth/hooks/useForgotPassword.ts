@@ -21,7 +21,7 @@ export const useForgotPassword = (): UseForgotPasswordReturn => {
       };
     } catch (err: any) {
       const errorMessage =
-        err.response?.data?.message || 'Something went wrong. Please try again.';
+        err.response?.data?.message || err.message || 'Something went wrong. Please try again.';
       return {
         success: false,
         message: errorMessage,

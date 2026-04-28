@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Alert } from 'react-native';
 import { authService } from '../../../core/auth/authService';
 
 interface UseLoginReturn {
@@ -35,17 +34,7 @@ export const useLogin = (): UseLoginReturn => {
         };
       }
     } catch (err: any) {
-      // Show detailed error for debugging
-      const debugInfo = `
-Error: ${err.message}
-Status: ${err.response?.status || 'N/A'}
-Data: ${JSON.stringify(err.response?.data || {})}
-URL: ${err.config?.baseURL}${err.config?.url}
-Request: ${JSON.stringify(err.config?.data || {})}
-      `.trim();
-      Alert.alert('Debug Error', debugInfo);
-
-      const errorMessage = err.response?.data?.message || 'Something went wrong. Please try again.';
+      const errorMessage = err.response?.data?.message || err.message || 'Something went wrong. Please try again.';
       setError(errorMessage);
       return {
         success: false,
