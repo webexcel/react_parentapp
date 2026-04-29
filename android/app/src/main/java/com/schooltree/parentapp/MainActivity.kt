@@ -11,7 +11,8 @@ class MainActivity : ReactActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     // Switch from SplashTheme to AppTheme before React Native renders
     setTheme(R.style.AppTheme)
-    super.onCreate(savedInstanceState)
+    // Pass null to avoid react-native-screens fragment restoration crash on process death
+    super.onCreate(null)
   }
 
   /**

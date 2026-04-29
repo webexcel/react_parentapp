@@ -72,8 +72,8 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 8
-        versionName "1.0.2"
+        versionCode 9
+        versionName "1.0.3"
 
         // Default BuildConfig fields (overridden by flavors)
         buildConfigField "String", "BRAND_ID", "\"crescent\""
