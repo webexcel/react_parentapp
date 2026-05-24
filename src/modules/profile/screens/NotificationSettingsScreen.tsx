@@ -95,7 +95,6 @@ export const NotificationSettingsScreen: React.FC = () => {
       const currentSettings = await getNotificationSettings();
       setSettings(currentSettings);
     } catch (error) {
-      console.error('Error loading notification settings:', error);
       Alert.alert('Error', 'Failed to load notification settings');
     } finally {
       setLoading(false);
@@ -134,7 +133,6 @@ export const NotificationSettingsScreen: React.FC = () => {
       if (settings) {
         setSettings({ ...settings, [key]: !value });
       }
-      console.error('Error updating notification setting:', error);
       Alert.alert('Error', 'Failed to update notification setting');
     }
   };

@@ -141,14 +141,6 @@ export const MarksScreen: React.FC = () => {
   );
 
   // Get report card URL - examgrpid from student (source of truth), term_type from exam
-  console.log('Report Card Debug:', {
-    admissionNo: selectedStudent?.admissionNo,
-    classId: Number(classId),
-    examgrpid: selectedStudent?.examgrpid,
-    yearId: selectedExam?.year_id,
-    termType: selectedExam?.term_type,
-  });
-
   const {
     reportCardUrl,
     isAvailable: isReportCardAvailable,

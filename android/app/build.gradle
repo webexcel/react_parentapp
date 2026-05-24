@@ -10,22 +10,92 @@ apply plugin: "com.google.firebase.crashlytics"
  * Maps each flavor+buildType combination to its environment file
  */
 project.ext.envConfigFiles = [
+    aadhithyadebug: "brands/aadhithya/env/.env.development",
+    aadhithyarelease: "brands/aadhithya/env/.env.production",
     aaimathajidebug: "brands/aaimathaji/env/.env.development",
     aaimathajirelease: "brands/aaimathaji/env/.env.production",
+    alphacbsedebug: "brands/alphacbse/env/.env.development",
+    alphacbserelease: "brands/alphacbse/env/.env.production",
+    alphamatdebug: "brands/alphamat/env/.env.development",
+    alphamatrelease: "brands/alphamat/env/.env.production",
+    alphatechnodebug: "brands/alphatechno/env/.env.development",
+    alphatechnorelease: "brands/alphatechno/env/.env.production",
+    avldebug: "brands/avl/env/.env.development",
+    avlrelease: "brands/avl/env/.env.production",
+    balakrishnadebug: "brands/balakrishna/env/.env.development",
+    balakrishnarelease: "brands/balakrishna/env/.env.production",
     bsschooldebug: "brands/bsschool/env/.env.development",
     bsschoolrelease: "brands/bsschool/env/.env.production",
+    carmelnpdebug: "brands/carmelnp/env/.env.development",
+    carmelnprelease: "brands/carmelnp/env/.env.production",
     crescentdebug: "brands/crescent/env/.env.development",
     crescentrelease: "brands/crescent/env/.env.production",
+    csistthomasdebug: "brands/csistthomas/env/.env.development",
+    csistthomasrelease: "brands/csistthomas/env/.env.production",
+    doondebug: "brands/doon/env/.env.development",
+    doonrelease: "brands/doon/env/.env.production",
+    glorydebug: "brands/glory/env/.env.development",
+    gloryrelease: "brands/glory/env/.env.production",
+    greenworldschooldebug: "brands/greenworldschool/env/.env.development",
+    greenworldschoolrelease: "brands/greenworldschool/env/.env.production",
+    holyangelsdebug: "brands/holyangels/env/.env.development",
+    holyangelsrelease: "brands/holyangels/env/.env.production",
+    holycresentmatricdebug: "brands/holycresentmatric/env/.env.development",
+    holycresentmatricrelease: "brands/holycresentmatric/env/.env.production",
+    holycresentnazdebug: "brands/holycresentnaz/env/.env.development",
+    holycresentnazrelease: "brands/holycresentnaz/env/.env.production",
+    holycresentsridebug: "brands/holycresentsri/env/.env.development",
+    holycresentsrirelease: "brands/holycresentsri/env/.env.production",
+    holycresentthirudebug: "brands/holycresentthiru/env/.env.development",
+    holycresentthirurelease: "brands/holycresentthiru/env/.env.production",
+    infantdebug: "brands/infant/env/.env.development",
+    infantrelease: "brands/infant/env/.env.production",
+    joshuadebug: "brands/joshua/env/.env.development",
+    joshuarelease: "brands/joshua/env/.env.production",
+    kalaimagaldebug: "brands/kalaimagal/env/.env.development",
+    kalaimagalrelease: "brands/kalaimagal/env/.env.production",
+    kamalanehrudebug: "brands/kamalanehru/env/.env.development",
+    kamalanehrurelease: "brands/kamalanehru/env/.env.production",
     littleflowerdebug: "brands/littleflower/env/.env.development",
     littleflowerrelease: "brands/littleflower/env/.env.production",
+    measidebug: "brands/measi/env/.env.development",
+    measirelease: "brands/measi/env/.env.production",
+    mountcarmeldebug: "brands/mountcarmel/env/.env.development",
+    mountcarmelrelease: "brands/mountcarmel/env/.env.production",
+    mountsenodebug: "brands/mountseno/env/.env.development",
+    mountsenorelease: "brands/mountseno/env/.env.production",
+    nationallotusdebug: "brands/nationallotus/env/.env.development",
+    nationallotusrelease: "brands/nationallotus/env/.env.production",
+    ourladyexceldebug: "brands/ourladyexcel/env/.env.development",
+    ourladyexcelrelease: "brands/ourladyexcel/env/.env.production",
+    periyardebug: "brands/periyar/env/.env.development",
+    periyarrelease: "brands/periyar/env/.env.production",
     psseniordebug: "brands/pssenior/env/.env.development",
     psseniorrelease: "brands/pssenior/env/.env.production",
     railwaybalabhavandebug: "brands/railwaybalabhavan/env/.env.development",
     railwaybalabhavanrelease: "brands/railwaybalabhavan/env/.env.production",
+    rpccbsedebug: "brands/rpccbse/env/.env.development",
+    rpccbserelease: "brands/rpccbse/env/.env.production",
+    rukmanidebug: "brands/rukmani/env/.env.development",
+    rukmanirelease: "brands/rukmani/env/.env.production",
     sivakasidebug: "brands/sivakasi/env/.env.development",
     sivakasirelease: "brands/sivakasi/env/.env.production",
     stdominicsdebug: "brands/stdominics/env/.env.development",
     stdominicsrelease: "brands/stdominics/env/.env.production",
+    templegreendebug: "brands/templegreen/env/.env.development",
+    templegreenrelease: "brands/templegreen/env/.env.production",
+    templeparkdebug: "brands/templepark/env/.env.development",
+    templeparkrelease: "brands/templepark/env/.env.production",
+    udhayamglobaldebug: "brands/udhayamglobal/env/.env.development",
+    udhayamglobalrelease: "brands/udhayamglobal/env/.env.production",
+    venkateshwaradebug: "brands/venkateshwara/env/.env.development",
+    venkateshwararelease: "brands/venkateshwara/env/.env.production",
+    vidhyaratnadebug: "brands/vidhyaratna/env/.env.development",
+    vidhyaratnarelease: "brands/vidhyaratna/env/.env.production",
+    vnrvivekanandadebug: "brands/vnrvivekananda/env/.env.development",
+    vnrvivekanandarelease: "brands/vnrvivekananda/env/.env.production",
+    vsnmatricdebug: "brands/vsnmatric/env/.env.development",
+    vsnmatricrelease: "brands/vsnmatric/env/.env.production",
 ]
 
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
@@ -38,7 +108,7 @@ apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
 react {
     /* Variants */
     // List debuggable variants for all flavors
-    debuggableVariants = ["aaimathajiDebug", "bsschoolDebug", "crescentDebug", "littleflowerDebug", "psseniorDebug", "railwaybalabhavanDebug", "sivakasiDebug", "stdominicsDebug"]
+    debuggableVariants = ["aadhithyaDebug", "aaimathajiDebug", "alphacbseDebug", "alphamatDebug", "alphatechnoDebug", "avlDebug", "balakrishnaDebug", "bsschoolDebug", "carmelnpDebug", "crescentDebug", "csistthomasDebug", "doonDebug", "gloryDebug", "greenworldschoolDebug", "holyangelsDebug", "holycresentmatricDebug", "holycresentnazDebug", "holycresentsriDebug", "holycresentthiruDebug", "infantDebug", "joshuaDebug", "kalaimagalDebug", "kamalanehruDebug", "littleflowerDebug", "measiDebug", "mountcarmelDebug", "mountsenoDebug", "nationallotusDebug", "ourladyexcelDebug", "periyarDebug", "psseniorDebug", "railwaybalabhavanDebug", "rpccbseDebug", "rukmaniDebug", "sivakasiDebug", "stdominicsDebug", "templegreenDebug", "templeparkDebug", "udhayamglobalDebug", "venkateshwaraDebug", "vidhyaratnaDebug", "vnrvivekanandaDebug", "vsnmatricDebug"]
 
     /* Autolinking */
     autolinkLibrariesWithApp()
@@ -91,6 +161,16 @@ android {
     flavorDimensions "brand"
 
     productFlavors {
+        // Sree Aadhithiya School
+        aadhithya {
+            dimension "brand"
+            applicationId "com.schooltree.aadhithya"
+            resValue "string", "app_name", "Sree Aadhithiya School Parent"
+            buildConfigField "String", "BRAND_ID", "\"aadhithya\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"aadhithya\""
+        }
+
         // Sri Aai Mathaji Matriculation School
         aaimathaji {
             dimension "brand"
@@ -99,6 +179,56 @@ android {
             buildConfigField "String", "BRAND_ID", "\"aaimathaji\""
             buildConfigField "String", "AUTH_TYPE", "\"otp\""
             buildConfigField "String", "DB_NAME", "\"aaimathaji\""
+        }
+
+        // Alpha International School
+        alphacbse {
+            dimension "brand"
+            applicationId "com.schooltree.alphaInternational"
+            resValue "string", "app_name", "Alpha International School Parent"
+            buildConfigField "String", "BRAND_ID", "\"alphacbse\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"alpha\""
+        }
+
+        // Alpha Matriculation School
+        alphamat {
+            dimension "brand"
+            applicationId "com.schooltree.alphamatric"
+            resValue "string", "app_name", "Alpha Matriculation School Parent"
+            buildConfigField "String", "BRAND_ID", "\"alphamat\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"alphamat1\""
+        }
+
+        // Alpha Techno School
+        alphatechno {
+            dimension "brand"
+            applicationId "com.schooltree.alpha_techno"
+            resValue "string", "app_name", "Alpha Techno School Parent"
+            buildConfigField "String", "BRAND_ID", "\"alphatechno\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"alpha_techno_school\""
+        }
+
+        // AVL Matriculation Hr. Sec. School
+        avl {
+            dimension "brand"
+            applicationId "com.schooltree.avl"
+            resValue "string", "app_name", "AVL Matriculation Hr. Sec. School Parent"
+            buildConfigField "String", "BRAND_ID", "\"avl\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"avl_school\""
+        }
+
+        // Balakrishna Nursery and Primary School
+        balakrishna {
+            dimension "brand"
+            applicationId "com.schooltree.balakrishna"
+            resValue "string", "app_name", "Balakrishna Nursery and Primary School Parent"
+            buildConfigField "String", "BRAND_ID", "\"balakrishna\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"balakrishna\""
         }
 
         // B.S Nursery & Primary School
@@ -111,6 +241,16 @@ android {
             buildConfigField "String", "DB_NAME", "\"bs_school\""
         }
 
+        // Carmel Nursery and Primary School
+        carmelnp {
+            dimension "brand"
+            applicationId "com.schooltree.carmel_np"
+            resValue "string", "app_name", "Carmel Nursery and Primary School Parent"
+            buildConfigField "String", "BRAND_ID", "\"carmelnp\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"carmel_np\""
+        }
+
         // Crescent Matriculation Girls Hr. Sec. School
         crescent {
             dimension "brand"
@@ -121,6 +261,136 @@ android {
             buildConfigField "String", "DB_NAME", "\"cresent\""
         }
 
+        // CSI St.Thomas Matric School
+        csistthomas {
+            dimension "brand"
+            applicationId "com.schooltree.csi_thomas"
+            resValue "string", "app_name", "CSI St.Thomas Matric School Parent"
+            buildConfigField "String", "BRAND_ID", "\"csistthomas\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"csi_st_thomas\""
+        }
+
+        // Doon Matriculation School
+        doon {
+            dimension "brand"
+            applicationId "com.schooltree.doon"
+            resValue "string", "app_name", "Doon Matriculation School Parent"
+            buildConfigField "String", "BRAND_ID", "\"doon\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"doon\""
+        }
+
+        // Glory Nursery & Primary School
+        glory {
+            dimension "brand"
+            applicationId "com.schooltree.glory"
+            resValue "string", "app_name", "Glory Nursery & Primary School Parent"
+            buildConfigField "String", "BRAND_ID", "\"glory\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"glory\""
+        }
+
+        // Green World Nursery and Primary School
+        greenworldschool {
+            dimension "brand"
+            applicationId "com.schooltree.greenworld"
+            resValue "string", "app_name", "Green World Nursery and Primary School Parent"
+            buildConfigField "String", "BRAND_ID", "\"greenworldschool\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"greenworld\""
+        }
+
+        // Holyangels A.I. School T.Nagar
+        holyangels {
+            dimension "brand"
+            applicationId "com.schooltree.holyangels"
+            resValue "string", "app_name", "Holyangels A.I. School T.Nagar Parent"
+            buildConfigField "String", "BRAND_ID", "\"holyangels\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"angels_online\""
+        }
+
+        // Holy Cresent Matric Hr Sec School
+        holycresentmatric {
+            dimension "brand"
+            applicationId "com.schooltree.holy_cresent_pm"
+            resValue "string", "app_name", "Holy Cresent Matric Hr Sec School Parent"
+            buildConfigField "String", "BRAND_ID", "\"holycresentmatric\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"holycrescent\""
+        }
+
+        // Cambridge School, Nazarathpet
+        holycresentnaz {
+            dimension "brand"
+            applicationId "com.schooltree.holyCresent_nazratpet"
+            resValue "string", "app_name", "Cambridge School, Nazarathpet Parent"
+            buildConfigField "String", "BRAND_ID", "\"holycresentnaz\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"holycrescent_naz\""
+        }
+
+        // Cambridge School Sriperambudur
+        holycresentsri {
+            dimension "brand"
+            applicationId "com.schooltree.holycresent_Sriperambudur"
+            resValue "string", "app_name", "Cambridge School Sriperambudur Parent"
+            buildConfigField "String", "BRAND_ID", "\"holycresentsri\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"holycresent_sri\""
+        }
+
+        // Cambridge School Thirumazhisai
+        holycresentthiru {
+            dimension "brand"
+            applicationId "com.schooltree.holy_cresent_thirumazhisai"
+            resValue "string", "app_name", "Cambridge School Thirumazhisai Parent"
+            buildConfigField "String", "BRAND_ID", "\"holycresentthiru\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"holycrescent_thiru\""
+        }
+
+        // Infant Pre Matric School
+        infant {
+            dimension "brand"
+            applicationId "com.schooltree.infant"
+            resValue "string", "app_name", "Infant Pre Matric School Parent"
+            buildConfigField "String", "BRAND_ID", "\"infant\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"an_infant\""
+        }
+
+        // Joshua Matriculation School
+        joshua {
+            dimension "brand"
+            applicationId "com.schooltree.joshua"
+            resValue "string", "app_name", "Joshua Matriculation School Parent"
+            buildConfigField "String", "BRAND_ID", "\"joshua\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"joshua\""
+        }
+
+        // Kalaimagal Matric Hr Sec School
+        kalaimagal {
+            dimension "brand"
+            applicationId "com.schooltree.kalai"
+            resValue "string", "app_name", "Kalaimagal Matric Hr Sec School Parent"
+            buildConfigField "String", "BRAND_ID", "\"kalaimagal\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"kalaimagal_thiru\""
+        }
+
+        // Kamala Nehru Nursery & Primary
+        kamalanehru {
+            dimension "brand"
+            applicationId "com.schooltree.kamala_nehru"
+            resValue "string", "app_name", "Kamala Nehru Nursery & Primary Parent"
+            buildConfigField "String", "BRAND_ID", "\"kamalanehru\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"kamala_nehru\""
+        }
+
         // Little Flower Nursery and Primary School
         littleflower {
             dimension "brand"
@@ -129,6 +399,66 @@ android {
             buildConfigField "String", "BRAND_ID", "\"littleflower\""
             buildConfigField "String", "AUTH_TYPE", "\"otp\""
             buildConfigField "String", "DB_NAME", "\"little_flowers\""
+        }
+
+        // Measi Matric. Hr. Sec. School
+        measi {
+            dimension "brand"
+            applicationId "com.schooltree.measi"
+            resValue "string", "app_name", "Measi Matric. Hr. Sec. School Parent"
+            buildConfigField "String", "BRAND_ID", "\"measi\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"measi\""
+        }
+
+        // Mount Carmel Nursery and Primary School
+        mountcarmel {
+            dimension "brand"
+            applicationId "com.schooltree.carmel"
+            resValue "string", "app_name", "Mount Carmel Nursery and Primary School Parent"
+            buildConfigField "String", "BRAND_ID", "\"mountcarmel\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"mount_carmel\""
+        }
+
+        // Mount Senoria School
+        mountseno {
+            dimension "brand"
+            applicationId "com.schooltree.mount_seno"
+            resValue "string", "app_name", "Mount Senoria School Parent"
+            buildConfigField "String", "BRAND_ID", "\"mountseno\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"mount_senoria\""
+        }
+
+        // National Lotus Hr Sec School
+        nationallotus {
+            dimension "brand"
+            applicationId "com.schooltree.lotus"
+            resValue "string", "app_name", "National Lotus Hr Sec School Parent"
+            buildConfigField "String", "BRAND_ID", "\"nationallotus\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"national_lotus\""
+        }
+
+        // Our lady School of Excellence
+        ourladyexcel {
+            dimension "brand"
+            applicationId "com.schooltree.ourlady"
+            resValue "string", "app_name", "Our lady School of Excellence Parent"
+            buildConfigField "String", "BRAND_ID", "\"ourladyexcel\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"our_lady\""
+        }
+
+        // Periyar Matric. Hr Sec. School
+        periyar {
+            dimension "brand"
+            applicationId "com.schooltree.periyar"
+            resValue "string", "app_name", "Periyar Matric. Hr Sec. School Parent"
+            buildConfigField "String", "BRAND_ID", "\"periyar\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"periyar\""
         }
 
         // P.S. Senior Secondary School
@@ -151,6 +481,26 @@ android {
             buildConfigField "String", "DB_NAME", "\"rlybalabhavans\""
         }
 
+        // Rpc Public School (Cbse)
+        rpccbse {
+            dimension "brand"
+            applicationId "com.schooltree.rpc_cbse"
+            resValue "string", "app_name", "Rpc Public School (Cbse) Parent"
+            buildConfigField "String", "BRAND_ID", "\"rpccbse\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"revoor_cbse\""
+        }
+
+        // Sri Rukmani Vidyalaya School
+        rukmani {
+            dimension "brand"
+            applicationId "com.schooltree.rukmaniVidyalaya"
+            resValue "string", "app_name", "Sri Rukmani Vidyalaya School Parent"
+            buildConfigField "String", "BRAND_ID", "\"rukmani\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"rukmani\""
+        }
+
         // Sivakasi Hindu Nadar Matriculation Higher Secondary School
         sivakasi {
             dimension "brand"
@@ -165,10 +515,80 @@ android {
         stdominics {
             dimension "brand"
             applicationId "com.schooltree.dominics"
-            resValue "string", "app_name", "St. Dominic\\'s anglo-indian Hr. Sec. School Parent"
+            resValue "string", "app_name", "St. Dominic's anglo-indian Hr. Sec. School Parent"
             buildConfigField "String", "BRAND_ID", "\"stdominics\""
             buildConfigField "String", "AUTH_TYPE", "\"otp\""
             buildConfigField "String", "DB_NAME", "\"dominic\""
+        }
+
+        // P.S. Temple Green Vidyashram
+        templegreen {
+            dimension "brand"
+            applicationId "com.schooltree.templegreen"
+            resValue "string", "app_name", "P.S. Temple Green Vidyashram Parent"
+            buildConfigField "String", "BRAND_ID", "\"templegreen\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"templegreen\""
+        }
+
+        // Temple Park School
+        templepark {
+            dimension "brand"
+            applicationId "com.schooltree.templepark"
+            resValue "string", "app_name", "Temple Park School Parent"
+            buildConfigField "String", "BRAND_ID", "\"templepark\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"templepark\""
+        }
+
+        // Udhayam Global School
+        udhayamglobal {
+            dimension "brand"
+            applicationId "com.schooltree.udhayamgs"
+            resValue "string", "app_name", "Udhayam Global School Parent"
+            buildConfigField "String", "BRAND_ID", "\"udhayamglobal\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"udhayamgs\""
+        }
+
+        // Venkateshwara Matric School
+        venkateshwara {
+            dimension "brand"
+            applicationId "com.schooltree.venkateshwara"
+            resValue "string", "app_name", "Venkateshwara Matric School Parent"
+            buildConfigField "String", "BRAND_ID", "\"venkateshwara\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"venkateshwara\""
+        }
+
+        // Vidhyaratna School
+        vidhyaratna {
+            dimension "brand"
+            applicationId "com.schooltree.vidhyaratna"
+            resValue "string", "app_name", "Vidhyaratna School Parent"
+            buildConfigField "String", "BRAND_ID", "\"vidhyaratna\""
+            buildConfigField "String", "AUTH_TYPE", "\"otp\""
+            buildConfigField "String", "DB_NAME", "\"vidhyaratna\""
+        }
+
+        // VNR Vivekananda Vidyalaya School
+        vnrvivekananda {
+            dimension "brand"
+            applicationId "com.schooltree.vnr_vivekananda"
+            resValue "string", "app_name", "VNR Vivekananda Vidyalaya School Parent"
+            buildConfigField "String", "BRAND_ID", "\"vnrvivekananda\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"vnr_vivekananda\""
+        }
+
+        // V.S.N Mat. Hr. Sec. School
+        vsnmatric {
+            dimension "brand"
+            applicationId "com.schooltree.vsnmatric"
+            resValue "string", "app_name", "V.S.N Mat. Hr. Sec. School Parent"
+            buildConfigField "String", "BRAND_ID", "\"vsnmatric\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"vsnmatric\""
         }
 
         // Add more school flavors using: npm run school:add
@@ -199,6 +619,246 @@ android {
             keyAlias 'stdominics'
             keyPassword 'stdominics123'
         }
+        railwaybalabhavanRelease {
+            storeFile file('../../brands/railwaybalabhavan/assets/railwaybalabhavan.jks')
+            storePassword 'railwaybalabhavan123'
+            keyAlias 'railwaybalabhavan'
+            keyPassword 'railwaybalabhavan123'
+        }
+        greenworldschoolRelease {
+            storeFile file('../../brands/greenworldschool/assets/greenworld_school.jks')
+            storePassword 'greenworld123'
+            keyAlias 'greenworld'
+            keyPassword 'greenworld123'
+        }
+        udhayamglobalRelease {
+            storeFile file('../../brands/udhayamglobal/assets/udhayamglobal.jks')
+            storePassword 'udhayamglobal123'
+            keyAlias 'udhayamglobal'
+            keyPassword 'udhayamglobal123'
+        }
+        vidhyaratnaRelease {
+            storeFile file('../../brands/vidhyaratna/assets/vidhyaratna.jks')
+            storePassword 'vidhyaratna123'
+            keyAlias 'vidhyaratna'
+            keyPassword 'vidhyaratna123'
+        }
+        vsnmatricRelease {
+            storeFile file('../../brands/vsnmatric/assets/vsnmatric.jks')
+            storePassword 'vsnmatric123'
+            keyAlias 'vsnmatric'
+            keyPassword 'vsnmatric123'
+        }
+        infantRelease {
+            storeFile file('../../brands/infant/assets/infant.jks')
+            storePassword 'infant123'
+            keyAlias 'infant'
+            keyPassword 'infant123'
+        }
+        aadhithyaRelease {
+            storeFile file('../../brands/aadhithya/assets/aadhithya.jks')
+            storePassword 'aadhithya123'
+            keyAlias 'aadhithya'
+            keyPassword 'aadhithya123'
+        }
+        alphacbseRelease {
+            storeFile file('../../brands/alphacbse/assets/alphacbse.jks')
+            storePassword 'alphacbse123'
+            keyAlias 'alphacbse'
+            keyPassword 'alphacbse123'
+        }
+        alphamatRelease {
+            storeFile file('../../brands/alphamat/assets/alphamat.jks')
+            storePassword 'alphamat123'
+            keyAlias 'alphamat'
+            keyPassword 'alphamat123'
+        }
+        alphatechnoRelease {
+            storeFile file('../../brands/alphatechno/assets/alphatechno.jks')
+            storePassword 'alphatechno123'
+            keyAlias 'alphatechno'
+            keyPassword 'alphatechno123'
+        }
+        avlRelease {
+            storeFile file('../../brands/avl/assets/avl.jks')
+            storePassword 'avl123'
+            keyAlias 'avl'
+            keyPassword 'avl123'
+        }
+        balakrishnaRelease {
+            storeFile file('../../brands/balakrishna/assets/balakrishna.jks')
+            storePassword 'balakrishna123'
+            keyAlias 'balakrishna'
+            keyPassword 'balakrishna123'
+        }
+        carmelnpRelease {
+            storeFile file('../../brands/carmelnp/assets/carmelnp.jks')
+            storePassword 'carmelnp123'
+            keyAlias 'carmelnp'
+            keyPassword 'carmelnp123'
+        }
+        crescentRelease {
+            storeFile file('../../brands/crescent/assets/crescent.jks')
+            storePassword 'crescent123'
+            keyAlias 'crescent'
+            keyPassword 'crescent123'
+        }
+        csistthomasRelease {
+            storeFile file('../../brands/csistthomas/assets/csistthomas.jks')
+            storePassword 'csistthomas123'
+            keyAlias 'csistthomas'
+            keyPassword 'csistthomas123'
+        }
+        doonRelease {
+            storeFile file('../../brands/doon/assets/doon.jks')
+            storePassword 'doon123'
+            keyAlias 'doon'
+            keyPassword 'doon123'
+        }
+        gloryRelease {
+            storeFile file('../../brands/glory/assets/glory.jks')
+            storePassword 'glory123'
+            keyAlias 'glory'
+            keyPassword 'glory123'
+        }
+        holyangelsRelease {
+            storeFile file('../../brands/holyangels/assets/holyangels.jks')
+            storePassword 'holyangels123'
+            keyAlias 'holyangels'
+            keyPassword 'holyangels123'
+        }
+        holycresentmatricRelease {
+            storeFile file('../../brands/holycresentmatric/assets/holycresentmatric.jks')
+            storePassword 'holycresentmatric123'
+            keyAlias 'holycresentmatric'
+            keyPassword 'holycresentmatric123'
+        }
+        holycresentnazRelease {
+            storeFile file('../../brands/holycresentnaz/assets/holycresentnaz.jks')
+            storePassword 'holycresentnaz123'
+            keyAlias 'holycresentnaz'
+            keyPassword 'holycresentnaz123'
+        }
+        holycresentsriRelease {
+            storeFile file('../../brands/holycresentsri/assets/holycresentsri.jks')
+            storePassword 'holycresentsri123'
+            keyAlias 'holycresentsri'
+            keyPassword 'holycresentsri123'
+        }
+        holycresentthiruRelease {
+            storeFile file('../../brands/holycresentthiru/assets/holycresentthiru.jks')
+            storePassword 'holycresentthiru123'
+            keyAlias 'holycresentthiru'
+            keyPassword 'holycresentthiru123'
+        }
+        joshuaRelease {
+            storeFile file('../../brands/joshua/assets/joshua.jks')
+            storePassword 'joshua123'
+            keyAlias 'joshua'
+            keyPassword 'joshua123'
+        }
+        kalaimagalRelease {
+            storeFile file('../../brands/kalaimagal/assets/kalaimagal.jks')
+            storePassword 'kalaimagal123'
+            keyAlias 'kalaimagal'
+            keyPassword 'kalaimagal123'
+        }
+        kamalanehruRelease {
+            storeFile file('../../brands/kamalanehru/assets/kamalanehru.jks')
+            storePassword 'kamalanehru123'
+            keyAlias 'kamalanehru'
+            keyPassword 'kamalanehru123'
+        }
+        littleflowerRelease {
+            storeFile file('../../brands/littleflower/assets/littleflower.jks')
+            storePassword 'littleflower123'
+            keyAlias 'littleflower'
+            keyPassword 'littleflower123'
+        }
+        measiRelease {
+            storeFile file('../../brands/measi/assets/measi.jks')
+            storePassword 'measi123'
+            keyAlias 'measi'
+            keyPassword 'measi123'
+        }
+        mountcarmelRelease {
+            storeFile file('../../brands/mountcarmel/assets/mountcarmel.jks')
+            storePassword 'mountcarmel123'
+            keyAlias 'mountcarmel'
+            keyPassword 'mountcarmel123'
+        }
+        mountsenoRelease {
+            storeFile file('../../brands/mountseno/assets/mountseno.jks')
+            storePassword 'mountseno123'
+            keyAlias 'mountseno'
+            keyPassword 'mountseno123'
+        }
+        nationallotusRelease {
+            storeFile file('../../brands/nationallotus/assets/nationallotus.jks')
+            storePassword 'nationallotus123'
+            keyAlias 'nationallotus'
+            keyPassword 'nationallotus123'
+        }
+        ourladyexcelRelease {
+            storeFile file('../../brands/ourladyexcel/assets/ourladyexcel.jks')
+            storePassword 'ourladyexcel123'
+            keyAlias 'ourladyexcel'
+            keyPassword 'ourladyexcel123'
+        }
+        periyarRelease {
+            storeFile file('../../brands/periyar/assets/periyar.jks')
+            storePassword 'periyar123'
+            keyAlias 'periyar'
+            keyPassword 'periyar123'
+        }
+        psseniorRelease {
+            storeFile file('../../brands/pssenior/assets/pssenior.jks')
+            storePassword 'pssenior123'
+            keyAlias 'pssenior'
+            keyPassword 'pssenior123'
+        }
+        rpccbseRelease {
+            storeFile file('../../brands/rpccbse/assets/rpccbse.jks')
+            storePassword 'rpccbse123'
+            keyAlias 'rpccbse'
+            keyPassword 'rpccbse123'
+        }
+        rukmaniRelease {
+            storeFile file('../../brands/rukmani/assets/rukmani.jks')
+            storePassword 'rukmani123'
+            keyAlias 'rukmani'
+            keyPassword 'rukmani123'
+        }
+        sivakasiRelease {
+            storeFile file('../../brands/sivakasi/assets/sivakasi.jks')
+            storePassword 'sivakasi123'
+            keyAlias 'sivakasi'
+            keyPassword 'sivakasi123'
+        }
+        templegreenRelease {
+            storeFile file('../../brands/templegreen/assets/templegreen.jks')
+            storePassword 'templegreen123'
+            keyAlias 'templegreen'
+            keyPassword 'templegreen123'
+        }
+        templeparkRelease {
+            storeFile file('../../brands/templepark/assets/templepark.jks')
+            storePassword 'templepark123'
+            keyAlias 'templepark'
+            keyPassword 'templepark123'
+        }
+        venkateshwaraRelease {
+            storeFile file('../../brands/venkateshwara/assets/venkateshwara.jks')
+            storePassword 'venkateshwara123'
+            keyAlias 'venkateshwara'
+            keyPassword 'venkateshwara123'
+        }
+        vnrvivekanandaRelease {
+            storeFile file('../../brands/vnrvivekananda/assets/vnrvivekananda.jks')
+            storePassword 'vnrvivekananda123'
+            keyAlias 'vnrvivekananda'
+            keyPassword 'vnrvivekananda123'
+        }
     }
 
     buildTypes {
@@ -213,6 +873,46 @@ android {
             productFlavors.bsschool.signingConfig signingConfigs.bsschoolRelease
             productFlavors.aaimathaji.signingConfig signingConfigs.aaimathajiRelease
             productFlavors.stdominics.signingConfig signingConfigs.stdominicsRelease
+            productFlavors.railwaybalabhavan.signingConfig signingConfigs.railwaybalabhavanRelease
+            productFlavors.greenworldschool.signingConfig signingConfigs.greenworldschoolRelease
+            productFlavors.udhayamglobal.signingConfig signingConfigs.udhayamglobalRelease
+            productFlavors.vidhyaratna.signingConfig signingConfigs.vidhyaratnaRelease
+            productFlavors.vsnmatric.signingConfig signingConfigs.vsnmatricRelease
+            productFlavors.infant.signingConfig signingConfigs.infantRelease
+            productFlavors.aadhithya.signingConfig signingConfigs.aadhithyaRelease
+            productFlavors.alphacbse.signingConfig signingConfigs.alphacbseRelease
+            productFlavors.alphamat.signingConfig signingConfigs.alphamatRelease
+            productFlavors.alphatechno.signingConfig signingConfigs.alphatechnoRelease
+            productFlavors.avl.signingConfig signingConfigs.avlRelease
+            productFlavors.balakrishna.signingConfig signingConfigs.balakrishnaRelease
+            productFlavors.carmelnp.signingConfig signingConfigs.carmelnpRelease
+            productFlavors.crescent.signingConfig signingConfigs.crescentRelease
+            productFlavors.csistthomas.signingConfig signingConfigs.csistthomasRelease
+            productFlavors.doon.signingConfig signingConfigs.doonRelease
+            productFlavors.glory.signingConfig signingConfigs.gloryRelease
+            productFlavors.holyangels.signingConfig signingConfigs.holyangelsRelease
+            productFlavors.holycresentmatric.signingConfig signingConfigs.holycresentmatricRelease
+            productFlavors.holycresentnaz.signingConfig signingConfigs.holycresentnazRelease
+            productFlavors.holycresentsri.signingConfig signingConfigs.holycresentsriRelease
+            productFlavors.holycresentthiru.signingConfig signingConfigs.holycresentthiruRelease
+            productFlavors.joshua.signingConfig signingConfigs.joshuaRelease
+            productFlavors.kalaimagal.signingConfig signingConfigs.kalaimagalRelease
+            productFlavors.kamalanehru.signingConfig signingConfigs.kamalanehruRelease
+            productFlavors.littleflower.signingConfig signingConfigs.littleflowerRelease
+            productFlavors.measi.signingConfig signingConfigs.measiRelease
+            productFlavors.mountcarmel.signingConfig signingConfigs.mountcarmelRelease
+            productFlavors.mountseno.signingConfig signingConfigs.mountsenoRelease
+            productFlavors.nationallotus.signingConfig signingConfigs.nationallotusRelease
+            productFlavors.ourladyexcel.signingConfig signingConfigs.ourladyexcelRelease
+            productFlavors.periyar.signingConfig signingConfigs.periyarRelease
+            productFlavors.pssenior.signingConfig signingConfigs.psseniorRelease
+            productFlavors.rpccbse.signingConfig signingConfigs.rpccbseRelease
+            productFlavors.rukmani.signingConfig signingConfigs.rukmaniRelease
+            productFlavors.sivakasi.signingConfig signingConfigs.sivakasiRelease
+            productFlavors.templegreen.signingConfig signingConfigs.templegreenRelease
+            productFlavors.templepark.signingConfig signingConfigs.templeparkRelease
+            productFlavors.venkateshwara.signingConfig signingConfigs.venkateshwaraRelease
+            productFlavors.vnrvivekananda.signingConfig signingConfigs.vnrvivekanandaRelease
         }
     }
 
@@ -222,17 +922,95 @@ android {
      * Place resources in: android/app/src/{brandName}/res/
      */
     sourceSets {
+        aadhithya {
+            res.srcDirs = ['src/aadhithya/res']
+        }
         aaimathaji {
             res.srcDirs = ['src/aaimathaji/res']
+        }
+        alphacbse {
+            res.srcDirs = ['src/alphacbse/res']
+        }
+        alphamat {
+            res.srcDirs = ['src/alphamat/res']
+        }
+        alphatechno {
+            res.srcDirs = ['src/alphatechno/res']
+        }
+        avl {
+            res.srcDirs = ['src/avl/res']
+        }
+        balakrishna {
+            res.srcDirs = ['src/balakrishna/res']
         }
         bsschool {
             res.srcDirs = ['src/bsschool/res']
         }
+        carmelnp {
+            res.srcDirs = ['src/carmelnp/res']
+        }
         crescent {
             res.srcDirs = ['src/crescent/res']
         }
+        csistthomas {
+            res.srcDirs = ['src/csistthomas/res']
+        }
+        doon {
+            res.srcDirs = ['src/doon/res']
+        }
+        glory {
+            res.srcDirs = ['src/glory/res']
+        }
+        greenworldschool {
+            res.srcDirs = ['src/greenworldschool/res']
+        }
+        holyangels {
+            res.srcDirs = ['src/holyangels/res']
+        }
+        holycresentmatric {
+            res.srcDirs = ['src/holycresentmatric/res']
+        }
+        holycresentnaz {
+            res.srcDirs = ['src/holycresentnaz/res']
+        }
+        holycresentsri {
+            res.srcDirs = ['src/holycresentsri/res']
+        }
+        holycresentthiru {
+            res.srcDirs = ['src/holycresentthiru/res']
+        }
+        infant {
+            res.srcDirs = ['src/infant/res']
+        }
+        joshua {
+            res.srcDirs = ['src/joshua/res']
+        }
+        kalaimagal {
+            res.srcDirs = ['src/kalaimagal/res']
+        }
+        kamalanehru {
+            res.srcDirs = ['src/kamalanehru/res']
+        }
         littleflower {
             res.srcDirs = ['src/littleflower/res']
+        }
+        measi {
+            res.srcDirs = ['src/measi/res']
+        }
+        mountcarmel {
+            res.srcDirs = ['src/mountcarmel/res']
+        }
+        mountseno {
+            res.srcDirs = ['src/mountseno/res']
+        }
+        nationallotus {
+            res.srcDirs = ['src/nationallotus/res']
+        }
+        ourladyexcel {
+            res.srcDirs = ['src/ourladyexcel/res']
+        }
+        periyar {
+            res.srcDirs = ['src/periyar/res']
         }
         pssenior {
             res.srcDirs = ['src/pssenior/res']
@@ -240,11 +1018,38 @@ android {
         railwaybalabhavan {
             res.srcDirs = ['src/railwaybalabhavan/res']
         }
+        rpccbse {
+            res.srcDirs = ['src/rpccbse/res']
+        }
+        rukmani {
+            res.srcDirs = ['src/rukmani/res']
+        }
         sivakasi {
             res.srcDirs = ['src/sivakasi/res']
         }
         stdominics {
             res.srcDirs = ['src/stdominics/res']
+        }
+        templegreen {
+            res.srcDirs = ['src/templegreen/res']
+        }
+        templepark {
+            res.srcDirs = ['src/templepark/res']
+        }
+        udhayamglobal {
+            res.srcDirs = ['src/udhayamglobal/res']
+        }
+        venkateshwara {
+            res.srcDirs = ['src/venkateshwara/res']
+        }
+        vidhyaratna {
+            res.srcDirs = ['src/vidhyaratna/res']
+        }
+        vnrvivekananda {
+            res.srcDirs = ['src/vnrvivekananda/res']
+        }
+        vsnmatric {
+            res.srcDirs = ['src/vsnmatric/res']
         }
     }
 }

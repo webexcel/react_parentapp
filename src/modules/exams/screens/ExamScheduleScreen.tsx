@@ -56,11 +56,6 @@ export const ExamScheduleScreen: React.FC = () => {
   const selectedStudent = students.find(s => s.id === selectedStudentId);
   const classId = selectedStudent?.classId;
 
-  console.log('=== EXAM SCHEDULE SCREEN ===');
-  console.log('selectedStudentId:', selectedStudentId);
-  console.log('selectedStudent:', JSON.stringify(selectedStudent));
-  console.log('classId:', classId);
-
   const { examSchedule, isLoading, isFetching, error, refetch } = useExamSchedule(classId);
 
   // Auto-fetch when screen comes into focus

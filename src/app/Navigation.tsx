@@ -29,12 +29,6 @@ import {MarksScreen} from '../modules/marks';
 import {ParentMessagesScreen, SendMessageScreen} from '../modules/parentMessage';
 import {LeaveLetterScreen} from '../modules/leaveLetter';
 
-// Debug: verify components are imported correctly
-if (__DEV__) {
-  console.log('[Navigation] ParentMessagesScreen:', typeof ParentMessagesScreen === 'function' ? 'OK' : 'UNDEFINED!');
-  console.log('[Navigation] SendMessageScreen:', typeof SendMessageScreen === 'function' ? 'OK' : 'UNDEFINED!');
-}
-
 // Stack and Tab navigators
 const AuthStack = createNativeStackNavigator();
 const MainStack = createNativeStackNavigator();
@@ -54,11 +48,6 @@ const AuthNavigator = () => {
         headerShown: false,
       }}>
       <AuthStack.Screen name={ROUTES.LOGIN} component={LoginScreen} />
-
-      {/* Show Password screen if auth type is 'password' or 'both' */}
-      {(authType === 'password' || authType === 'both') && (
-        <AuthStack.Screen name={ROUTES.PASSWORD} component={PasswordScreen} />
-      )}
 
       {/* Show OTP screen if auth type is 'otp' or 'both' */}
       {(authType === 'otp' || authType === 'both') && (
@@ -155,12 +144,6 @@ const TabNavigator = () => {
  */
 const MainNavigator = () => {
   const {isModuleEnabled} = useBrand();
-
-  // Debug: Log which screens are being registered
-  if (__DEV__) {
-    console.log('[MainNavigator] Registering screens...');
-    console.log('[MainNavigator] ParentMessages screen will be registered:', !!ParentMessagesScreen);
-  }
 
   return (
     <MainStack.Navigator

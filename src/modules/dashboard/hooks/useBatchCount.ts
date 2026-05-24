@@ -56,7 +56,6 @@ export const useBatchCount = (studentId?: string): UseBatchCountResult => {
         if (attendanceItem) {
           summary.attendancePercentage = parseFloat(attendanceItem.percentage) || 0;
           summary.todayAttendanceStatus = attendanceItem.today_status || 'Not Marked';
-          // Use absent_days from API as leave count
           summary.leaveCount = parseFloat(attendanceItem.absent_days) || 0;
         }
 

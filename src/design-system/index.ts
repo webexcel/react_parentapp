@@ -53,6 +53,7 @@ export {
   StudentChip,
   StatCard,
   EmptyState,
+  AudioPlayer,
 } from './molecules';
 
 export type {

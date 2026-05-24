@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import {
   View,
   FlatList,
@@ -9,7 +9,10 @@ import {
   Modal,
   RefreshControl,
   ActivityIndicator,
+  Animated,
+  ScrollView,
 } from 'react-native';
+import { PinchGestureHandler, PanGestureHandler, State } from 'react-native-gesture-handler';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import {
   ListTemplate,
@@ -25,8 +28,150 @@ import { useAuth } from '../../../core/auth';
 import { useGallery } from '../hooks/useGallery';
 import { GalleryAlbum, GalleryImage } from '../types/gallery.types';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const IMAGE_SIZE = (SCREEN_WIDTH - spacing.base * 3) / 2;
+
+// --- Zoomable Image for Gallery Viewer ---
+const ZoomableGalleryImage: React.FC<{ uri: string }> = ({ uri }) => {
+  const pinchRef = useRef<any>(null);
+  const panRef = useRef<any>(null);
+
+  const baseScale = useRef(new Animated.Value(1)).current;
+  const pinchScale = useRef(new Animated.Value(1)).current;
+  const scale = Animated.multiply(baseScale, pinchScale);
+
+  const translateX = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(0)).current;
+
+  const lastScale = useRef(1);
+  const lastTranslateX = useRef(0);
+  const lastTranslateY = useRef(0);
+  const lastTap = useRef(0);
+
+  const onPinchEvent = Animated.event(
+    [{ nativeEvent: { scale: pinchScale } }],
+    { useNativeDriver: true },
+  );
+
+  const onPinchStateChange = (event: any) => {
+    if (event.nativeEvent.oldState === State.ACTIVE) {
+      lastScale.current *= event.nativeEvent.scale;
+      if (lastScale.current < 1) lastScale.current = 1;
+      if (lastScale.current > 5) lastScale.current = 5;
+      baseScale.setValue(lastScale.current);
+      pinchScale.setValue(1);
+
+      if (lastScale.current <= 1) {
+        lastTranslateX.current = 0;
+        lastTranslateY.current = 0;
+        translateX.setOffset(0);
+        translateX.setValue(0);
+        translateY.setOffset(0);
+        translateY.setValue(0);
+      }
+    }
+  };
+
+  const onPanEvent = Animated.event(
+    [{ nativeEvent: { translationX: translateX, translationY: translateY } }],
+    { useNativeDriver: true },
+  );
+
+  const onPanStateChange = (event: any) => {
+    if (event.nativeEvent.oldState === State.ACTIVE) {
+      lastTranslateX.current += event.nativeEvent.translationX;
+      lastTranslateY.current += event.nativeEvent.translationY;
+      translateX.setOffset(lastTranslateX.current);
+      translateX.setValue(0);
+      translateY.setOffset(lastTranslateY.current);
+      translateY.setValue(0);
+    }
+  };
+
+  const resetZoom = () => {
+    lastScale.current = 1;
+    lastTranslateX.current = 0;
+    lastTranslateY.current = 0;
+    translateX.setOffset(0);
+    translateY.setOffset(0);
+    Animated.parallel([
+      Animated.spring(baseScale, { toValue: 1, useNativeDriver: true }),
+      Animated.spring(translateX, { toValue: 0, useNativeDriver: true }),
+      Animated.spring(translateY, { toValue: 0, useNativeDriver: true }),
+    ]).start();
+    pinchScale.setValue(1);
+  };
+
+  const zoomInAt = (tapX: number, tapY: number) => {
+    const zoomFactor = 3;
+    const offsetX = tapX - SCREEN_WIDTH / 2;
+    const offsetY = tapY - SCREEN_HEIGHT / 2;
+    const tx = -offsetX * (zoomFactor - 1);
+    const ty = -offsetY * (zoomFactor - 1);
+
+    lastScale.current = zoomFactor;
+    lastTranslateX.current = tx;
+    lastTranslateY.current = ty;
+    translateX.setOffset(tx);
+    translateX.setValue(0);
+    translateY.setOffset(ty);
+    translateY.setValue(0);
+
+    Animated.spring(baseScale, { toValue: zoomFactor, useNativeDriver: true }).start();
+    pinchScale.setValue(1);
+  };
+
+  const onTap = (e: any) => {
+    const now = Date.now();
+    if (now - lastTap.current < 300) {
+      if (lastScale.current > 1) {
+        resetZoom();
+      } else {
+        const { pageX, pageY } = e.nativeEvent;
+        const margin = SCREEN_HEIGHT * 0.15;
+        if (pageY > margin && pageY < SCREEN_HEIGHT - margin) {
+          zoomInAt(pageX, pageY);
+        }
+      }
+    }
+    lastTap.current = now;
+  };
+
+  return (
+    <TouchableOpacity activeOpacity={1} onPress={onTap} style={styles.zoomContainer}>
+      <PinchGestureHandler
+        ref={pinchRef}
+        onGestureEvent={onPinchEvent}
+        onHandlerStateChange={onPinchStateChange}
+        simultaneousHandlers={panRef}
+      >
+        <Animated.View style={styles.zoomContainer}>
+          <PanGestureHandler
+            ref={panRef}
+            onGestureEvent={onPanEvent}
+            onHandlerStateChange={onPanStateChange}
+            simultaneousHandlers={pinchRef}
+            minDist={10}
+            avgTouches
+          >
+            <Animated.View
+              style={[
+                styles.zoomContainer,
+                { transform: [{ scale }, { translateX }, { translateY }] },
+              ]}
+            >
+              <Image
+                source={{ uri }}
+                style={styles.zoomImage}
+                resizeMode="contain"
+              />
+            </Animated.View>
+          </PanGestureHandler>
+        </Animated.View>
+      </PinchGestureHandler>
+    </TouchableOpacity>
+  );
+};
 
 export const GalleryScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -67,7 +212,11 @@ export const GalleryScreen: React.FC = () => {
     setSelectedAlbum(album);
   };
 
+  const [imageViewerIndex, setImageViewerIndex] = useState(0);
+
   const handleImagePress = (image: GalleryImage) => {
+    const index = selectedAlbum?.images.findIndex(i => i.id === image.id) || 0;
+    setImageViewerIndex(index >= 0 ? index : 0);
     setSelectedImage(image);
     setShowImageViewer(true);
   };
@@ -120,6 +269,8 @@ export const GalleryScreen: React.FC = () => {
     []
   );
 
+  const albumImages = selectedAlbum?.images || [];
+
   const renderImageViewer = () => (
     <Modal
       visible={showImageViewer}
@@ -132,21 +283,38 @@ export const GalleryScreen: React.FC = () => {
           <Icon name="close" size={28} color={colors.white} />
         </TouchableOpacity>
 
-        {selectedImage && (
-          <>
-            <Image
-              source={{ uri: selectedImage.uri }}
-              style={styles.fullImage}
-              resizeMode="contain"
-            />
-            {selectedImage.caption && (
-              <View style={styles.captionContainer}>
-                <Text variant="body" style={styles.captionText}>
-                  {selectedImage.caption}
-                </Text>
-              </View>
-            )}
-          </>
+        <ScrollView
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          contentOffset={{ x: imageViewerIndex * SCREEN_WIDTH, y: 0 }}
+          onMomentumScrollEnd={(e) => {
+            const newIndex = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
+            setImageViewerIndex(newIndex);
+            if (albumImages[newIndex]) {
+              setSelectedImage(albumImages[newIndex]);
+            }
+          }}
+        >
+          {albumImages.map((image) => (
+            <ZoomableGalleryImage key={image.id} uri={image.uri} />
+          ))}
+        </ScrollView>
+
+        {/* Caption */}
+        {selectedImage?.caption && (
+          <View style={styles.captionContainer}>
+            <Text variant="body" style={styles.captionText}>
+              {selectedImage.caption}
+            </Text>
+          </View>
+        )}
+
+        {/* Counter */}
+        {albumImages.length > 1 && (
+          <Text variant="caption" style={styles.imageCounter}>
+            {imageViewerIndex + 1} / {albumImages.length}
+          </Text>
         )}
       </View>
     </Modal>
@@ -339,13 +507,29 @@ const styles = StyleSheet.create({
     zIndex: 10,
     padding: spacing.sm,
   },
-  fullImage: {
+  zoomContainer: {
     width: SCREEN_WIDTH,
-    height: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  zoomImage: {
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
+  },
+  imageCounter: {
+    position: 'absolute',
+    bottom: 50,
+    alignSelf: 'center',
+    color: '#FFFFFF',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
   },
   captionContainer: {
     position: 'absolute',
-    bottom: 60,
+    bottom: 80,
     left: 0,
     right: 0,
     padding: spacing.base,

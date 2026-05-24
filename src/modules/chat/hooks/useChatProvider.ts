@@ -29,7 +29,7 @@ export const useChatProvider = () => {
           setProvider(saved);
         }
       } catch (e) {
-        console.error('Failed to load chat provider preference:', e);
+        // Failed to load preference - use default
       } finally {
         setIsLoading(false);
       }
@@ -60,7 +60,7 @@ export const useChatProvider = () => {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, newProvider);
     } catch (e) {
-      console.error('Failed to save provider preference:', e);
+      // Failed to save preference
     }
   }, []);
 

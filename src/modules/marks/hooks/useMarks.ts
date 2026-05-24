@@ -18,10 +18,6 @@ export const useMarks = (examId: number, yearId: number) => {
     queryFn: async () => {
       // Double-check params before making API call
       if (!selectedStudent?.studentId || !examId || !yearId) {
-        console.log('=== MARKS SKIPPED - Missing params ===');
-        console.log('studentId:', selectedStudent?.studentId);
-        console.log('examId:', examId);
-        console.log('yearId:', yearId);
         return {
           status: false,
           message: 'Missing required parameters',
@@ -29,20 +25,11 @@ export const useMarks = (examId: number, yearId: number) => {
         };
       }
 
-      console.log('=== FETCHING MARKS ===');
-      console.log('ADNO:', selectedStudent.studentId);
-      console.log('examId:', examId);
-      console.log('yearId:', yearId);
-
       const response = await marksApi.getMarksByAdno({
         ADNO: selectedStudent.studentId,
         examid: examId,
         yearid: yearId,
       });
-
-      console.log('=== MARKS RESPONSE ===');
-      console.log('Status:', response.status);
-      console.log('Data:', response.data);
 
       return response;
     },

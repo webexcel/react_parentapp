@@ -15,12 +15,18 @@ import {Text} from '../../atoms/Text';
 const brandLogos: Record<string, ImageSourcePropType> = {
   aaimathaji: require('../../../../brands/aaimathaji/assets/icon.png'),
   crescent: require('../../../../brands/crescent/assets/icon.png'),
+  greenworldschool: require('../../../../brands/greenworldschool/assets/icon.png'),
   pssenior: require('../../../../brands/pssenior/assets/icon.png'),
   bsschool: require('../../../../brands/bsschool/assets/icon.png'),
   sivakasi: require('../../../../brands/sivakasi/assets/icon.png'),
   railwaybalabhavan: require('../../../../brands/railwaybalabhavan/assets/icon.png'),
   littleflower: require('../../../../brands/littleflower/assets/icon.png'),
   stdominics: require('../../../../brands/stdominics/assets/icon.png'),
+  holycresentmatric: require('../../../../brands/holycresentmatric/assets/icon.png'),
+  mountseno: require('../../../../brands/mountseno/assets/icon.png'),
+  udhayamglobal: require('../../../../brands/udhayamglobal/assets/icon.png'),
+  vidhyaratna: require('../../../../brands/vidhyaratna/assets/icon.png'),
+  vsnmatric: require('../../../../brands/vsnmatric/assets/icon.png'),
 };
 
 interface ForceUpdateScreenProps {

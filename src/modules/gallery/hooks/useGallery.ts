@@ -12,10 +12,6 @@ export const useGallery = () => {
   const classId = selectedStudent?.classId;
   const classIds = classId ? [classId] : [];
 
-  console.log('=== useGallery ===');
-  console.log('selectedStudent:', JSON.stringify(selectedStudent));
-  console.log('classId:', classId);
-
   const {
     data: albums = [],
     isLoading,
@@ -25,17 +21,12 @@ export const useGallery = () => {
   } = useQuery({
     queryKey: [QUERY_KEYS.GALLERY, classIds],
     queryFn: async (): Promise<GalleryAlbum[]> => {
-      console.log('=== GALLERY FETCH ===');
-      console.log('classIds:', classIds);
-
       if (classIds.length === 0) {
-        console.log('No classIds available - student may not have CLASS_ID');
         return [];
       }
 
       try {
         const response = await galleryApi.getCategories(classIds);
-        console.log('Gallery response:', JSON.stringify(response));
 
         if (response.status && response.data) {
           const baseUrl = response.url || '';
@@ -65,7 +56,6 @@ export const useGallery = () => {
         return [];
       } catch (err) {
         // Return empty array on error - galleryApi already handles 400
-        console.log('Gallery fetch error handled:', err);
         return [];
       }
     },

@@ -43,29 +43,13 @@ export const useOtpVerification = (): UseOtpVerificationReturn => {
 
         // Update FCM token to backend after successful login
         try {
-          console.log('┌─────────────────────────────────────────┐');
-          console.log('│  POST-LOGIN: Updating FCM token');
-          console.log('│  Mobile:', mobileNumber);
-          console.log('└─────────────────────────────────────────┘');
-
           const { fcmService } = await import('../../../core/notifications');
           const fcmToken = await fcmService.getToken();
 
-          console.log('POST-LOGIN: FCM Token:', fcmToken ? `${fcmToken.substring(0, 20)}...` : 'NULL');
-
           if (fcmToken) {
-            console.log('POST-LOGIN: Calling updateFcmToken API...');
-            const success = await authService.updateFcmToken(fcmToken, mobileNumber);
-            if (success) {
-              console.log('✅ POST-LOGIN: FCM token updated successfully');
-            } else {
-              console.log('❌ POST-LOGIN: FCM token update failed');
-            }
-          } else {
-            console.log('⚠️  POST-LOGIN: No FCM token available');
+            await authService.updateFcmToken(fcmToken, mobileNumber);
           }
         } catch (fcmError) {
-          console.error('❌ POST-LOGIN: Error updating FCM token:', fcmError);
           // Don't fail login if FCM update fails
         }
 
@@ -73,9 +57,6 @@ export const useOtpVerification = (): UseOtpVerificationReturn => {
         try {
           const studentsResponse = await authService.getStudents(installId || '');
           if (studentsResponse.status && studentsResponse.data) {
-            console.log('=== FETCHING STUDENT PHOTOS ===');
-            console.log('Number of students:', studentsResponse.data.length);
-
             // API returns fields from v_mobileapp view: SNAME, ADMISSION_ID, ADNO, CLASS, SECTION, etc.
             // Map API response to Student objects
             const students: Student[] = await Promise.all(
@@ -87,7 +68,7 @@ export const useOtpVerification = (): UseOtpVerificationReturn => {
                 try {
                   photoBase64 = await authService.getStudentPhoto(adno);
                 } catch (photoError) {
-                  console.error(`Error fetching photo for student ${adno}:`, photoError);
+                  // Photo fetch failed - continue without photo
                 }
 
                 // Get CLASSSEC (e.g., "VI-A") - keep it whole for display
@@ -120,7 +101,6 @@ export const useOtpVerification = (): UseOtpVerificationReturn => {
             await setStudents(students);
           }
         } catch (studentsError) {
-          console.error('Error fetching students:', studentsError);
           // Continue even if students fetch fails - user is still logged in
         }
 

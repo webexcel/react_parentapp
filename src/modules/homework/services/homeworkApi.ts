@@ -17,17 +17,10 @@ export const homeworkApi = {
    * Mark homework as complete
    */
   acknowledgeHomework: async (homeworkId: string, adno: string): Promise<boolean> => {
-    console.log('=== ACKNOWLEDGE HOMEWORK API CALL ===');
-    console.log('homeworkId:', homeworkId);
-    console.log('adno:', adno);
-
     const response = await apiClient.post(API_ENDPOINTS.HOMEWORK.MARK_COMPLETE, {
       homeworkId,
       adno,
     });
-
-    console.log('=== ACKNOWLEDGE HOMEWORK API RESPONSE ===');
-    console.log('Response:', JSON.stringify(response.data, null, 2));
 
     if (!response.data?.status) {
       throw new Error(response.data?.message || 'Failed to mark homework as complete');

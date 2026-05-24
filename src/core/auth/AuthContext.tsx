@@ -53,7 +53,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
       }
     } catch (error) {
-      console.error('Error checking auth:', error);
       setState({
         ...initialState,
         isLoading: false,
@@ -121,21 +120,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     if (state.students.length === 0) return;
 
-    console.log('=== REFRESHING STUDENT PHOTOS ===');
     const updatedStudents = await Promise.all(
       state.students.map(async (student) => {
         try {
           const photo = await authService.getStudentPhoto(student.studentId);
           return { ...student, photo: photo || '' };
         } catch (error) {
-          console.error(`Error refreshing photo for ${student.name}:`, error);
           return student;
         }
       })
     );
 
     await setStudents(updatedStudents);
-    console.log('=== PHOTOS REFRESHED ===');
   };
 
   const value: AuthContextType = {

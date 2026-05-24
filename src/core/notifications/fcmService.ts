@@ -36,13 +36,12 @@ class FCMService {
       // Request permission with force option
       const hasPermission = await this.requestPermissionWithForce();
       if (!hasPermission) {
-        console.log('FCM: Notification permission denied, waiting for user');
         return;
       }
 
       await this.setupFCM();
     } catch (error) {
-      console.error('FCM initialization error:', error);
+      // FCM initialization error
     }
   }
 
@@ -54,9 +53,8 @@ class FCMService {
       return;
     }
 
-    // Get and log initial token
+    // Get initial token
     const token = await this.getToken();
-    console.log('FCM Token:', token);
 
     // Send token to backend
     if (token) {
@@ -65,7 +63,6 @@ class FCMService {
 
     // Set up token refresh listener
     this.tokenRefreshUnsubscribe = messaging().onTokenRefresh(async newToken => {
-      console.log('FCM Token refreshed:', newToken);
       // Send new token to backend
       await this.sendTokenToBackend(newToken);
     });
@@ -73,7 +70,6 @@ class FCMService {
     // Set up foreground message handler
     this.foregroundUnsubscribe = messaging().onMessage(
       async (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
-        console.log('FCM Foreground message:', remoteMessage);
         if (this.foregroundHandler) {
           this.foregroundHandler({
             title: remoteMessage.notification?.title,
@@ -85,7 +81,6 @@ class FCMService {
     );
 
     this.isInitialized = true;
-    console.log('FCM Service initialized successfully');
   }
 
   /**
@@ -133,7 +128,6 @@ class FCMService {
         authStatus === messaging.AuthorizationStatus.PROVISIONAL
       );
     } catch (error) {
-      console.error('FCM checkPermission error:', error);
       return false;
     }
   }
@@ -148,7 +142,6 @@ class FCMService {
           PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
         );
         if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-          console.log('Android notification permission denied');
           return false;
         }
       }
@@ -158,10 +151,8 @@ class FCMService {
         authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
         authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-      console.log('FCM Authorization status:', authStatus, 'Enabled:', enabled);
       return enabled;
     } catch (error) {
-      console.error('FCM permission request error:', error);
       return false;
     }
   }
@@ -208,7 +199,6 @@ class FCMService {
         if (nextAppState === 'active') {
           const hasPermission = await this.checkPermission();
           if (hasPermission && !this.isInitialized) {
-            console.log('FCM: Permission granted, initializing...');
             await this.setupFCM();
             // Remove listener once initialized
             if (this.appStateSubscription) {
@@ -229,36 +219,18 @@ class FCMService {
    */
   private async sendTokenToBackend(fcmToken: string): Promise<void> {
     try {
-      console.log('┌─────────────────────────────────────────┐');
-      console.log('│  FCM: Attempting to send token to backend');
-      console.log('└─────────────────────────────────────────┘');
-
       // Get user data to retrieve mobile number
       const { getUserData } = await import('../storage/secureStorage');
       const userData = await getUserData();
 
-      console.log('FCM: UserData retrieved:', userData ? 'Found' : 'Not found');
-      console.log('FCM: Mobile number:', (userData as any)?.mobileNumber || 'MISSING');
-
       if (userData && (userData as any).mobileNumber) {
         const mobileNumber = (userData as any).mobileNumber;
-        console.log('FCM: Calling updateFcmToken API...');
 
         // Import authService dynamically to avoid circular dependency
         const { authService } = await import('../auth/authService');
-        const success = await authService.updateFcmToken(fcmToken, mobileNumber);
-
-        if (success) {
-          console.log('✅ FCM: Token successfully sent to backend');
-        } else {
-          console.log('❌ FCM: Failed to send token to backend');
-        }
-      } else {
-        console.log('⚠️  FCM: No mobile number found, skipping token update');
-        console.log('FCM: This is normal if user is not logged in yet');
+        await authService.updateFcmToken(fcmToken, mobileNumber);
       }
     } catch (error) {
-      console.error('❌ FCM: Error sending token to backend:', error);
       // Don't throw - this is a non-critical operation
     }
   }
@@ -271,7 +243,6 @@ class FCMService {
       const token = await messaging().getToken();
       return token;
     } catch (error) {
-      console.error('FCM getToken error:', error);
       return null;
     }
   }
@@ -282,9 +253,8 @@ class FCMService {
   async deleteToken(): Promise<void> {
     try {
       await messaging().deleteToken();
-      console.log('FCM token deleted');
     } catch (error) {
-      console.error('FCM deleteToken error:', error);
+      // FCM deleteToken error
     }
   }
 
@@ -309,7 +279,6 @@ class FCMService {
     try {
       const remoteMessage = await messaging().getInitialNotification();
       if (remoteMessage) {
-        console.log('App opened from notification:', remoteMessage);
         return {
           title: remoteMessage.notification?.title,
           body: remoteMessage.notification?.body,
@@ -318,7 +287,6 @@ class FCMService {
       }
       return null;
     } catch (error) {
-      console.error('FCM getInitialNotification error:', error);
       return null;
     }
   }
@@ -329,9 +297,8 @@ class FCMService {
   async subscribeToTopic(topic: string): Promise<void> {
     try {
       await messaging().subscribeToTopic(topic);
-      console.log('FCM subscribed to topic:', topic);
     } catch (error) {
-      console.error('FCM subscribeToTopic error:', error);
+      // FCM subscribeToTopic error
     }
   }
 
@@ -341,9 +308,8 @@ class FCMService {
   async unsubscribeFromTopic(topic: string): Promise<void> {
     try {
       await messaging().unsubscribeFromTopic(topic);
-      console.log('FCM unsubscribed from topic:', topic);
     } catch (error) {
-      console.error('FCM unsubscribeFromTopic error:', error);
+      // FCM unsubscribeFromTopic error
     }
   }
 
@@ -373,7 +339,6 @@ export const fcmService = new FCMService();
 // This should be called in index.js
 export function registerBackgroundHandler(): void {
   messaging().setBackgroundMessageHandler(async remoteMessage => {
-    console.log('FCM Background message:', remoteMessage);
     // Handle background message here
     // Note: You cannot update UI directly from here
   });

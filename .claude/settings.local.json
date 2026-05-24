@@ -38,7 +38,26 @@
       "Bash(npm install:*)",
       "Bash(npm run:*)",
       "Bash(tee:*)",
-      "Bash(.gradlew clean:*)"
+      "Bash(.gradlew clean:*)",
+      "Bash(node:*)",
+      "Bash(ls -la C:/raja/react_mobile/react_parentapp/android/app/src/udhayamglobal/res/mipmap-*/ic_launcher*.png)",
+      "Bash(keytool:*)",
+      "WebFetch(domain:demo.schooltree.in)",
+      "Bash(npx playwright:*)",
+      "Bash(npm ls:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm view:*)",
+      "Bash(ls:*)",
+      "Bash(C:/Users/DELL/AppData/Local/Android/Sdk/platform-tools/adb.exe install:*)",
+      "Bash(C:/Users/DELL/AppData/Local/Android/Sdk/emulator/emulator.exe:*)",
+      "Bash(C:/Users/DELL/AppData/Local/Android/Sdk/platform-tools/adb.exe wait-for-device:*)",
+      "Bash(C:/Users/DELL/AppData/Local/Android/Sdk/platform-tools/adb.exe shell:*)",
+      "Bash(C:/Users/DELL/AppData/Local/Android/Sdk/platform-tools/adb.exe uninstall:*)",
+      "Bash([ ! -f \"brands/bsschool/assets/bs_school.jks\" ])",
+      "Bash(where magick:*)",
+      "Bash(where convert:*)",
+      "Bash(npx --yes sharp-cli --version)",
+      "Bash(disown)"
     ]
   }
 }

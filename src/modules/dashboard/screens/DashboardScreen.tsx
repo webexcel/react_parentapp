@@ -245,7 +245,6 @@ export const DashboardScreen: React.FC = () => {
   // Handle flash message dismiss
   const handleFlashMessageDismiss = useCallback((messageId: number) => {
     // Could implement local dismissal state or API call
-    console.log('Dismissed flash message:', messageId);
   }, []);
 
   // Handle modal close

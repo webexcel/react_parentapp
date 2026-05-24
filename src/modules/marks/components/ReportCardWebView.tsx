@@ -11,8 +11,8 @@ export const ReportCardWebView: React.FC<Props> = ({ visible, url, onClose }) =>
   useEffect(() => {
     if (visible && url) {
       // Open directly in browser
-      Linking.openURL(url).catch(err => {
-        console.error('Error opening URL:', err);
+      Linking.openURL(url).catch(() => {
+        // Failed to open URL
       });
       // Close immediately after opening
       onClose();
