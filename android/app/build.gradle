@@ -475,7 +475,7 @@ android {
         railwaybalabhavan {
             dimension "brand"
             applicationId "com.schooltree.balabhavan"
-            resValue "string", "app_name", "Reilway Bala Bhavan School Parent"
+            resValue "string", "app_name", "Railway Balabhavan School Parent"
             buildConfigField "String", "BRAND_ID", "\"railwaybalabhavan\""
             buildConfigField "String", "AUTH_TYPE", "\"otp\""
             buildConfigField "String", "DB_NAME", "\"rlybalabhavans\""

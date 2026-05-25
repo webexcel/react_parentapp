@@ -57,7 +57,8 @@
       "Bash(where magick:*)",
       "Bash(where convert:*)",
       "Bash(npx --yes sharp-cli --version)",
-      "Bash(disown)"
+      "Bash(disown)",
+      "Bash(xargs -I{} basename {})"
     ]
   }
 }

@@ -4,6 +4,7 @@ export interface GalleryImage {
   uri: string;
   thumbnailUri?: string;
   caption?: string;
+  type: 'image' | 'video';
 }
 
 // Gallery Album/Category

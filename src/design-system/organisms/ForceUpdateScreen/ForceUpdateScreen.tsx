@@ -14,6 +14,7 @@ import {Text} from '../../atoms/Text';
 
 const brandLogos: Record<string, ImageSourcePropType> = {
   aaimathaji: require('../../../../brands/aaimathaji/assets/icon.png'),
+  avl: require('../../../../brands/avl/assets/icon.png'),
   crescent: require('../../../../brands/crescent/assets/icon.png'),
   greenworldschool: require('../../../../brands/greenworldschool/assets/icon.png'),
   pssenior: require('../../../../brands/pssenior/assets/icon.png'),

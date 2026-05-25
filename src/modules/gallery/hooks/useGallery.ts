@@ -32,12 +32,18 @@ export const useGallery = () => {
           const baseUrl = response.url || '';
 
           return response.data.map((category) => {
-            // Build image URLs from the image names
-            const images: GalleryImage[] = category.images.map((imageName, index) => ({
-              id: `${category.CatID}-${index}`,
-              uri: `${baseUrl}/${category.CatID}/${imageName}`,
-              thumbnailUri: `${baseUrl}/${category.CatID}/thumb_${imageName}`,
-            }));
+            // Build image URLs - use as-is if already absolute, otherwise prepend baseUrl
+            const images: GalleryImage[] = category.images.map((imageName, index) => {
+              const isAbsolute = imageName.startsWith('http');
+              const uri = isAbsolute ? imageName : `${baseUrl}/${imageName}`;
+              const isVideo = /\.(mp4|mov|avi|mkv|webm|3gp)$/i.test(imageName);
+              return {
+                id: `${category.CatID}-${index}`,
+                uri,
+                thumbnailUri: isVideo ? undefined : (isAbsolute ? imageName : `${baseUrl}/thumb_${imageName}`),
+                type: isVideo ? 'video' as const : 'image' as const,
+              };
+            });
 
             // Use first image as cover
             const coverImage = images.length > 0 ? images[0].thumbnailUri || images[0].uri : '';
