@@ -101,7 +101,7 @@ export const PaymentProcessingScreen: React.FC = () => {
           }
         }
       } catch (err) {
-        console.error('Payment status poll error:', err);
+        // Payment status poll error - continue polling
       }
 
       pollCountRef.current++;

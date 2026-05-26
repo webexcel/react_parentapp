@@ -26,13 +26,10 @@ export const feesApi = {
     interval: string = '0'
   ): Promise<FeeDetailsResponse> => {
     try {
-      console.log('=== feesApi.getStudentPayDetails ===');
-      console.log('Request params:', { adno, interval });
       const response = await apiClient.post<FeeDetailsResponse>(
         API_ENDPOINTS.PAYMENTS.GET_STUDENT_PAY_DETAILS,
         { adno, interval }
       );
-      console.log('Response status:', response.status);
       return response.data;
     } catch (error: any) {
       // Backend returns 400 when no fee details exist - treat as empty data
@@ -82,13 +79,10 @@ export const feesApi = {
     classId: string
   ): Promise<PaymentHistoryResponse> => {
     try {
-      console.log('=== feesApi.getStudentPayHistory ===');
-      console.log('Request params:', { adno, CLASS_ID: classId });
       const response = await apiClient.post<PaymentHistoryResponse>(
         API_ENDPOINTS.PAYMENTS.GET_STUDENT_PAY_HISTORY,
         { adno, CLASS_ID: classId }
       );
-      console.log('Response status:', response.status);
       return response.data;
     } catch (error: any) {
       // Backend returns 400 when no payment history exists - treat as empty data

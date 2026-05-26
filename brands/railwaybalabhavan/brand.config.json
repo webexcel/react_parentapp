@@ -2,7 +2,7 @@
   "$schema": "../brand.schema.json",
   "brand": {
     "id": "railwaybalabhavan",
-    "name": "Reilway Bala Bhavan School",
+    "name": "Railway Balabhavan School",
     "shortName": "rly",
     "tagline": "Excellence in Education"
   },

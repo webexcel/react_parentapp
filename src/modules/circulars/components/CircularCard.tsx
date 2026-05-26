@@ -67,7 +67,7 @@ export const CircularCard: React.FC<CircularCardProps> = ({ circular, onPress, o
     }
   };
 
-  const getAttachmentIcon = (type: string): 'pdf' | 'image' | 'audio' | 'attachment' => {
+  const getAttachmentIcon = (type: string): 'pdf' | 'image' | 'audio' | 'playCircle' | 'attachment' => {
     switch (type) {
       case 'pdf':
         return 'pdf';
@@ -75,6 +75,8 @@ export const CircularCard: React.FC<CircularCardProps> = ({ circular, onPress, o
         return 'image';
       case 'audio':
         return 'audio';
+      case 'video':
+        return 'playCircle';
       default:
         return 'attachment';
     }
@@ -88,8 +90,10 @@ export const CircularCard: React.FC<CircularCardProps> = ({ circular, onPress, o
         return colors.success;
       case 'audio':
         return colors.warning;
-      default:
+      case 'video':
         return colors.primary;
+      default:
+        return colors.textSecondary;
     }
   };
 

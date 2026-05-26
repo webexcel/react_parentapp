@@ -3,7 +3,7 @@ import { Alert } from 'react-native';
 import { QUERY_KEYS } from '../../../core/constants';
 import { useAuth } from '../../../core/auth';
 import { circularsApi } from '../services/circularsApi';
-import { Circular } from '../types/circular.types';
+import { Attachment, Circular } from '../types/circular.types';
 
 export const useCirculars = () => {
   const { userData } = useAuth();
@@ -18,16 +18,11 @@ export const useCirculars = () => {
   } = useQuery({
     queryKey: [QUERY_KEYS.CIRCULARS, userData?.mobileNumber],
     queryFn: async (): Promise<Circular[]> => {
-      console.log('=== CIRCULARS FETCH ===');
-      console.log('userData:', JSON.stringify(userData));
       if (!userData?.mobileNumber) {
-        console.log('No mobileNumber, returning empty');
         return [];
       }
 
-      console.log('Fetching circulars for:', userData.mobileNumber);
       const response = await circularsApi.getCirculars(userData.mobileNumber);
-      console.log('Circulars response:', JSON.stringify(response));
 
       if (response.status && response.data) {
         return response.data.map((item: any, index: number) => ({
@@ -37,16 +32,7 @@ export const useCirculars = () => {
           content: item.Message || '',
           date: item.SMSdate || '',
           category: 'General',
-          attachments: item.event_image
-            ? [
-                {
-                  id: String(index),
-                  type: getAttachmentType(item.event_image),
-                  url: item.event_image,
-                  name: 'Attachment',
-                },
-              ]
-            : [],
+          attachments: parseAttachments(item.event_image, index),
           isRead: true,
           isAcknowledged: item.completed_status === '1',
           priority: 'normal',
@@ -111,10 +97,54 @@ export const useCirculars = () => {
   };
 };
 
-const getAttachmentType = (url: string): 'pdf' | 'image' | 'audio' | 'document' => {
+const parseAttachments = (eventImage: any, index: number): Attachment[] => {
+  if (!eventImage || typeof eventImage !== 'string' || eventImage.trim() === '') {
+    return [];
+  }
+
+  const trimmed = eventImage.trim();
+
+  // Single URL starting with http
+  if (trimmed.startsWith('http')) {
+    return [{
+      id: String(index),
+      type: getAttachmentType(trimmed),
+      url: trimmed,
+      name: 'Attachment',
+    }];
+  }
+
+  // Stringified JSON array — clean whitespace inside URLs before parsing
+  if (trimmed.startsWith('[')) {
+    try {
+      const sanitized = trimmed.replace(/\s+/g, '');
+      const parsed = JSON.parse(sanitized);
+      if (Array.isArray(parsed)) {
+        const urls = parsed.filter(
+          (u: any) => typeof u === 'string' && u !== '',
+        );
+        if (urls.length > 0) {
+          return urls.map((url: string, idx: number) => ({
+            id: `${index}-${idx}`,
+            type: getAttachmentType(url),
+            url,
+            name: `Attachment ${idx + 1}`,
+          }));
+        }
+      }
+    } catch {
+      // Invalid JSON, fall through
+    }
+  }
+
+  return [];
+};
+
+const getAttachmentType = (url: string): 'pdf' | 'image' | 'audio' | 'video' | 'document' => {
   const ext = url.split('.').pop()?.toLowerCase() || '';
   if (['pdf'].includes(ext)) return 'pdf';
   if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) return 'image';
   if (['mp3', 'wav', 'aac', 'm4a'].includes(ext)) return 'audio';
+  if (['mp4', 'mov', 'avi', 'mkv', 'webm'].includes(ext)) return 'video';
   return 'document';
 };

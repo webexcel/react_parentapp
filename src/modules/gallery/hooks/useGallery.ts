@@ -12,10 +12,6 @@ export const useGallery = () => {
   const classId = selectedStudent?.classId;
   const classIds = classId ? [classId] : [];
 
-  console.log('=== useGallery ===');
-  console.log('selectedStudent:', JSON.stringify(selectedStudent));
-  console.log('classId:', classId);
-
   const {
     data: albums = [],
     isLoading,
@@ -25,28 +21,29 @@ export const useGallery = () => {
   } = useQuery({
     queryKey: [QUERY_KEYS.GALLERY, classIds],
     queryFn: async (): Promise<GalleryAlbum[]> => {
-      console.log('=== GALLERY FETCH ===');
-      console.log('classIds:', classIds);
-
       if (classIds.length === 0) {
-        console.log('No classIds available - student may not have CLASS_ID');
         return [];
       }
 
       try {
         const response = await galleryApi.getCategories(classIds);
-        console.log('Gallery response:', JSON.stringify(response));
 
         if (response.status && response.data) {
           const baseUrl = response.url || '';
 
           return response.data.map((category) => {
-            // Build image URLs from the image names
-            const images: GalleryImage[] = category.images.map((imageName, index) => ({
-              id: `${category.CatID}-${index}`,
-              uri: `${baseUrl}/${category.CatID}/${imageName}`,
-              thumbnailUri: `${baseUrl}/${category.CatID}/thumb_${imageName}`,
-            }));
+            // Build image URLs - use as-is if already absolute, otherwise prepend baseUrl
+            const images: GalleryImage[] = category.images.map((imageName, index) => {
+              const isAbsolute = imageName.startsWith('http');
+              const uri = isAbsolute ? imageName : `${baseUrl}/${imageName}`;
+              const isVideo = /\.(mp4|mov|avi|mkv|webm|3gp)$/i.test(imageName);
+              return {
+                id: `${category.CatID}-${index}`,
+                uri,
+                thumbnailUri: isVideo ? undefined : (isAbsolute ? imageName : `${baseUrl}/thumb_${imageName}`),
+                type: isVideo ? 'video' as const : 'image' as const,
+              };
+            });
 
             // Use first image as cover
             const coverImage = images.length > 0 ? images[0].thumbnailUri || images[0].uri : '';
@@ -65,7 +62,6 @@ export const useGallery = () => {
         return [];
       } catch (err) {
         // Return empty array on error - galleryApi already handles 400
-        console.log('Gallery fetch error handled:', err);
         return [];
       }
     },

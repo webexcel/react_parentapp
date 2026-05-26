@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import {
   View,
   FlatList,
@@ -9,7 +9,12 @@ import {
   Modal,
   RefreshControl,
   ActivityIndicator,
+  Animated,
+  ScrollView,
+  BackHandler,
 } from 'react-native';
+import { PinchGestureHandler, PanGestureHandler, State } from 'react-native-gesture-handler';
+import Video from 'react-native-video';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import {
   ListTemplate,
@@ -25,8 +30,219 @@ import { useAuth } from '../../../core/auth';
 import { useGallery } from '../hooks/useGallery';
 import { GalleryAlbum, GalleryImage } from '../types/gallery.types';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const IMAGE_SIZE = (SCREEN_WIDTH - spacing.base * 3) / 2;
+
+// --- Zoomable Image for Gallery Viewer (matches circular viewer pattern) ---
+interface ZoomableGalleryImageProps {
+  uri: string;
+  active: boolean;
+  onZoomChange: (zoomed: boolean) => void;
+}
+
+const ZoomableGalleryImage: React.FC<ZoomableGalleryImageProps> = ({ uri, active, onZoomChange }) => {
+  const pinchRef = useRef<any>(null);
+  const panRef = useRef<any>(null);
+
+  const baseScale = useRef(new Animated.Value(1)).current;
+  const pinchScale = useRef(new Animated.Value(1)).current;
+  const scale = Animated.multiply(baseScale, pinchScale);
+
+  const translateX = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(0)).current;
+
+  const lastScale = useRef(1);
+  const lastTranslateX = useRef(0);
+  const lastTranslateY = useRef(0);
+  const lastTap = useRef(0);
+  const isZoomed = useRef(false);
+
+  const setZoomed = (zoomed: boolean) => {
+    if (isZoomed.current !== zoomed) {
+      isZoomed.current = zoomed;
+      onZoomChange(zoomed);
+    }
+  };
+
+  // Reset when no longer active
+  React.useEffect(() => {
+    if (!active && lastScale.current !== 1) {
+      lastScale.current = 1;
+      lastTranslateX.current = 0;
+      lastTranslateY.current = 0;
+      baseScale.setValue(1);
+      pinchScale.setValue(1);
+      translateX.setOffset(0);
+      translateX.setValue(0);
+      translateY.setOffset(0);
+      translateY.setValue(0);
+      setZoomed(false);
+    }
+  }, [active]);
+
+  const onPinchEvent = Animated.event(
+    [{ nativeEvent: { scale: pinchScale } }],
+    { useNativeDriver: true },
+  );
+
+  const onPinchStateChange = (event: any) => {
+    if (event.nativeEvent.oldState === State.ACTIVE) {
+      lastScale.current *= event.nativeEvent.scale;
+      if (lastScale.current < 1) lastScale.current = 1;
+      if (lastScale.current > 5) lastScale.current = 5;
+      baseScale.setValue(lastScale.current);
+      pinchScale.setValue(1);
+
+      if (lastScale.current <= 1) {
+        lastTranslateX.current = 0;
+        lastTranslateY.current = 0;
+        translateX.setOffset(0);
+        translateX.setValue(0);
+        translateY.setOffset(0);
+        translateY.setValue(0);
+        setZoomed(false);
+      } else {
+        setZoomed(true);
+      }
+    }
+  };
+
+  const onPanEvent = Animated.event(
+    [{ nativeEvent: { translationX: translateX, translationY: translateY } }],
+    { useNativeDriver: true },
+  );
+
+  const onPanStateChange = (event: any) => {
+    if (event.nativeEvent.oldState === State.ACTIVE) {
+      lastTranslateX.current += event.nativeEvent.translationX;
+      lastTranslateY.current += event.nativeEvent.translationY;
+      translateX.setOffset(lastTranslateX.current);
+      translateX.setValue(0);
+      translateY.setOffset(lastTranslateY.current);
+      translateY.setValue(0);
+    }
+  };
+
+  const resetZoom = () => {
+    lastScale.current = 1;
+    lastTranslateX.current = 0;
+    lastTranslateY.current = 0;
+    translateX.setOffset(0);
+    translateY.setOffset(0);
+    Animated.parallel([
+      Animated.spring(baseScale, { toValue: 1, useNativeDriver: true }),
+      Animated.spring(translateX, { toValue: 0, useNativeDriver: true }),
+      Animated.spring(translateY, { toValue: 0, useNativeDriver: true }),
+    ]).start();
+    pinchScale.setValue(1);
+    setZoomed(false);
+  };
+
+  const zoomInAt = (tapX: number, tapY: number) => {
+    const zoomFactor = 3;
+    const offsetX = tapX - SCREEN_WIDTH / 2;
+    const offsetY = tapY - SCREEN_HEIGHT / 2;
+    const tx = -offsetX * (zoomFactor - 1);
+    const ty = -offsetY * (zoomFactor - 1);
+
+    lastScale.current = zoomFactor;
+    lastTranslateX.current = tx;
+    lastTranslateY.current = ty;
+    translateX.setOffset(tx);
+    translateX.setValue(0);
+    translateY.setOffset(ty);
+    translateY.setValue(0);
+
+    Animated.spring(baseScale, { toValue: zoomFactor, useNativeDriver: true }).start();
+    pinchScale.setValue(1);
+    setZoomed(true);
+  };
+
+  const onTap = (e: any) => {
+    const now = Date.now();
+    if (now - lastTap.current < 300) {
+      if (lastScale.current > 1) {
+        resetZoom();
+      } else {
+        const { pageX, pageY } = e.nativeEvent;
+        const margin = SCREEN_HEIGHT * 0.15;
+        if (pageY > margin && pageY < SCREEN_HEIGHT - margin) {
+          zoomInAt(pageX, pageY);
+        }
+      }
+    }
+    lastTap.current = now;
+  };
+
+  return (
+    <TouchableOpacity activeOpacity={1} onPress={onTap} style={styles.zoomContainer}>
+      <PinchGestureHandler
+        ref={pinchRef}
+        onGestureEvent={onPinchEvent}
+        onHandlerStateChange={onPinchStateChange}
+        simultaneousHandlers={panRef}
+      >
+        <Animated.View style={styles.zoomContainer}>
+          <PanGestureHandler
+            ref={panRef}
+            onGestureEvent={onPanEvent}
+            onHandlerStateChange={onPanStateChange}
+            simultaneousHandlers={pinchRef}
+            minDist={10}
+            avgTouches
+          >
+            <Animated.View
+              style={[
+                styles.zoomContainer,
+                { transform: [{ scale }, { translateX }, { translateY }] },
+              ]}
+            >
+              <Image
+                source={{ uri }}
+                style={styles.zoomImage}
+                resizeMode="contain"
+              />
+            </Animated.View>
+          </PanGestureHandler>
+        </Animated.View>
+      </PinchGestureHandler>
+    </TouchableOpacity>
+  );
+};
+
+// --- Video Player for Gallery Viewer ---
+const GalleryVideoPlayer: React.FC<{ uri: string; isActive: boolean }> = ({ uri, isActive }) => {
+  const [paused, setPaused] = useState(true);
+
+  // Pause when swiped away
+  React.useEffect(() => {
+    if (!isActive) setPaused(true);
+  }, [isActive]);
+
+  return (
+    <View style={styles.zoomContainer}>
+      <Video
+        source={{ uri }}
+        style={styles.videoPlayer}
+        resizeMode="contain"
+        paused={paused}
+        controls
+        onEnd={() => setPaused(true)}
+      />
+      {paused && (
+        <TouchableOpacity
+          style={styles.playOverlay}
+          onPress={() => setPaused(false)}
+          activeOpacity={0.8}
+        >
+          <View style={styles.playButton}>
+            <Icon name="playCircle" size={40} color={colors.white} />
+          </View>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+};
 
 export const GalleryScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -44,6 +260,28 @@ export const GalleryScreen: React.FC = () => {
   const [selectedAlbum, setSelectedAlbum] = useState<GalleryAlbum | null>(null);
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [showImageViewer, setShowImageViewer] = useState(false);
+  const [isImageZoomed, setIsImageZoomed] = useState(false);
+
+  // Handle Android hardware back button
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        if (showImageViewer) {
+          setShowImageViewer(false);
+          setSelectedImage(null);
+          setIsImageZoomed(false);
+          return true;
+        }
+        if (selectedAlbum) {
+          setSelectedAlbum(null);
+          return true;
+        }
+        return false; // let navigation handle it
+      };
+      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () => subscription.remove();
+    }, [showImageViewer, selectedAlbum])
+  );
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -67,7 +305,11 @@ export const GalleryScreen: React.FC = () => {
     setSelectedAlbum(album);
   };
 
+  const [imageViewerIndex, setImageViewerIndex] = useState(0);
+
   const handleImagePress = (image: GalleryImage) => {
+    const index = selectedAlbum?.images.findIndex(i => i.id === image.id) || 0;
+    setImageViewerIndex(index >= 0 ? index : 0);
     setSelectedImage(image);
     setShowImageViewer(true);
   };
@@ -75,6 +317,7 @@ export const GalleryScreen: React.FC = () => {
   const handleCloseViewer = () => {
     setShowImageViewer(false);
     setSelectedImage(null);
+    setIsImageZoomed(false);
   };
 
   const handleBackFromAlbum = () => {
@@ -95,7 +338,7 @@ export const GalleryScreen: React.FC = () => {
               {item.title}
             </Text>
             <Text variant="caption" style={styles.albumMeta}>
-              {formatDate(item.date)} • {item.imageCount} photos
+              {formatDate(item.date)} • {item.imageCount} items
             </Text>
           </View>
         </View>
@@ -111,14 +354,28 @@ export const GalleryScreen: React.FC = () => {
         onPress={() => handleImagePress(item)}
         activeOpacity={0.8}
       >
-        <Image
-          source={{ uri: item.thumbnailUri || item.uri }}
-          style={styles.gridImage}
-        />
+        {item.type === 'video' ? (
+          <View style={styles.videoThumbContainer}>
+            <View style={styles.videoThumbPlaceholder}>
+              <Icon name="playCircle" size={40} color={colors.white} />
+            </View>
+            <View style={styles.videoBadge}>
+              <Icon name="playCircle" size={16} color={colors.white} />
+              <Text variant="caption" style={styles.videoBadgeText}>Video</Text>
+            </View>
+          </View>
+        ) : (
+          <Image
+            source={{ uri: item.thumbnailUri || item.uri }}
+            style={styles.gridImage}
+          />
+        )}
       </TouchableOpacity>
     ),
     []
   );
+
+  const albumImages = selectedAlbum?.images || [];
 
   const renderImageViewer = () => (
     <Modal
@@ -132,21 +389,48 @@ export const GalleryScreen: React.FC = () => {
           <Icon name="close" size={28} color={colors.white} />
         </TouchableOpacity>
 
-        {selectedImage && (
-          <>
-            <Image
-              source={{ uri: selectedImage.uri }}
-              style={styles.fullImage}
-              resizeMode="contain"
-            />
-            {selectedImage.caption && (
-              <View style={styles.captionContainer}>
-                <Text variant="body" style={styles.captionText}>
-                  {selectedImage.caption}
-                </Text>
-              </View>
-            )}
-          </>
+        <ScrollView
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          contentOffset={{ x: imageViewerIndex * SCREEN_WIDTH, y: 0 }}
+          onMomentumScrollEnd={(e) => {
+            const newIndex = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
+            setImageViewerIndex(newIndex);
+            if (albumImages[newIndex]) {
+              setSelectedImage(albumImages[newIndex]);
+            }
+          }}
+          scrollEnabled={!isImageZoomed}
+        >
+          {albumImages.map((image, idx) => (
+            image.type === 'video' ? (
+              <GalleryVideoPlayer key={image.id} uri={image.uri} isActive={idx === imageViewerIndex} />
+            ) : (
+              <ZoomableGalleryImage
+                key={image.id}
+                uri={image.uri}
+                active={imageViewerIndex === idx}
+                onZoomChange={setIsImageZoomed}
+              />
+            )
+          ))}
+        </ScrollView>
+
+        {/* Caption */}
+        {selectedImage?.caption && (
+          <View style={styles.captionContainer}>
+            <Text variant="body" style={styles.captionText}>
+              {selectedImage.caption}
+            </Text>
+          </View>
+        )}
+
+        {/* Counter */}
+        {albumImages.length > 1 && (
+          <Text variant="caption" style={styles.imageCounter}>
+            {imageViewerIndex + 1} / {albumImages.length}
+          </Text>
         )}
       </View>
     </Modal>
@@ -191,6 +475,7 @@ export const GalleryScreen: React.FC = () => {
         hideStudentSelector
       >
         <FlatList
+          key="album-images"
           data={selectedAlbum.images}
           keyExtractor={(item) => item.id}
           renderItem={renderImage}
@@ -201,7 +486,7 @@ export const GalleryScreen: React.FC = () => {
           ListHeaderComponent={
             <View style={styles.albumHeader}>
               <Text variant="caption" color="secondary">
-                {formatDate(selectedAlbum.date)} • {selectedAlbum.imageCount} photos
+                {formatDate(selectedAlbum.date)} • {selectedAlbum.imageCount} items
               </Text>
               {selectedAlbum.description && (
                 <Text variant="body" color="secondary" style={styles.albumDescription}>
@@ -237,6 +522,7 @@ export const GalleryScreen: React.FC = () => {
       hideStudentSelector
     >
       <FlatList
+        key="album-list"
         data={albums}
         keyExtractor={(item) => item.id}
         renderItem={renderAlbum}
@@ -339,13 +625,29 @@ const styles = StyleSheet.create({
     zIndex: 10,
     padding: spacing.sm,
   },
-  fullImage: {
+  zoomContainer: {
     width: SCREEN_WIDTH,
-    height: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  zoomImage: {
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
+  },
+  imageCounter: {
+    position: 'absolute',
+    bottom: 50,
+    alignSelf: 'center',
+    color: '#FFFFFF',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
   },
   captionContainer: {
     position: 'absolute',
-    bottom: 60,
+    bottom: 80,
     left: 0,
     right: 0,
     padding: spacing.base,
@@ -353,5 +655,51 @@ const styles = StyleSheet.create({
   captionText: {
     color: colors.white,
     textAlign: 'center',
+  },
+  videoPlayer: {
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT * 0.6,
+  },
+  playOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  playButton: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingLeft: 4,
+  },
+  videoThumbContainer: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  videoThumbPlaceholder: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#1a1a2e',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  videoBadge: {
+    position: 'absolute',
+    bottom: 8,
+    left: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 4,
+  },
+  videoBadgeText: {
+    color: colors.white,
+    fontSize: 11,
   },
 });

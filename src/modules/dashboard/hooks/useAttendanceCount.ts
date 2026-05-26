@@ -35,7 +35,6 @@ export const useAttendanceCount = (studentId?: string): UseAttendanceCountResult
 
         return 0;
       } catch (err) {
-        console.error('Error fetching attendance count:', err);
         return 0;
       }
     },

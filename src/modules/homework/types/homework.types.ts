@@ -1,6 +1,6 @@
 export interface HomeworkAttachment {
   id: string;
-  type: 'pdf' | 'image' | 'audio' | 'document';
+  type: 'pdf' | 'image' | 'audio' | 'video' | 'document';
   url: string;
   name: string;
 }

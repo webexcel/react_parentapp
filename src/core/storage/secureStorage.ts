@@ -8,7 +8,7 @@ export const setAuthToken = async (token: string): Promise<void> => {
   try {
     await AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
   } catch (error) {
-    console.error('Error saving auth token:', error);
+    // Error saving auth token
     throw error;
   }
 };
@@ -17,7 +17,7 @@ export const getAuthToken = async (): Promise<string | null> => {
   try {
     return await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
   } catch (error) {
-    console.error('Error getting auth token:', error);
+    // Error getting auth token
     return null;
   }
 };
@@ -26,7 +26,7 @@ export const setUserData = async (userData: object): Promise<void> => {
   try {
     await AsyncStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
   } catch (error) {
-    console.error('Error saving user data:', error);
+    // Error saving user data
     throw error;
   }
 };
@@ -36,7 +36,7 @@ export const getUserData = async (): Promise<object | null> => {
     const data = await AsyncStorage.getItem(STORAGE_KEYS.USER_DATA);
     return data ? JSON.parse(data) : null;
   } catch (error) {
-    console.error('Error getting user data:', error);
+    // Error getting user data
     return null;
   }
 };
@@ -45,7 +45,7 @@ export const setStudents = async (students: any[]): Promise<void> => {
   try {
     await AsyncStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(students));
   } catch (error) {
-    console.error('Error saving students:', error);
+    // Error saving students
     throw error;
   }
 };
@@ -55,7 +55,7 @@ export const getStudents = async (): Promise<any[] | null> => {
     const data = await AsyncStorage.getItem(STORAGE_KEYS.STUDENTS);
     return data ? JSON.parse(data) : null;
   } catch (error) {
-    console.error('Error getting students:', error);
+    // Error getting students
     return null;
   }
 };
@@ -64,7 +64,7 @@ export const setSelectedStudent = async (studentId: string): Promise<void> => {
   try {
     await AsyncStorage.setItem(STORAGE_KEYS.SELECTED_STUDENT, studentId);
   } catch (error) {
-    console.error('Error saving selected student:', error);
+    // Error saving selected student
     throw error;
   }
 };
@@ -73,7 +73,7 @@ export const getSelectedStudent = async (): Promise<string | null> => {
   try {
     return await AsyncStorage.getItem(STORAGE_KEYS.SELECTED_STUDENT);
   } catch (error) {
-    console.error('Error getting selected student:', error);
+    // Error getting selected student
     return null;
   }
 };
@@ -82,7 +82,7 @@ export const setStudentPhotos = async (photos: Record<string, string>): Promise<
   try {
     await AsyncStorage.setItem(STORAGE_KEYS.STUDENT_PHOTOS, JSON.stringify(photos));
   } catch (error) {
-    console.error('Error saving student photos:', error);
+    // Error saving student photos
     throw error;
   }
 };
@@ -92,7 +92,7 @@ export const getStudentPhotos = async (): Promise<Record<string, string> | null>
     const data = await AsyncStorage.getItem(STORAGE_KEYS.STUDENT_PHOTOS);
     return data ? JSON.parse(data) : null;
   } catch (error) {
-    console.error('Error getting student photos:', error);
+    // Error getting student photos
     return null;
   }
 };
@@ -103,7 +103,7 @@ export const setStudentPhoto = async (studentId: string, photoBase64: string): P
     photos[studentId] = photoBase64;
     await setStudentPhotos(photos);
   } catch (error) {
-    console.error('Error saving student photo:', error);
+    // Error saving student photo
     throw error;
   }
 };
@@ -113,7 +113,7 @@ export const getStudentPhoto = async (studentId: string): Promise<string | null>
     const photos = await getStudentPhotos();
     return photos?.[studentId] || null;
   } catch (error) {
-    console.error('Error getting student photo:', error);
+    // Error getting student photo
     return null;
   }
 };
@@ -128,7 +128,7 @@ export const clearAuthData = async (): Promise<void> => {
       STORAGE_KEYS.STUDENT_PHOTOS,
     ]);
   } catch (error) {
-    console.error('Error clearing auth data:', error);
+    // Error clearing auth data
     throw error;
   }
 };
@@ -168,7 +168,7 @@ export const getNotificationSettings = async (): Promise<NotificationSettings> =
     }
     return DEFAULT_NOTIFICATION_SETTINGS;
   } catch (error) {
-    console.error('Error getting notification settings:', error);
+    // Error getting notification settings
     return DEFAULT_NOTIFICATION_SETTINGS;
   }
 };
@@ -177,7 +177,7 @@ export const setNotificationSettings = async (settings: NotificationSettings): P
   try {
     await AsyncStorage.setItem(STORAGE_KEYS.NOTIFICATION_SETTINGS, JSON.stringify(settings));
   } catch (error) {
-    console.error('Error saving notification settings:', error);
+    // Error saving notification settings
     throw error;
   }
 };
@@ -191,7 +191,7 @@ export const updateNotificationSetting = async (
     const updatedSettings = { ...currentSettings, [key]: value };
     await setNotificationSettings(updatedSettings);
   } catch (error) {
-    console.error('Error updating notification setting:', error);
+    // Error updating notification setting
     throw error;
   }
 };

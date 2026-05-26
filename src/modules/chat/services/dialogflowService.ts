@@ -57,7 +57,6 @@ class DialogflowService implements ChatServiceInterface {
       // Return the fulfillment text
       return data.response;
     } catch (error: any) {
-      console.error('Dialogflow API error:', error);
 
       // Handle specific error codes
       if (error.response?.status === 401) {
@@ -92,8 +91,7 @@ class DialogflowService implements ChatServiceInterface {
       await apiClient.post(API_ENDPOINTS.CHATBOT.DIALOGFLOW_RESET);
       this.sessionId = null;
     } catch (error) {
-      console.error('Failed to reset Dialogflow session:', error);
-      // Don't throw - just log the error and continue
+      // Don't throw - just continue
     }
   }
 

@@ -215,7 +215,6 @@ const brandConfigs: Record<string, BrandConfig> = Object.fromEntries(
 export const getCurrentBrandId = (): string => {
   // Try native module first (Android), then react-native-config, then fallback
   const brandId = nativeBrandId || Config.BRAND_ID || 'crescent';
-  console.log('[BrandConfig] getCurrentBrandId:', brandId, '| Native:', nativeBrandId, '| Config:', Config.BRAND_ID);
   return brandId;
 };
 
@@ -228,7 +227,6 @@ export const getBrandConfig = (brandId?: string): BrandConfig => {
   const config = brandConfigs[id];
 
   if (!config) {
-    console.warn(`Brand "${id}" not found, falling back to crescent`);
     return brandConfigs.crescent;
   }
 

@@ -53,11 +53,6 @@ export const usePayOnline = (): UsePayOnlineResult => {
         const mobileNo =
           userData?.mobileNumber || userData?.mobile_number || '';
 
-        console.log('=== usePayOnline: initiatePayment ===');
-        console.log('student:', student?.name, 'adno:', adno);
-        console.log('mobileNo:', mobileNo, 'token:', token ? 'present' : 'MISSING');
-        console.log('totalAmount:', totalAmount, 'selectedFees:', selectedFees.length);
-
         if (!adno || !token || !mobileNo) {
           throw new Error(`Missing required payment information (adno: ${!!adno}, token: ${!!token}, mobile: ${!!mobileNo})`);
         }
@@ -66,18 +61,13 @@ export const usePayOnline = (): UsePayOnlineResult => {
         const paymentFlowType: PaymentFlowType =
           Platform.OS === 'android' ? 'INTENT' : 'PG_CHECKOUT';
 
-        console.log('Payment flow type:', paymentFlowType);
-
         // Step 1: Create merchant entry
-        console.log('Step 1: Calling payOnline...');
         const payOnlineRes = await feesApi.payOnline({
           admission_id: adno,
           payment_amount: String(totalAmount),
           mobile_no: mobileNo,
           token,
         });
-        console.log('Step 1 response:', JSON.stringify(payOnlineRes));
-
         if (!payOnlineRes.status || !payOnlineRes.data) {
           throw new Error(
             payOnlineRes.message || 'Failed to initiate payment'
@@ -87,7 +77,6 @@ export const usePayOnline = (): UsePayOnlineResult => {
         const merchantId = payOnlineRes.data;
 
         // Step 2: Create PhonePe order
-        console.log('Step 2: Calling updateOrderId with merchantId:', merchantId, 'flowType:', paymentFlowType);
         const updateOrderRes = await feesApi.updateOrderId({
           token,
           amount: String(totalAmount),
@@ -95,8 +84,6 @@ export const usePayOnline = (): UsePayOnlineResult => {
           id: merchantId,
           paymentFlowType,
         });
-        console.log('Step 2 response:', JSON.stringify(updateOrderRes));
-
         if (!updateOrderRes.status || !updateOrderRes.data) {
           throw new Error(
             updateOrderRes.message || 'Failed to create payment order'
@@ -118,10 +105,6 @@ export const usePayOnline = (): UsePayOnlineResult => {
           paymentFlowType,
         };
       } catch (err: any) {
-        console.error('=== usePayOnline ERROR ===');
-        console.error('Error:', err?.message);
-        console.error('Response status:', err?.response?.status);
-        console.error('Response data:', JSON.stringify(err?.response?.data));
         const message =
           err?.response?.data?.message ||
           err?.message ||

@@ -56,7 +56,6 @@ class GeminiService {
     const key = apiKey || Config.GEMINI_API_KEY;
 
     if (!key || key === 'your_gemini_api_key_here') {
-      console.warn('Gemini API key not configured');
       return false;
     }
 
@@ -65,7 +64,6 @@ class GeminiService {
       this.model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
       return true;
     } catch (error) {
-      console.error('Failed to initialize Gemini:', error);
       return false;
     }
   }
@@ -134,8 +132,6 @@ ${ctx.pendingFees !== undefined ? `- Pending Fees: ₹${ctx.pendingFees}` : ''}`
       const response = result.response;
       return response.text();
     } catch (error: any) {
-      console.error('Gemini API error:', error);
-
       if (error.message?.includes('API key')) {
         throw new Error('Invalid API key. Please check your Gemini API key configuration.');
       }
@@ -161,7 +157,6 @@ ${ctx.pendingFees !== undefined ? `- Pending Fees: ₹${ctx.pendingFees}` : ''}`
       const response = result.response;
       return response.text();
     } catch (error: any) {
-      console.error('Gemini API error:', error);
       throw new Error('Failed to get response. Please try again.');
     }
   }

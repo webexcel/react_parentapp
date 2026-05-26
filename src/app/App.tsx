@@ -22,7 +22,6 @@ const AppContent = () => {
       // Check if app was opened from notification
       const initialNotification = await fcmService.getInitialNotification();
       if (initialNotification) {
-        console.log('App opened from notification:', initialNotification);
         // Handle navigation based on notification data
       }
 

@@ -55,7 +55,7 @@ export const usePasswordLogin = (): UsePasswordLoginReturn => {
                                 try {
                                     photoBase64 = await authService.getStudentPhoto(adno);
                                 } catch (photoError) {
-                                    console.error(`Error fetching photo for student ${adno}:`, photoError);
+                                    // Photo fetch failed - continue without photo
                                 }
 
                                 // Get CLASSSEC (e.g., "VI-A") - keep it whole for display
@@ -88,7 +88,6 @@ export const usePasswordLogin = (): UsePasswordLoginReturn => {
                         await setStudents(students);
                     }
                 } catch (studentsError) {
-                    console.error('Error fetching students:', studentsError);
                     // Continue even if students fetch fails - user is still logged in
                 }
 

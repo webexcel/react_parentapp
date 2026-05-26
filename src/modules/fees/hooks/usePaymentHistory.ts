@@ -31,12 +31,6 @@ export const usePaymentHistory = (
   const adno = student?.studentId || student?.id;
   const studentClassId = classId || student?.classId;
 
-  console.log('=== usePaymentHistory ===');
-  console.log('targetStudentId:', targetStudentId);
-  console.log('student:', JSON.stringify(student, null, 2));
-  console.log('adno:', adno, 'studentClassId:', studentClassId);
-  console.log('query enabled:', !!adno && !!studentClassId);
-
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [QUERY_KEYS.FEES, 'history', targetStudentId, adno, studentClassId],
     queryFn: async () => {
@@ -46,13 +40,10 @@ export const usePaymentHistory = (
       const currentClassId = classId || currentStudent?.classId;
 
       if (!currentAdno || !currentClassId) {
-        console.log('Missing adno or classId - returning empty');
         return { receipts: [] as PaymentReceipt[], totalPaid: 0 };
       }
 
-      console.log('Calling getStudentPayHistory with adno:', currentAdno, 'classId:', currentClassId);
       const response = await feesApi.getStudentPayHistory(currentAdno, currentClassId);
-      console.log('Payment history response:', JSON.stringify(response, null, 2));
 
       // Check for Student_History regardless of status (handles empty data case)
       if (response.Student_History) {

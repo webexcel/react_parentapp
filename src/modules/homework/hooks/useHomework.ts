@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { QUERY_KEYS } from '../../../core/constants';
 import { useAuth } from '../../../core/auth';
 import { homeworkApi } from '../services/homeworkApi';
-import { Homework, SUBJECT_COLORS } from '../types/homework.types';
+import { Homework, HomeworkAttachment, SUBJECT_COLORS } from '../types/homework.types';
 
 export const useHomework = () => {
   const { selectedStudentId, students } = useAuth();
@@ -25,42 +25,19 @@ export const useHomework = () => {
       const adno = selectedStudent.studentId;
       const classId = selectedStudent.classId;
 
-      console.log('=== HOMEWORK FETCH DEBUG ===');
-      console.log('Selected Student:', JSON.stringify(selectedStudent, null, 2));
-      console.log('adno:', adno);
-      console.log('classId:', classId);
-
       if (!adno || !classId) {
-        console.error('ERROR: Missing required fields for homework API');
-        console.error('adno:', adno);
-        console.error('classId:', classId);
-        console.error('Please logout and login again to capture classId');
         return [];
       }
-
-      console.log('Fetching homework with:', { adno, classid: classId });
 
       try {
         const response = await homeworkApi.getHomework(adno, classId);
 
-        console.log('=== HOMEWORK API RESPONSE ===');
-        console.log('Full response:', JSON.stringify(response, null, 2));
-        console.log('response.status:', response.status);
-        console.log('response.data:', response.data);
-        console.log('response.message:', response.message);
-
         if (response.status && response.data && Array.isArray(response.data)) {
-          console.log('Number of homework items:', response.data.length);
-
           if (response.data.length === 0) {
-            console.log('API returned empty homework array');
             return [];
           }
 
           const mappedHomework = response.data.map((item: any, index: number) => {
-            console.log(`=== Homework item ${index + 1} RAW ===`);
-            console.log(JSON.stringify(item, null, 2));
-
             // API returns: MSG_ID, CLASS, MESSAGE, MSG_DATE, subject, event_image
             const homework = {
               id: String(item.MSG_ID || item.id || item.homeworkId || Math.random()),
@@ -70,38 +47,20 @@ export const useHomework = () => {
               dueDate: item.MSG_DATE || item.dueDate || item.submissionDate || new Date().toISOString(),
               assignedDate: item.MSG_DATE || item.assignedDate || item.createdAt || new Date().toISOString(),
               status: getHomeworkStatus(item),
-              attachments: item.event_image ? [{
-                id: String(item.MSG_ID || Math.random()),
-                type: getAttachmentType(item.event_image),
-                url: item.event_image,
-                name: 'Attachment',
-              }] : [],
+              attachments: parseAttachments(item.event_image, index),
               teacherName: item.teacherName || item.teacher || '',
               subjectColor: getSubjectColor(item.subject || item.subjectName || ''),
               isAcknowledged: item.completed_status === '1' || item.completed_status === 1 || item.isAcknowledged || item.acknowledged || false,
             };
 
-            console.log(`=== Homework item ${index + 1} MAPPED ===`);
-            console.log(JSON.stringify(homework, null, 2));
             return homework;
           });
 
-          console.log('=== FINAL HOMEWORK ARRAY ===');
-          console.log(`Total items: ${mappedHomework.length}`);
           return mappedHomework;
         } else {
-          console.error('Invalid response format');
-          console.error('response.status:', response.status);
-          console.error('response.data is array:', Array.isArray(response.data));
-          console.error('response.data:', response.data);
           return [];
         }
       } catch (error: any) {
-        console.error('=== HOMEWORK API ERROR ===');
-        console.error('Error message:', error.message);
-        console.error('Error response:', error.response?.data);
-        console.error('Error status:', error.response?.status);
-        console.error('Full error:', JSON.stringify(error, null, 2));
         throw error;
       }
     },
@@ -114,18 +73,12 @@ export const useHomework = () => {
       const adno = selectedStudent.studentId;
       if (!adno) throw new Error('Student admission number not found');
 
-      console.log('=== MARKING HOMEWORK COMPLETE ===');
-      console.log('homeworkId:', homeworkId);
-      console.log('adno:', adno);
-
       return homeworkApi.acknowledgeHomework(homeworkId, adno);
     },
     onSuccess: () => {
-      console.log('Homework marked as complete successfully');
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.HOMEWORK] });
     },
     onError: (error: any) => {
-      console.error('Error marking homework complete:', error);
       throw error; // Re-throw to let the screen handle the error
     },
   });
@@ -159,11 +112,55 @@ const getHomeworkStatus = (item: any): 'pending' | 'completed' | 'overdue' => {
   return 'pending';
 };
 
-const getAttachmentType = (url: string): 'pdf' | 'image' | 'audio' | 'document' => {
+const parseAttachments = (eventImage: any, index: number): HomeworkAttachment[] => {
+  if (!eventImage || typeof eventImage !== 'string' || eventImage.trim() === '') {
+    return [];
+  }
+
+  const trimmed = eventImage.trim();
+
+  // Single URL starting with http
+  if (trimmed.startsWith('http')) {
+    return [{
+      id: String(index),
+      type: getAttachmentType(trimmed),
+      url: trimmed,
+      name: 'Attachment',
+    }];
+  }
+
+  // Stringified JSON array — clean whitespace inside URLs before parsing
+  if (trimmed.startsWith('[')) {
+    try {
+      const sanitized = trimmed.replace(/\s+/g, '');
+      const parsed = JSON.parse(sanitized);
+      if (Array.isArray(parsed)) {
+        const urls = parsed.filter(
+          (u: any) => typeof u === 'string' && u !== '',
+        );
+        if (urls.length > 0) {
+          return urls.map((url: string, idx: number) => ({
+            id: `${index}-${idx}`,
+            type: getAttachmentType(url),
+            url,
+            name: `Attachment ${idx + 1}`,
+          }));
+        }
+      }
+    } catch {
+      // Invalid JSON, fall through
+    }
+  }
+
+  return [];
+};
+
+const getAttachmentType = (url: string): 'pdf' | 'image' | 'audio' | 'video' | 'document' => {
   const ext = url.split('.').pop()?.toLowerCase() || '';
   if (['pdf'].includes(ext)) return 'pdf';
   if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) return 'image';
   if (['mp3', 'wav', 'aac', 'm4a'].includes(ext)) return 'audio';
+  if (['mp4', 'mov', 'avi', 'mkv', 'webm'].includes(ext)) return 'video';
   return 'document';
 };
 

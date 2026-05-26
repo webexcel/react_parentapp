@@ -30,15 +30,6 @@ export const ProfileScreen: React.FC = () => {
   const navigation = useNavigation<any>();
   const brandName = useBrandName();
 
-  // Debug: Log student data to see what's available
-  React.useEffect(() => {
-    console.log('=== PROFILE SCREEN STUDENTS ===');
-    console.log('Number of students:', students.length);
-    students.forEach((student, index) => {
-      console.log(`Student ${index + 1}:`, JSON.stringify(student, null, 2));
-    });
-  }, [students]);
-
   const handleRefreshPhotos = async () => {
     Alert.alert(
       'Refresh Photos',

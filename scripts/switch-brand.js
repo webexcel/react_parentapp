@@ -108,7 +108,7 @@ console.log(`
 To run the app:
 
   Android:
-    npx react-native run-android --variant=${brand}Debug
+    npx react-native run-android --mode=${brand}Debug
 
   iOS:
     npx react-native run-ios

@@ -40,13 +40,6 @@ export const useFeeDetails = (
   const student = students.find((s) => s.id === targetStudentId);
   const adno = student?.studentId || student?.id;
 
-  console.log('=== useFeeDetails ===');
-  console.log('targetStudentId:', targetStudentId);
-  console.log('student:', JSON.stringify(student, null, 2));
-  console.log('adno:', adno);
-  console.log('students array length:', students.length);
-  console.log('query enabled:', !!adno);
-
   const { data, isLoading, isFetching, error, refetch } = useQuery({
     queryKey: [QUERY_KEYS.FEES, 'details', targetStudentId, adno, interval],
     queryFn: async () => {
@@ -55,7 +48,6 @@ export const useFeeDetails = (
       const currentAdno = currentStudent?.studentId || currentStudent?.id;
 
       if (!currentAdno) {
-        console.log('No adno - returning empty');
         return {
           fees: [] as SelectableFeeItem[],
           totalAmount: 0,
@@ -63,16 +55,12 @@ export const useFeeDetails = (
         };
       }
 
-      console.log('Calling getStudentPayDetails with adno:', currentAdno, 'interval:', interval);
       const response = await feesApi.getStudentPayDetails(currentAdno, interval);
-      console.log('Fee details response:', JSON.stringify(response, null, 2));
 
       // Check if we have Student_details (regardless of status - handles empty data case)
       if (response.Student_details) {
         const feeDetails = response.Student_details.FEE_DETAILS || [];
-        console.log('FEE_DETAILS count:', feeDetails.length);
         const pendingFees = feeDetails.filter((fee) => fee.Balance_Amount > 0);
-        console.log('Pending fees count:', pendingFees.length);
 
         return {
           fees: transformToSelectableFees(pendingFees),
@@ -81,7 +69,6 @@ export const useFeeDetails = (
         };
       }
 
-      console.log('No Student_details in response');
       return {
         fees: [] as SelectableFeeItem[],
         totalAmount: 0,
