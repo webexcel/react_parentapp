@@ -142,8 +142,8 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 9
-        versionName "1.0.3"
+        versionCode 10
+        versionName "1.0.4"
 
         // Default BuildConfig fields (overridden by flavors)
         buildConfigField "String", "BRAND_ID", "\"crescent\""
@@ -515,7 +515,7 @@ android {
         stdominics {
             dimension "brand"
             applicationId "com.schooltree.dominics"
-            resValue "string", "app_name", "St. Dominic's anglo-indian Hr. Sec. School Parent"
+            resValue "string", "app_name", "St. Dominics anglo-indian Hr. Sec. School Parent"
             buildConfigField "String", "BRAND_ID", "\"stdominics\""
             buildConfigField "String", "AUTH_TYPE", "\"otp\""
             buildConfigField "String", "DB_NAME", "\"dominic\""

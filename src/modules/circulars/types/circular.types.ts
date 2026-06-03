@@ -26,4 +26,5 @@ export interface CircularsResponse {
   status: boolean;
   message: string;
   data?: Circular[];
+  total_size?: number;
 }

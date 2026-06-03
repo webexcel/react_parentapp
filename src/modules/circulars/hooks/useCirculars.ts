@@ -1,82 +1,113 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Alert } from 'react-native';
 import { QUERY_KEYS } from '../../../core/constants';
 import { useAuth } from '../../../core/auth';
 import { circularsApi } from '../services/circularsApi';
 import { Attachment, Circular } from '../types/circular.types';
 
+const PAGE_SIZE = 10;
+
 export const useCirculars = () => {
   const { userData } = useAuth();
   const queryClient = useQueryClient();
 
   const {
-    data: circulars = [],
+    data,
     isLoading,
     isFetching,
+    isFetchingNextPage,
     error,
     refetch,
-  } = useQuery({
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteQuery({
     queryKey: [QUERY_KEYS.CIRCULARS, userData?.mobileNumber],
-    queryFn: async (): Promise<Circular[]> => {
+    queryFn: async ({ pageParam = 0 }): Promise<{
+      circulars: Circular[];
+      totalSize: number;
+      currentOffset: number;
+    }> => {
       if (!userData?.mobileNumber) {
-        return [];
+        return { circulars: [], totalSize: 0, currentOffset: 0 };
       }
 
-      const response = await circularsApi.getCirculars(userData.mobileNumber);
+      const response = await circularsApi.getCirculars(
+        userData.mobileNumber,
+        PAGE_SIZE,
+        pageParam,
+      );
+
+      const totalSize = response.total_size || 0;
 
       if (response.status && response.data) {
-        return response.data.map((item: any, index: number) => ({
-          id: `${item.ADNO || 'circular'}-${index}`,
+        const circulars = response.data.map((item: any, index: number) => ({
+          id: `${item.ADNO || 'circular'}-${pageParam + index}`,
           sn: item.sn,
           title: item.STUDENTNAME || 'Circular',
           content: item.Message || '',
           date: item.SMSdate || '',
           category: 'General',
-          attachments: parseAttachments(item.event_image, index),
+          attachments: parseAttachments(item.event_image, pageParam + index),
           isRead: true,
           isAcknowledged: item.completed_status === '1',
           priority: 'normal',
           adno: item.ADNO || '',
         }));
+        return { circulars, totalSize, currentOffset: pageParam };
       }
-      return [];
+      return { circulars: [], totalSize, currentOffset: pageParam };
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => {
+      const nextOffset = lastPage.currentOffset + PAGE_SIZE;
+      return nextOffset < lastPage.totalSize ? nextOffset : undefined;
     },
     enabled: !!userData?.mobileNumber,
-    staleTime: 2 * 60 * 1000,
+    staleTime: 0,
   });
+
+  // Flatten all pages into a single array
+  const circulars = data?.pages.flatMap((page) => page.circulars) || [];
+  const totalSize = data?.pages[0]?.totalSize || 0;
 
   const acknowledgeMutation = useMutation({
     mutationFn: async ({ sn, adno }: { sn: number; adno: string }) => {
       return circularsApi.acknowledgeCircular(sn, adno);
     },
     onMutate: async ({ sn }) => {
-      // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.CIRCULARS, userData?.mobileNumber] });
 
-      // Snapshot previous value
-      const previousCirculars = queryClient.getQueryData<Circular[]>([QUERY_KEYS.CIRCULARS, userData?.mobileNumber]);
+      const previousData = queryClient.getQueryData([QUERY_KEYS.CIRCULARS, userData?.mobileNumber]);
 
-      // Optimistically update
-      queryClient.setQueryData<Circular[]>(
+      queryClient.setQueryData(
         [QUERY_KEYS.CIRCULARS, userData?.mobileNumber],
-        (old) => old?.map((c) => (c.sn === sn ? { ...c, isAcknowledged: true } : c)) || []
+        (old: any) => {
+          if (!old?.pages) return old;
+          return {
+            ...old,
+            pages: old.pages.map((page: any) => ({
+              ...page,
+              circulars: page.circulars.map((c: Circular) =>
+                c.sn === sn ? { ...c, isAcknowledged: true } : c
+              ),
+            })),
+          };
+        }
       );
 
-      return { previousCirculars };
+      return { previousData };
     },
     onError: (_err, _vars, context) => {
-      // Rollback on error
-      if (context?.previousCirculars) {
+      if (context?.previousData) {
         queryClient.setQueryData(
           [QUERY_KEYS.CIRCULARS, userData?.mobileNumber],
-          context.previousCirculars
+          context.previousData
         );
       }
       Alert.alert('Error', 'Failed to acknowledge circular. Please try again.');
     },
     onSettled: () => {
-      // Silently refetch in background without showing loading state
-      queryClient.refetchQueries({
+      queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.CIRCULARS, userData?.mobileNumber],
       });
     },
@@ -88,10 +119,14 @@ export const useCirculars = () => {
 
   return {
     circulars,
+    totalSize,
     isLoading,
     isFetching,
+    isFetchingNextPage,
     error,
     refetch,
+    fetchNextPage,
+    hasNextPage: !!hasNextPage,
     acknowledgeCircular,
     isAcknowledging: acknowledgeMutation.isPending,
   };

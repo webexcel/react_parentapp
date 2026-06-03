@@ -9,6 +9,7 @@ const QUERY_KEYS = {
 export const useExams = (classId?: string | number) => {
   const query = useQuery({
     queryKey: [QUERY_KEYS.EXAMS, classId],
+    staleTime: 0,
     queryFn: async () => {
       if (!classId) {
         return { status: false, message: 'No class ID', examdata: [] };

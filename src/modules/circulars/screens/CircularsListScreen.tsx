@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { FlatList, StyleSheet, View, RefreshControl } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { FlatList, StyleSheet, View, RefreshControl, ActivityIndicator } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   ListTemplate,
   SearchBar,
@@ -10,7 +11,7 @@ import {
   colors,
   spacing,
 } from '../../../design-system';
-import { ROUTES } from '../../../core/constants';
+import { ROUTES, QUERY_KEYS } from '../../../core/constants';
 import { useCirculars } from '../hooks/useCirculars';
 import { CircularCard } from '../components/CircularCard';
 import { Circular } from '../types/circular.types';
@@ -19,11 +20,28 @@ type FilterType = 'all' | 'today' | 'pending' | 'acknowledged';
 
 export const CircularsListScreen: React.FC = () => {
   const navigation = useNavigation<any>();
-  const { circulars, isLoading, isFetching, refetch, acknowledgeCircular } = useCirculars();
+  const queryClient = useQueryClient();
+  const {
+    circulars,
+    totalSize,
+    isLoading,
+    isFetchingNextPage,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    acknowledgeCircular,
+  } = useCirculars();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+
+  // Reset query and fetch fresh first page when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      queryClient.resetQueries({ queryKey: [QUERY_KEYS.CIRCULARS] });
+    }, [queryClient])
+  );
 
   // Today's date string for "New" filter
   const todayStr = useMemo(() => {
@@ -35,7 +53,7 @@ export const CircularsListScreen: React.FC = () => {
     return dateStr?.startsWith(todayStr);
   }, [todayStr]);
 
-  // Counts for filter chips
+  // Counts for filter chips (based on loaded circulars)
   const todayCount = useMemo(
     () => circulars.filter((c) => isToday(c.date)).length,
     [circulars, isToday]
@@ -68,9 +86,15 @@ export const CircularsListScreen: React.FC = () => {
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await refetch();
+    await queryClient.resetQueries({ queryKey: [QUERY_KEYS.CIRCULARS] });
     setRefreshing(false);
   };
+
+  const handleLoadMore = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const handleCircularPress = useCallback((circular: Circular) => {
     navigation.navigate(ROUTES.CIRCULAR_DETAIL, { circular });
@@ -89,6 +113,19 @@ export const CircularsListScreen: React.FC = () => {
       onAcknowledge={() => handleAcknowledge(item)}
     />
   ), [handleCircularPress, handleAcknowledge]);
+
+  const renderFooter = useCallback(() => {
+    if (isFetchingNextPage) {
+      return (
+        <ActivityIndicator
+          size="small"
+          color={colors.primary}
+          style={styles.loadingMore}
+        />
+      );
+    }
+    return null;
+  }, [isFetchingNextPage]);
 
   if (isLoading && circulars.length === 0 && !refreshing) {
     return (
@@ -125,7 +162,7 @@ export const CircularsListScreen: React.FC = () => {
         {/* Filter Chips */}
         <View style={styles.filterRow}>
           <Chip
-            label={`All (${circulars.length})`}
+            label={`All (${totalSize || circulars.length})`}
             selected={activeFilter === 'all'}
             onPress={() => setActiveFilter('all')}
           />
@@ -159,6 +196,9 @@ export const CircularsListScreen: React.FC = () => {
               description={activeFilter === 'today' ? 'No circulars received today.' : activeFilter === 'pending' ? 'All circulars have been acknowledged.' : activeFilter === 'acknowledged' ? 'No circulars acknowledged yet.' : 'There are no circulars to display at the moment.'}
             />
           }
+          ListFooterComponent={renderFooter}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
@@ -189,5 +229,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.base,
     paddingBottom: spacing['2xl'],
     flexGrow: 1,
+  },
+  loadingMore: {
+    paddingVertical: spacing.base,
   },
 });

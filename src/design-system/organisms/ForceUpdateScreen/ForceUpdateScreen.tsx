@@ -24,6 +24,7 @@ const brandLogos: Record<string, ImageSourcePropType> = {
   littleflower: require('../../../../brands/littleflower/assets/icon.png'),
   stdominics: require('../../../../brands/stdominics/assets/icon.png'),
   holycresentmatric: require('../../../../brands/holycresentmatric/assets/icon.png'),
+  infant: require('../../../../brands/infant/assets/icon.png'),
   mountseno: require('../../../../brands/mountseno/assets/icon.png'),
   udhayamglobal: require('../../../../brands/udhayamglobal/assets/icon.png'),
   vidhyaratna: require('../../../../brands/vidhyaratna/assets/icon.png'),

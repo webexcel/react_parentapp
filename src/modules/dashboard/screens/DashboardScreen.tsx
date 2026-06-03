@@ -24,7 +24,6 @@ import { ROUTES } from '../../../core/constants';
 import { useDashboard } from '../hooks';
 import { FlashMessageModal } from '../components';
 import { useIsModuleEnabled } from '../../../core/brand/featureFlags';
-import { useCirculars } from '../../circulars/hooks/useCirculars';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -68,13 +67,6 @@ export const DashboardScreen: React.FC = () => {
     refresh,
   } = useDashboard();
 
-  // Get circulars for pending acknowledge count
-  const { circulars } = useCirculars();
-  const pendingAcknowledgeCount = useMemo(
-    () => circulars.filter((c) => !c.isAcknowledged).length,
-    [circulars]
-  );
-
   const selectedStudent = students.find((s) => s.id === selectedStudentId) || students[0];
 
   // Auto-fetch when screen comes into focus
@@ -114,23 +106,31 @@ export const DashboardScreen: React.FC = () => {
 
   // Transform API data for attendance display - show all students
   const attendanceData = useMemo(() => {
-    return students.map((student, index) => ({
-      ...student,
-      percentage: student.id === selectedStudentId ? summary.attendancePercentage : 0,
-      leaveCount: student.id === selectedStudentId ? summary.leaveCount : 0,
-      color: getAvatarColor(index),
-    }));
-  }, [students, selectedStudentId, summary.attendancePercentage, summary.leaveCount]);
+    return students.map((student, index) => {
+      const studentAdno = student.studentId || student.id;
+      const attItem = summary.attendanceByStudent?.find((a) => a.adno === studentAdno);
+      return {
+        ...student,
+        percentage: attItem ? parseFloat(attItem.percentage) || 0 : 0,
+        leaveCount: attItem ? parseFloat(attItem.absent_days) || 0 : 0,
+        color: getAvatarColor(index),
+      };
+    });
+  }, [students, summary.attendanceByStudent]);
 
   // Transform API data for homework display - show all students
   const homeworkData = useMemo(() => {
-    return students.map((student, index) => ({
-      ...student,
-      pending: student.id === selectedStudentId ? summary.homeworkCount : 0,
-      completed: student.id === selectedStudentId ? summary.homeworkCompleted : 0,
-      color: getAvatarColor(index),
-    }));
-  }, [students, selectedStudentId, summary.homeworkCount, summary.homeworkCompleted]);
+    return students.map((student, index) => {
+      const studentAdno = student.studentId || student.id;
+      const hwItem = summary.homeworkByStudent?.find((h) => h.adno === studentAdno);
+      return {
+        ...student,
+        pending: hwItem?.count || 0,
+        completed: hwItem?.completed || 0,
+        color: getAvatarColor(index),
+      };
+    });
+  }, [students, summary.homeworkByStudent]);
 
   // Transform API latest messages to news format
   const latestNews = useMemo(() => {
@@ -351,15 +351,8 @@ export const DashboardScreen: React.FC = () => {
                 <ActivityIndicator size="small" color={colors.primary} style={{ marginTop: spacing.xs }} />
               ) : (
                 <View style={{ marginTop: spacing.xs }}>
-                  {summary.circularsCount > 0 && (
-                    <Text style={styles.circularsValue}>
-                      {summary.circularsCount} New
-                    </Text>
-                  )}
-                  <Text style={[
-                    summary.circularsCount > 0 ? styles.circularsSubValue : styles.circularsValue,
-                  ]}>
-                    {pendingAcknowledgeCount > 0 ? `${pendingAcknowledgeCount} Pending` : 'All Done'}
+                  <Text style={styles.circularsValue}>
+                    {summary.circularsCount > 0 ? `${summary.circularsCount} New` : 'All Done'}
                   </Text>
                 </View>
               )}

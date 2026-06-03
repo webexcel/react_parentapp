@@ -160,15 +160,12 @@ export const MarksScreen: React.FC = () => {
     }, [refetch])
   );
 
-  // Show loading when:
-  // 1. Exams are loading
-  // 2. We have exams and marks are loading
-  // 3. Waiting for classId (student data not yet loaded)
-  const isLoading = isWaitingForClassId || isLoadingExams || (exams.length > 0 && isLoadingMarks);
+  // Show loading only when API is actually fetching
+  const isLoading = isLoadingExams || (exams.length > 0 && isLoadingMarks);
   const isFetching = exams.length > 0 && isFetchingMarks;
 
-  // Check if no exams available from API (only after loading is complete)
-  const noExamsAvailable = !isWaitingForClassId && !isLoadingExams && exams.length === 0;
+  // No exams: either classId is missing (API can't be called) or API returned empty
+  const noExamsAvailable = isWaitingForClassId || (!isLoadingExams && exams.length === 0);
 
   const [refreshing, setRefreshing] = useState(false);
 

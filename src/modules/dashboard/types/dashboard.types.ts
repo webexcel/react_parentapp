@@ -17,7 +17,7 @@ export interface BatchCountRequest {
 export interface AttendanceItem {
   adno: string;
   percentage: string;
-  total_days: number;
+  total_working_days: number;
   present_days: string;
   absent_days: string;
   today_status: string;
@@ -154,6 +154,9 @@ export interface DashboardSummary {
   paymentDue: number;
   paymentStatus: string;
   leaveCount: number;
+  // Per-student data from batchCount (all siblings)
+  homeworkByStudent: HomeworkItem[];
+  attendanceByStudent: AttendanceItem[];
 }
 
 export interface StudentDashboardData {

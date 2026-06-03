@@ -21,6 +21,8 @@ const getDefaultSummary = (): DashboardSummary => ({
   paymentDue: 0,
   paymentStatus: 'No Due',
   leaveCount: 0,
+  homeworkByStudent: [],
+  attendanceByStudent: [],
 });
 
 export const useBatchCount = (studentId?: string): UseBatchCountResult => {
@@ -28,17 +30,19 @@ export const useBatchCount = (studentId?: string): UseBatchCountResult => {
 
   const targetStudentId = studentId || selectedStudentId;
 
-  // Find the student's admission number (ADNO) and classId
+  // Find the selected student's admission number (ADNO)
   const student = students.find((s) => s.id === targetStudentId);
   const adno = student?.studentId || student?.id;
-  const classId = student?.classId;
+
+  // Collect ALL siblings' admission numbers for the payload
+  const allAdnos = students.map((s) => s.studentId || s.id);
 
   const { data, isLoading, isFetching, error, refetch } = useQuery({
     queryKey: [QUERY_KEYS.DASHBOARD, 'batchCount', targetStudentId],
     queryFn: async (): Promise<DashboardSummary> => {
-      if (!adno) return getDefaultSummary();
+      if (!adno || allAdnos.length === 0) return getDefaultSummary();
 
-      const response = await dashboardApi.getBatchCount(adno, classId);
+      const response = await dashboardApi.getBatchCount(allAdnos);
 
       if (response.status && response.data) {
         const summary = getDefaultSummary();
@@ -46,12 +50,16 @@ export const useBatchCount = (studentId?: string): UseBatchCountResult => {
         // Circulars count
         summary.circularsCount = response.data.circulars?.count || 0;
 
-        // Homework count for this student
+        // Store full per-student arrays
+        summary.homeworkByStudent = response.data.homework || [];
+        summary.attendanceByStudent = response.data.attendance || [];
+
+        // Homework count for selected student
         const homeworkItem = response.data.homework?.find((h) => h.adno === adno);
         summary.homeworkCount = homeworkItem?.count || 0;
         summary.homeworkCompleted = homeworkItem?.completed || 0;
 
-        // Attendance data for this student
+        // Attendance data for selected student
         const attendanceItem = response.data.attendance?.find((a) => a.adno === adno);
         if (attendanceItem) {
           summary.attendancePercentage = parseFloat(attendanceItem.percentage) || 0;

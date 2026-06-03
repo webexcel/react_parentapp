@@ -58,7 +58,16 @@
       "Bash(where convert:*)",
       "Bash(npx --yes sharp-cli --version)",
       "Bash(disown)",
-      "Bash(xargs -I{} basename {})"
+      "Bash(xargs -I{} basename {})",
+      "Bash(export PATH=\"$PATH:/c/Users/DELL/AppData/Local/Android/Sdk/platform-tools\")",
+      "Bash(adb wait-for-device:*)",
+      "Bash(python3:*)",
+      "Bash(/c/Users/DELL/AppData/Local/Android/Sdk/platform-tools/adb.exe devices:*)",
+      "Bash(/c/Users/DELL/AppData/Local/Android/Sdk/emulator/emulator.exe:*)",
+      "Bash(/c/Users/DELL/AppData/Local/Android/Sdk/platform-tools/adb.exe wait-for-device:*)",
+      "Bash(/c/Users/DELL/AppData/Local/Android/Sdk/platform-tools/adb.exe shell:*)",
+      "Bash(/c/Users/DELL/AppData/Local/Android/Sdk/platform-tools/adb.exe install:*)",
+      "Bash(du:*)"
     ]
   }
 }
