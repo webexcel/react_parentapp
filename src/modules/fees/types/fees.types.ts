@@ -134,10 +134,10 @@ export interface UpdateOrderResponse extends ApiResponse<UpdateOrderData> {}
 
 export interface PrintBillRequest {
   rid: string;
-  payment_id: string;
   adno: string;
   name: string;
-  className: string;
+  class_id: string;
+  year_id: number;
 }
 
 export interface PrintBillResponse extends ApiResponse<string> {} // Returns PDF URL

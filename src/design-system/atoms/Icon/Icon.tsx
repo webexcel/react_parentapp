@@ -50,7 +50,8 @@ export type IconName =
   | 'playCircle'
   | 'add'
   | 'arrowBack'
-  | 'thumbUp';
+  | 'thumbUp'
+  | 'leaveLetter';
 
 export interface IconProps {
   name: IconName;
@@ -109,6 +110,7 @@ const iconMap: Record<IconName, string> = {
   add: 'add',
   arrowBack: 'arrow-back',
   thumbUp: 'thumb-up',
+  leaveLetter: 'event-busy',
 };
 
 export const Icon: React.FC<IconProps> = ({

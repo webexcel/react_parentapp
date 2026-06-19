@@ -1,4 +1,5 @@
 import React from 'react';
+import {View, StyleSheet} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -7,13 +8,15 @@ import {ROUTES} from '../core/constants';
 import {Spinner, Icon} from '../design-system';
 import {useTheme} from '../design-system/theme/ThemeContext';
 import {useBrand, useAuthType} from '../core/brand';
+import {SideMenu} from './SideMenu';
+import {SideMenuProvider, useSideMenu} from './SideMenuContext';
 
 // Auth Screens
-import {LoginScreen, OtpScreen, PasswordScreen, CreatePasswordScreen} from '../modules/auth';
+import {LoginScreen, OtpScreen, PasswordScreen} from '../modules/auth';
 
 // Main Screens
 import {DashboardScreen} from '../modules/dashboard';
-import {HomeworkScreen} from '../modules/homework';
+import {HomeworkScreen, HomeworkDetailScreen} from '../modules/homework';
 import {ProfileScreen, NotificationSettingsScreen, ChangePasswordScreen} from '../modules/profile';
 
 // Feature Screens
@@ -32,7 +35,6 @@ import {LeaveLetterScreen} from '../modules/leaveLetter';
 // Stack and Tab navigators
 const AuthStack = createNativeStackNavigator();
 const MainStack = createNativeStackNavigator();
-const PasswordSetupStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 /**
@@ -161,6 +163,14 @@ const MainNavigator = () => {
         />
       )}
 
+      {/* Homework Detail - Show if homework module is enabled */}
+      {isModuleEnabled('homework') && (
+        <MainStack.Screen
+          name={ROUTES.HOMEWORK_DETAIL}
+          component={HomeworkDetailScreen}
+        />
+      )}
+
       {/* Attendance - Conditional */}
       {isModuleEnabled('attendance') && (
         <MainStack.Screen
@@ -250,44 +260,39 @@ const MainNavigator = () => {
   );
 };
 
-/**
- * Password Setup Navigator - Shown when first-time user needs to create password
- */
-const PasswordSetupNavigator = () => {
+// Inner component that uses SideMenu context
+const AuthenticatedApp = () => {
+  const {isOpen, closeMenu} = useSideMenu();
+
   return (
-    <PasswordSetupStack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}>
-      <PasswordSetupStack.Screen
-        name={ROUTES.CREATE_PASSWORD}
-        component={CreatePasswordScreen}
-      />
-    </PasswordSetupStack.Navigator>
+    <View style={styles.flex}>
+      <MainNavigator />
+      <SideMenu visible={isOpen} onClose={closeMenu} />
+    </View>
   );
 };
 
 // Root Navigator
 export const Navigation = () => {
-  const { isAuthenticated, isLoading, requiresPasswordSetup } = useAuth();
-  const authType = useAuthType();
+  const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
     return <Spinner fullScreen message="Loading..." />;
   }
 
-  // Only show password setup for brands that use password auth (e.g. pssenior)
-  const showPasswordSetup = requiresPasswordSetup && (authType === 'password' || authType === 'both');
-
   return (
-    <NavigationContainer>
-      {isAuthenticated && showPasswordSetup ? (
-        <PasswordSetupNavigator />
-      ) : isAuthenticated ? (
-        <MainNavigator />
-      ) : (
-        <AuthNavigator />
-      )}
-    </NavigationContainer>
+    <SideMenuProvider>
+      <NavigationContainer>
+        {isAuthenticated ? (
+          <AuthenticatedApp />
+        ) : (
+          <AuthNavigator />
+        )}
+      </NavigationContainer>
+    </SideMenuProvider>
   );
 };
+
+const styles = StyleSheet.create({
+  flex: {flex: 1},
+});

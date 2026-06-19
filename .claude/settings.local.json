@@ -67,7 +67,20 @@
       "Bash(/c/Users/DELL/AppData/Local/Android/Sdk/platform-tools/adb.exe wait-for-device:*)",
       "Bash(/c/Users/DELL/AppData/Local/Android/Sdk/platform-tools/adb.exe shell:*)",
       "Bash(/c/Users/DELL/AppData/Local/Android/Sdk/platform-tools/adb.exe install:*)",
-      "Bash(du:*)"
+      "Bash(du:*)",
+      "Bash(avdmanager list:*)",
+      "Bash(xargs -I {} sh -c 'echo \"===== {} =====\"; head -10 {}')",
+      "Bash(xargs -I {} sh -c 'echo \"===== {} =====\"; cat {}')",
+      "Bash([ -f \"$dir/colors.xml\" ])",
+      "Bash(del /f \"C:\\\\\\\\raja\\\\\\\\react_mobile\\\\\\\\react_parentapp\\\\\\\\brands\\\\\\\\mountseno\\\\\\\\assets\\\\\\\\mountseno.jks\")",
+      "Bash(cmd.exe:*)",
+      "Bash(cp:*)",
+      "Bash(npx react-native:*)",
+      "Bash(C:/Users/DELL/AppData/Local/Android/Sdk/platform-tools/adb.exe logcat:*)",
+      "Bash(\"C:/Users/DELL/AppData/Local/Android/Sdk/platform-tools/adb.exe\" logcat:*)",
+      "Bash(kill 942 948 968 973 978)",
+      "Bash(kill -9 942 948 968 973 978)",
+      "Bash($ADB devices:*)"
     ]
   }
 }

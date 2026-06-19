@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, SectionList, StyleSheet, RefreshControl, Alert } from 'react-native';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { View, FlatList, StyleSheet, RefreshControl, ActivityIndicator, Alert } from 'react-native';
 import { useNavigation, useRoute, RouteProp, useFocusEffect } from '@react-navigation/native';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   ListTemplate,
   Chip,
@@ -10,6 +11,7 @@ import {
   colors,
   spacing,
 } from '../../../design-system';
+import { ROUTES, QUERY_KEYS } from '../../../core/constants';
 import { useAuth } from '../../../core/auth';
 import { useHomework } from '../hooks/useHomework';
 import { HomeworkCard } from '../components/HomeworkCard';
@@ -26,13 +28,13 @@ type HomeworkRouteParams = {
 export const HomeworkScreen: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<HomeworkRouteParams, 'Homework'>>();
+  const queryClient = useQueryClient();
   const { students, selectedStudentId, selectStudent } = useAuth();
 
   // Auto-select student from route params if provided
   useEffect(() => {
     const studentIdFromRoute = route.params?.studentId;
     if (studentIdFromRoute && studentIdFromRoute !== selectedStudentId) {
-      // Verify the student exists before selecting
       const studentExists = students.some(s => s.id === studentIdFromRoute);
       if (studentExists) {
         selectStudent(studentIdFromRoute);
@@ -41,33 +43,51 @@ export const HomeworkScreen: React.FC = () => {
   }, [route.params?.studentId]);
 
   const {
+    homework,
+    totalSize,
     pendingHomework,
     completedHomework,
     isLoading,
-    isFetching,
+    isFetchingNextPage,
     refetch,
+    fetchNextPage,
+    hasNextPage,
     acknowledgeHomeworkAsync,
-    isAcknowledging,
   } = useHomework();
 
   const [filter, setFilter] = useState<FilterType>('all');
   const [refreshing, setRefreshing] = useState(false);
-  const [acknowledgingId, setAcknowledgingId] = useState<string | null>(null);
 
-  // Refetch data when screen comes into focus
+  // Reset query and fetch fresh first page when screen comes into focus
   useFocusEffect(
     useCallback(() => {
-      refetch();
-    }, [refetch])
+      queryClient.resetQueries({ queryKey: [QUERY_KEYS.HOMEWORK] });
+    }, [queryClient])
   );
+
+  const filteredHomework = useMemo(() => {
+    if (filter === 'pending') return pendingHomework;
+    if (filter === 'completed') return completedHomework;
+    return homework;
+  }, [homework, pendingHomework, completedHomework, filter]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await refetch();
+    await queryClient.resetQueries({ queryKey: [QUERY_KEYS.HOMEWORK] });
     setRefreshing(false);
   };
 
-  const handleAcknowledge = (homework: Homework) => {
+  const handleLoadMore = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const handleHomeworkPress = useCallback((homework: Homework) => {
+    navigation.navigate(ROUTES.HOMEWORK_DETAIL, { homework });
+  }, [navigation]);
+
+  const handleAcknowledge = useCallback((homework: Homework) => {
     Alert.alert(
       'Mark as Complete',
       `Are you sure you want to mark "${homework.title}" as complete?`,
@@ -77,63 +97,43 @@ export const HomeworkScreen: React.FC = () => {
           text: 'Confirm',
           onPress: async () => {
             try {
-              setAcknowledgingId(homework.id);
               await acknowledgeHomeworkAsync(homework.id);
               Alert.alert('Success', 'Homework marked as complete');
             } catch (error: any) {
               Alert.alert('Error', error.message || 'Failed to mark homework as complete');
-            } finally {
-              setAcknowledgingId(null);
             }
           },
         },
       ]
     );
-  };
+  }, [acknowledgeHomeworkAsync]);
 
-  const getSections = () => {
-    const sections = [];
-
-    if (filter === 'all' || filter === 'pending') {
-      if (pendingHomework.length > 0) {
-        sections.push({
-          title: 'Pending',
-          data: pendingHomework,
-        });
-      }
-    }
-
-    if (filter === 'all' || filter === 'completed') {
-      if (completedHomework.length > 0) {
-        sections.push({
-          title: 'Completed',
-          data: completedHomework,
-        });
-      }
-    }
-
-    return sections;
-  };
-
-  const renderSectionHeader = ({ section }: { section: { title: string } }) => (
-    <View style={styles.sectionHeader}>
-      <Text variant="h3" style={styles.sectionTitle}>
-        {section.title}
-      </Text>
-    </View>
-  );
-
-  const renderHomework = ({ item }: { item: Homework }) => (
+  const renderHomework = useCallback(({ item }: { item: Homework }) => (
     <HomeworkCard
       homework={item}
+      onPress={() => handleHomeworkPress(item)}
       onAcknowledge={
-        item.status !== 'completed' ? () => handleAcknowledge(item) : undefined
+        item.status !== 'completed' && !item.isAcknowledged
+          ? () => handleAcknowledge(item)
+          : undefined
       }
-      isAcknowledging={acknowledgingId === item.id}
     />
-  );
+  ), [handleHomeworkPress, handleAcknowledge]);
 
-  if ((isLoading || isFetching) && !refreshing) {
+  const renderFooter = useCallback(() => {
+    if (isFetchingNextPage) {
+      return (
+        <ActivityIndicator
+          size="small"
+          color={colors.primary}
+          style={styles.loadingMore}
+        />
+      );
+    }
+    return null;
+  }, [isFetchingNextPage]);
+
+  if (isLoading && homework.length === 0 && !refreshing) {
     return (
       <ListTemplate
         headerProps={{
@@ -150,8 +150,6 @@ export const HomeworkScreen: React.FC = () => {
     );
   }
 
-  const sections = getSections();
-
   return (
     <ListTemplate
       headerProps={{
@@ -163,11 +161,10 @@ export const HomeworkScreen: React.FC = () => {
       selectedStudentId={selectedStudentId || ''}
       onSelectStudent={selectStudent}
     >
-
       {/* Filters */}
       <View style={styles.filtersContainer}>
         <Chip
-          label="All"
+          label={`All (${totalSize || homework.length})`}
           selected={filter === 'all'}
           onPress={() => setFilter('all')}
           style={styles.filterChip}
@@ -186,11 +183,10 @@ export const HomeworkScreen: React.FC = () => {
         />
       </View>
 
-      <SectionList
-        sections={sections}
+      <FlatList
+        data={filteredHomework}
         keyExtractor={(item) => item.id}
         renderItem={renderHomework}
-        renderSectionHeader={renderSectionHeader}
         ListEmptyComponent={
           <EmptyState
             icon="homework"
@@ -204,9 +200,11 @@ export const HomeworkScreen: React.FC = () => {
             }
           />
         }
+        ListFooterComponent={renderFooter}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
-        stickySectionHeadersEnabled={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
@@ -227,16 +225,12 @@ const styles = StyleSheet.create({
   filterChip: {
     marginRight: spacing.sm,
   },
-  sectionHeader: {
-    paddingTop: spacing.base,
-    paddingBottom: spacing.sm,
-  },
-  sectionTitle: {
-    color: colors.textSecondary,
-  },
   listContent: {
     paddingHorizontal: spacing.base,
     paddingBottom: spacing['2xl'],
     flexGrow: 1,
+  },
+  loadingMore: {
+    paddingVertical: spacing.base,
   },
 });

@@ -50,6 +50,8 @@ project.ext.envConfigFiles = [
     holycresentthirurelease: "brands/holycresentthiru/env/.env.production",
     infantdebug: "brands/infant/env/.env.development",
     infantrelease: "brands/infant/env/.env.production",
+    islamiahdebug: "brands/islamiah/env/.env.development",
+    islamiahrelease: "brands/islamiah/env/.env.production",
     joshuadebug: "brands/joshua/env/.env.development",
     joshuarelease: "brands/joshua/env/.env.production",
     kalaimagaldebug: "brands/kalaimagal/env/.env.development",
@@ -82,6 +84,8 @@ project.ext.envConfigFiles = [
     sivakasirelease: "brands/sivakasi/env/.env.production",
     stdominicsdebug: "brands/stdominics/env/.env.development",
     stdominicsrelease: "brands/stdominics/env/.env.production",
+    stjosephkodudebug: "brands/stjosephkodu/env/.env.development",
+    stjosephkodurelease: "brands/stjosephkodu/env/.env.production",
     templegreendebug: "brands/templegreen/env/.env.development",
     templegreenrelease: "brands/templegreen/env/.env.production",
     templeparkdebug: "brands/templepark/env/.env.development",
@@ -90,8 +94,8 @@ project.ext.envConfigFiles = [
     udhayamglobalrelease: "brands/udhayamglobal/env/.env.production",
     venkateshwaradebug: "brands/venkateshwara/env/.env.development",
     venkateshwararelease: "brands/venkateshwara/env/.env.production",
-    vidhyaratnadebug: "brands/vidhyaratna/env/.env.development",
-    vidhyaratnarelease: "brands/vidhyaratna/env/.env.production",
+    vidyaratnadebug: "brands/vidyaratna/env/.env.development",
+    vidyaratnarelease: "brands/vidyaratna/env/.env.production",
     vnrvivekanandadebug: "brands/vnrvivekananda/env/.env.development",
     vnrvivekanandarelease: "brands/vnrvivekananda/env/.env.production",
     vsnmatricdebug: "brands/vsnmatric/env/.env.development",
@@ -108,7 +112,7 @@ apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
 react {
     /* Variants */
     // List debuggable variants for all flavors
-    debuggableVariants = ["aadhithyaDebug", "aaimathajiDebug", "alphacbseDebug", "alphamatDebug", "alphatechnoDebug", "avlDebug", "balakrishnaDebug", "bsschoolDebug", "carmelnpDebug", "crescentDebug", "csistthomasDebug", "doonDebug", "gloryDebug", "greenworldschoolDebug", "holyangelsDebug", "holycresentmatricDebug", "holycresentnazDebug", "holycresentsriDebug", "holycresentthiruDebug", "infantDebug", "joshuaDebug", "kalaimagalDebug", "kamalanehruDebug", "littleflowerDebug", "measiDebug", "mountcarmelDebug", "mountsenoDebug", "nationallotusDebug", "ourladyexcelDebug", "periyarDebug", "psseniorDebug", "railwaybalabhavanDebug", "rpccbseDebug", "rukmaniDebug", "sivakasiDebug", "stdominicsDebug", "templegreenDebug", "templeparkDebug", "udhayamglobalDebug", "venkateshwaraDebug", "vidhyaratnaDebug", "vnrvivekanandaDebug", "vsnmatricDebug"]
+    debuggableVariants = ["aadhithyaDebug", "aaimathajiDebug", "alphacbseDebug", "alphamatDebug", "alphatechnoDebug", "avlDebug", "balakrishnaDebug", "bsschoolDebug", "carmelnpDebug", "crescentDebug", "csistthomasDebug", "doonDebug", "gloryDebug", "greenworldschoolDebug", "holyangelsDebug", "holycresentmatricDebug", "holycresentnazDebug", "holycresentsriDebug", "holycresentthiruDebug", "infantDebug", "islamiahDebug", "joshuaDebug", "kalaimagalDebug", "kamalanehruDebug", "littleflowerDebug", "measiDebug", "mountcarmelDebug", "mountsenoDebug", "nationallotusDebug", "ourladyexcelDebug", "periyarDebug", "psseniorDebug", "railwaybalabhavanDebug", "rpccbseDebug", "rukmaniDebug", "sivakasiDebug", "stdominicsDebug", "stjosephkoduDebug", "templegreenDebug", "templeparkDebug", "udhayamglobalDebug", "venkateshwaraDebug", "vidyaratnaDebug", "vnrvivekanandaDebug", "vsnmatricDebug"]
 
     /* Autolinking */
     autolinkLibrariesWithApp()
@@ -224,7 +228,7 @@ android {
         // Balakrishna Nursery and Primary School
         balakrishna {
             dimension "brand"
-            applicationId "com.schooltree.balakrishna"
+            applicationId "com.schooltree.balakrishna_new"
             resValue "string", "app_name", "Balakrishna Nursery and Primary School Parent"
             buildConfigField "String", "BRAND_ID", "\"balakrishna\""
             buildConfigField "String", "AUTH_TYPE", "\"password\""
@@ -304,7 +308,9 @@ android {
         // Holyangels A.I. School T.Nagar
         holyangels {
             dimension "brand"
-            applicationId "com.schooltree.holyangels"
+            applicationId "holyangels.tnagar.schoolapp"
+            versionCode 90000
+            versionName "9.0"
             resValue "string", "app_name", "Holyangels A.I. School T.Nagar Parent"
             buildConfigField "String", "BRAND_ID", "\"holyangels\""
             buildConfigField "String", "AUTH_TYPE", "\"password\""
@@ -325,6 +331,8 @@ android {
         holycresentnaz {
             dimension "brand"
             applicationId "com.schooltree.holyCresent_nazratpet"
+            versionCode 3
+            versionName "3.0"
             resValue "string", "app_name", "Cambridge School, Nazarathpet Parent"
             buildConfigField "String", "BRAND_ID", "\"holycresentnaz\""
             buildConfigField "String", "AUTH_TYPE", "\"password\""
@@ -335,6 +343,8 @@ android {
         holycresentsri {
             dimension "brand"
             applicationId "com.schooltree.holycresent_Sriperambudur"
+            versionCode 3
+            versionName "3.0"
             resValue "string", "app_name", "Cambridge School Sriperambudur Parent"
             buildConfigField "String", "BRAND_ID", "\"holycresentsri\""
             buildConfigField "String", "AUTH_TYPE", "\"password\""
@@ -361,6 +371,16 @@ android {
             buildConfigField "String", "DB_NAME", "\"an_infant\""
         }
 
+        // Islamiah Matric Hr Sec School
+        islamiah {
+            dimension "brand"
+            applicationId "com.schooltree.islamiah"
+            resValue "string", "app_name", "Islamiah Matric Hr Sec School Parent"
+            buildConfigField "String", "BRAND_ID", "\"islamiah\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"islamiah_matric\""
+        }
+
         // Joshua Matriculation School
         joshua {
             dimension "brand"
@@ -375,6 +395,8 @@ android {
         kalaimagal {
             dimension "brand"
             applicationId "com.schooltree.kalai"
+            versionCode 8
+            versionName "8.0"
             resValue "string", "app_name", "Kalaimagal Matric Hr Sec School Parent"
             buildConfigField "String", "BRAND_ID", "\"kalaimagal\""
             buildConfigField "String", "AUTH_TYPE", "\"password\""
@@ -385,6 +407,8 @@ android {
         kamalanehru {
             dimension "brand"
             applicationId "com.schooltree.kamala_nehru"
+            versionCode 4
+            versionName "4.0"
             resValue "string", "app_name", "Kamala Nehru Nursery & Primary Parent"
             buildConfigField "String", "BRAND_ID", "\"kamalanehru\""
             buildConfigField "String", "AUTH_TYPE", "\"password\""
@@ -471,7 +495,7 @@ android {
             buildConfigField "String", "DB_NAME", "\"pssenior\""
         }
 
-        // Reilway Bala Bhavan School
+        // Railway Balabhavan School
         railwaybalabhavan {
             dimension "brand"
             applicationId "com.schooltree.balabhavan"
@@ -515,10 +539,22 @@ android {
         stdominics {
             dimension "brand"
             applicationId "com.schooltree.dominics"
-            resValue "string", "app_name", "St. Dominics anglo-indian Hr. Sec. School Parent"
+            resValue "string", "app_name", "St. Dominic's anglo-indian Hr. Sec. School Parent"
             buildConfigField "String", "BRAND_ID", "\"stdominics\""
             buildConfigField "String", "AUTH_TYPE", "\"otp\""
             buildConfigField "String", "DB_NAME", "\"dominic\""
+        }
+
+        // St.Joseph's Mat Higher Sec School
+        stjosephkodu {
+            dimension "brand"
+            applicationId "com.schooltree.stjkodu"
+            versionCode 70000
+            versionName "7.0"
+            resValue "string", "app_name", "St.Joseph\\'s Mat Higher Sec School Parent"
+            buildConfigField "String", "BRAND_ID", "\"stjosephkodu\""
+            buildConfigField "String", "AUTH_TYPE", "\"password\""
+            buildConfigField "String", "DB_NAME", "\"stjkod\""
         }
 
         // P.S. Temple Green Vidyashram
@@ -561,12 +597,12 @@ android {
             buildConfigField "String", "DB_NAME", "\"venkateshwara\""
         }
 
-        // Vidhyaratna School
-        vidhyaratna {
+        // Vidyaratna School
+        vidyaratna {
             dimension "brand"
             applicationId "com.schooltree.vidhyaratna"
-            resValue "string", "app_name", "Vidhyaratna School Parent"
-            buildConfigField "String", "BRAND_ID", "\"vidhyaratna\""
+            resValue "string", "app_name", "Vidyaratna School Parent"
+            buildConfigField "String", "BRAND_ID", "\"vidyaratna\""
             buildConfigField "String", "AUTH_TYPE", "\"otp\""
             buildConfigField "String", "DB_NAME", "\"vidhyaratna\""
         }
@@ -619,6 +655,12 @@ android {
             keyAlias 'stdominics'
             keyPassword 'stdominics123'
         }
+        stjosephkoduRelease {
+            storeFile file('../../brands/stjosephkodu/assets/stjkod.keystore')
+            storePassword 'stjkod123'
+            keyAlias 'stjkod'
+            keyPassword 'stjkod123'
+        }
         railwaybalabhavanRelease {
             storeFile file('../../brands/railwaybalabhavan/assets/railwaybalabhavan.jks')
             storePassword 'railwaybalabhavan123'
@@ -637,8 +679,8 @@ android {
             keyAlias 'udhayamglobal'
             keyPassword 'udhayamglobal123'
         }
-        vidhyaratnaRelease {
-            storeFile file('../../brands/vidhyaratna/assets/vidhyaratna.jks')
+        vidyaratnaRelease {
+            storeFile file('../../brands/vidyaratna/assets/vidhyaratna.jks')
             storePassword 'vidhyaratna123'
             keyAlias 'vidhyaratna'
             keyPassword 'vidhyaratna123'
@@ -655,23 +697,29 @@ android {
             keyAlias 'infant'
             keyPassword 'infant123'
         }
+        islamiahRelease {
+            storeFile file('../../brands/islamiah/assets/islamiah.jks')
+            storePassword 'islamiah123'
+            keyAlias 'islamiah'
+            keyPassword 'islamiah123'
+        }
         aadhithyaRelease {
-            storeFile file('../../brands/aadhithya/assets/aadhithya.jks')
+            storeFile file('../../brands/aadhithya/assets/aadhithya')
             storePassword 'aadhithya123'
             keyAlias 'aadhithya'
             keyPassword 'aadhithya123'
         }
         alphacbseRelease {
-            storeFile file('../../brands/alphacbse/assets/alphacbse.jks')
-            storePassword 'alphacbse123'
-            keyAlias 'alphacbse'
-            keyPassword 'alphacbse123'
+            storeFile file('../../brands/alphacbse/assets/alpha.jks')
+            storePassword 'alpha123'
+            keyAlias 'alpha international school'
+            keyPassword 'alpha123'
         }
         alphamatRelease {
-            storeFile file('../../brands/alphamat/assets/alphamat.jks')
-            storePassword 'alphamat123'
-            keyAlias 'alphamat'
-            keyPassword 'alphamat123'
+            storeFile file('../../brands/alphamat/assets/AlphaMatric')
+            storePassword 'alphamatric123'
+            keyAlias 'alphamatric'
+            keyPassword 'alphamatric123'
         }
         alphatechnoRelease {
             storeFile file('../../brands/alphatechno/assets/alphatechno.jks')
@@ -686,7 +734,7 @@ android {
             keyPassword 'avl123'
         }
         balakrishnaRelease {
-            storeFile file('../../brands/balakrishna/assets/balakrishna.jks')
+            storeFile file('../../brands/balakrishna/assets/balakrishna_new.jks')
             storePassword 'balakrishna123'
             keyAlias 'balakrishna'
             keyPassword 'balakrishna123'
@@ -694,20 +742,20 @@ android {
         carmelnpRelease {
             storeFile file('../../brands/carmelnp/assets/carmelnp.jks')
             storePassword 'carmelnp123'
-            keyAlias 'carmelnp'
+            keyAlias 'carmel nursery and primary'
             keyPassword 'carmelnp123'
         }
         crescentRelease {
-            storeFile file('../../brands/crescent/assets/crescent.jks')
+            storeFile file('../../brands/crescent/assets/crescent.keystore')
             storePassword 'crescent123'
             keyAlias 'crescent'
             keyPassword 'crescent123'
         }
         csistthomasRelease {
-            storeFile file('../../brands/csistthomas/assets/csistthomas.jks')
-            storePassword 'csistthomas123'
-            keyAlias 'csistthomas'
-            keyPassword 'csistthomas123'
+            storeFile file('../../brands/csistthomas/assets/thomas.jks')
+            storePassword 'thomas123'
+            keyAlias 'csi st.thomas'
+            keyPassword 'thomas123'
         }
         doonRelease {
             storeFile file('../../brands/doon/assets/doon.jks')
@@ -723,9 +771,9 @@ android {
         }
         holyangelsRelease {
             storeFile file('../../brands/holyangels/assets/holyangels.jks')
-            storePassword 'holyangels123'
+            storePassword 'p@mani4u'
             keyAlias 'holyangels'
-            keyPassword 'holyangels123'
+            keyPassword 'p@mani4u'
         }
         holycresentmatricRelease {
             storeFile file('../../brands/holycresentmatric/assets/holycresentmatric.jks')
@@ -734,16 +782,16 @@ android {
             keyPassword 'holycresentmatric123'
         }
         holycresentnazRelease {
-            storeFile file('../../brands/holycresentnaz/assets/holycresentnaz.jks')
-            storePassword 'holycresentnaz123'
-            keyAlias 'holycresentnaz'
-            keyPassword 'holycresentnaz123'
+            storeFile file('../../brands/holycresentnaz/assets/hc_nazratpet.jks')
+            storePassword 'nazratpet123'
+            keyAlias 'holy_cresent_nazratpet'
+            keyPassword 'nazratpet123'
         }
         holycresentsriRelease {
-            storeFile file('../../brands/holycresentsri/assets/holycresentsri.jks')
-            storePassword 'holycresentsri123'
-            keyAlias 'holycresentsri'
-            keyPassword 'holycresentsri123'
+            storeFile file('../../brands/holycresentsri/assets/holycresent_sriperambur.jks')
+            storePassword 'holy123'
+            keyAlias 'key0'
+            keyPassword 'holy123'
         }
         holycresentthiruRelease {
             storeFile file('../../brands/holycresentthiru/assets/holycresentthiru.jks')
@@ -758,16 +806,16 @@ android {
             keyPassword 'joshua123'
         }
         kalaimagalRelease {
-            storeFile file('../../brands/kalaimagal/assets/kalaimagal.jks')
-            storePassword 'kalaimagal123'
+            storeFile file('../../brands/kalaimagal/assets/kalaimagal_thiru.jks')
+            storePassword 'kalai123'
             keyAlias 'kalaimagal'
-            keyPassword 'kalaimagal123'
+            keyPassword 'kalai123'
         }
         kamalanehruRelease {
-            storeFile file('../../brands/kamalanehru/assets/kamalanehru.jks')
-            storePassword 'kamalanehru123'
-            keyAlias 'kamalanehru'
-            keyPassword 'kamalanehru123'
+            storeFile file('../../brands/kamalanehru/assets/kamala_nehru.jks')
+            storePassword 'kamala123'
+            keyAlias 'kamala nehru'
+            keyPassword 'kamala123'
         }
         littleflowerRelease {
             storeFile file('../../brands/littleflower/assets/littleflower.jks')
@@ -800,10 +848,10 @@ android {
             keyPassword 'nationallotus123'
         }
         ourladyexcelRelease {
-            storeFile file('../../brands/ourladyexcel/assets/ourladyexcel.jks')
-            storePassword 'ourladyexcel123'
-            keyAlias 'ourladyexcel'
-            keyPassword 'ourladyexcel123'
+            storeFile file('../../brands/ourladyexcel/assets/ourlady.jks')
+            storePassword 'ourlady123'
+            keyAlias 'our lady school of excellence'
+            keyPassword 'ourlady123'
         }
         periyarRelease {
             storeFile file('../../brands/periyar/assets/periyar.jks')
@@ -818,19 +866,19 @@ android {
             keyPassword 'pssenior123'
         }
         rpccbseRelease {
-            storeFile file('../../brands/rpccbse/assets/rpccbse.jks')
-            storePassword 'rpccbse123'
-            keyAlias 'rpccbse'
-            keyPassword 'rpccbse123'
+            storeFile file('../../brands/rpccbse/assets/revoor_cbse_n.jks')
+            storePassword 'revoor123'
+            keyAlias 'revoor cbse'
+            keyPassword 'revoor123'
         }
         rukmaniRelease {
-            storeFile file('../../brands/rukmani/assets/rukmani.jks')
+            storeFile file('../../brands/rukmani/assets/rukmani')
             storePassword 'rukmani123'
             keyAlias 'rukmani'
             keyPassword 'rukmani123'
         }
         sivakasiRelease {
-            storeFile file('../../brands/sivakasi/assets/sivakasi.jks')
+            storeFile file('../../brands/sivakasi/assets/sivakasi')
             storePassword 'sivakasi123'
             keyAlias 'sivakasi'
             keyPassword 'sivakasi123'
@@ -876,9 +924,10 @@ android {
             productFlavors.railwaybalabhavan.signingConfig signingConfigs.railwaybalabhavanRelease
             productFlavors.greenworldschool.signingConfig signingConfigs.greenworldschoolRelease
             productFlavors.udhayamglobal.signingConfig signingConfigs.udhayamglobalRelease
-            productFlavors.vidhyaratna.signingConfig signingConfigs.vidhyaratnaRelease
+            productFlavors.vidyaratna.signingConfig signingConfigs.vidyaratnaRelease
             productFlavors.vsnmatric.signingConfig signingConfigs.vsnmatricRelease
             productFlavors.infant.signingConfig signingConfigs.infantRelease
+            productFlavors.islamiah.signingConfig signingConfigs.islamiahRelease
             productFlavors.aadhithya.signingConfig signingConfigs.aadhithyaRelease
             productFlavors.alphacbse.signingConfig signingConfigs.alphacbseRelease
             productFlavors.alphamat.signingConfig signingConfigs.alphamatRelease
@@ -913,6 +962,7 @@ android {
             productFlavors.templepark.signingConfig signingConfigs.templeparkRelease
             productFlavors.venkateshwara.signingConfig signingConfigs.venkateshwaraRelease
             productFlavors.vnrvivekananda.signingConfig signingConfigs.vnrvivekanandaRelease
+            productFlavors.stjosephkodu.signingConfig signingConfigs.stjosephkoduRelease
         }
     }
 
@@ -982,6 +1032,9 @@ android {
         infant {
             res.srcDirs = ['src/infant/res']
         }
+        islamiah {
+            res.srcDirs = ['src/islamiah/res']
+        }
         joshua {
             res.srcDirs = ['src/joshua/res']
         }
@@ -1030,6 +1083,9 @@ android {
         stdominics {
             res.srcDirs = ['src/stdominics/res']
         }
+        stjosephkodu {
+            res.srcDirs = ['src/stjosephkodu/res']
+        }
         templegreen {
             res.srcDirs = ['src/templegreen/res']
         }
@@ -1042,8 +1098,8 @@ android {
         venkateshwara {
             res.srcDirs = ['src/venkateshwara/res']
         }
-        vidhyaratna {
-            res.srcDirs = ['src/vidhyaratna/res']
+        vidyaratna {
+            res.srcDirs = ['src/vidyaratna/res']
         }
         vnrvivekananda {
             res.srcDirs = ['src/vnrvivekananda/res']

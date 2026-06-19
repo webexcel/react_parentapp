@@ -34,6 +34,7 @@ export const useMarks = (examId: number, yearId: number) => {
       return response;
     },
     enabled: hasValidParams,
+    staleTime: 0,
   });
 
   const marks = query.data?.data?.marks || [];

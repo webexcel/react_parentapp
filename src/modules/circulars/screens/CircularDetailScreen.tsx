@@ -376,7 +376,18 @@ export const CircularDetailScreen: React.FC = () => {
         {/* Message Content */}
         <View style={styles.contentCard}>
           <Text variant="body" style={styles.bodyText}>
-            {circular.content}
+            {circular.content.split(/(https?:\/\/[^\s]+)/g).map((part, i) =>
+              /^https?:\/\//.test(part) ? (
+                <Text
+                  key={i}
+                  style={styles.linkText}
+                  onPress={() => Linking.openURL(part)}>
+                  {part}
+                </Text>
+              ) : (
+                part
+              ),
+            )}
           </Text>
         </View>
 
@@ -625,6 +636,10 @@ const styles = StyleSheet.create({
   },
   bodyText: {
     lineHeight: 24,
+  },
+  linkText: {
+    color: colors.primary,
+    textDecorationLine: 'underline' as const,
   },
   imagesCard: {
     backgroundColor: colors.surfaceLight,

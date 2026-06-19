@@ -24,6 +24,7 @@ import { ROUTES } from '../../../core/constants';
 import { useDashboard } from '../hooks';
 import { FlashMessageModal } from '../components';
 import { useIsModuleEnabled } from '../../../core/brand/featureFlags';
+import { useSideMenu } from '../../../app/SideMenuContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -38,6 +39,7 @@ const avatarColors = [
 
 export const DashboardScreen: React.FC = () => {
   const navigation = useNavigation<any>();
+  const { openMenu } = useSideMenu();
   const { students, selectedStudentId, userData } = useAuth();
   const [refreshing, setRefreshing] = React.useState(false);
   const [showFlashModal, setShowFlashModal] = React.useState(false);
@@ -259,7 +261,7 @@ export const DashboardScreen: React.FC = () => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <TouchableOpacity style={styles.menuButton}>
+          <TouchableOpacity style={styles.menuButton} onPress={openMenu}>
             <Icon name="menu" size={24} color={colors.textPrimary} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Dashboard</Text>

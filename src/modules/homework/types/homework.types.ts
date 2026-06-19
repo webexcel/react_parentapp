@@ -23,6 +23,7 @@ export interface HomeworkResponse {
   status: boolean;
   message: string;
   data?: Homework[];
+  total_size?: number;
 }
 
 export const SUBJECT_COLORS: Record<string, string> = {

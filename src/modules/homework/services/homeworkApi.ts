@@ -3,12 +3,22 @@ import { HomeworkResponse } from '../types/homework.types';
 
 export const homeworkApi = {
   /**
-   * Get homework by class
+   * Get homework by class with pagination
    */
-  getHomework: async (adno: string, classId: string): Promise<HomeworkResponse> => {
+  getHomework: async (
+    adno: string,
+    classId: string,
+    pageSize: number = 50,
+    currentSize: number = 0,
+  ): Promise<HomeworkResponse> => {
     const response = await apiClient.post<HomeworkResponse>(
       API_ENDPOINTS.HOMEWORK.GET_BY_CLASS,
-      { adno, classid: classId }
+      {
+        adno,
+        classid: classId,
+        page_size: pageSize,
+        current_size: currentSize,
+      },
     );
     return response.data;
   },

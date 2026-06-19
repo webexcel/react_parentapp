@@ -1,8 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { QUERY_KEYS } from '../../../core/constants';
 import { useAuth } from '../../../core/auth';
 import { homeworkApi } from '../services/homeworkApi';
 import { Homework, HomeworkAttachment, SUBJECT_COLORS } from '../types/homework.types';
+
+const PAGE_SIZE = 10;
 
 export const useHomework = () => {
   const { selectedStudentId, students } = useAuth();
@@ -11,61 +13,74 @@ export const useHomework = () => {
   const selectedStudent = students.find((s) => s.id === selectedStudentId);
 
   const {
-    data: homework = [],
+    data,
     isLoading,
     isFetching,
+    isFetchingNextPage,
     error,
     refetch,
-  } = useQuery({
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteQuery({
     queryKey: [QUERY_KEYS.HOMEWORK, selectedStudentId],
-    queryFn: async (): Promise<Homework[]> => {
-      if (!selectedStudentId || !selectedStudent) return [];
+    queryFn: async ({ pageParam = 0 }): Promise<{
+      homework: Homework[];
+      totalSize: number;
+      currentOffset: number;
+    }> => {
+      if (!selectedStudentId || !selectedStudent) {
+        return { homework: [], totalSize: 0, currentOffset: 0 };
+      }
 
-      // API requires adno (admission number) and classid (class ID)
       const adno = selectedStudent.studentId;
       const classId = selectedStudent.classId;
 
       if (!adno || !classId) {
-        return [];
+        return { homework: [], totalSize: 0, currentOffset: 0 };
       }
 
-      try {
-        const response = await homeworkApi.getHomework(adno, classId);
+      const response = await homeworkApi.getHomework(adno, classId, PAGE_SIZE, pageParam);
+      const totalSize = response.total_size || 0;
 
-        if (response.status && response.data && Array.isArray(response.data)) {
-          if (response.data.length === 0) {
-            return [];
-          }
-
-          const mappedHomework = response.data.map((item: any, index: number) => {
-            // API returns: MSG_ID, CLASS, MESSAGE, MSG_DATE, subject, event_image
-            const homework = {
-              id: String(item.MSG_ID || item.id || item.homeworkId || Math.random()),
-              subject: item.subject || item.subjectName || 'General',
-              title: item.MESSAGE || item.title || item.topic || 'Homework',
-              description: item.MESSAGE || item.description || item.details || '',
-              dueDate: item.MSG_DATE || item.dueDate || item.submissionDate || new Date().toISOString(),
-              assignedDate: item.MSG_DATE || item.assignedDate || item.createdAt || new Date().toISOString(),
-              status: getHomeworkStatus(item),
-              attachments: parseAttachments(item.event_image, index),
-              teacherName: item.teacherName || item.teacher || '',
-              subjectColor: getSubjectColor(item.subject || item.subjectName || ''),
-              isAcknowledged: item.completed_status === '1' || item.completed_status === 1 || item.isAcknowledged || item.acknowledged || false,
-            };
-
-            return homework;
-          });
-
-          return mappedHomework;
-        } else {
-          return [];
+      if (response.status && response.data && Array.isArray(response.data)) {
+        if (response.data.length === 0) {
+          return { homework: [], totalSize, currentOffset: pageParam };
         }
-      } catch (error: any) {
-        throw error;
+
+        const mappedHomework = response.data.map((item: any, index: number) => {
+          const homework = {
+            id: String(item.MSG_ID || item.id || item.homeworkId || Math.random()),
+            subject: item.subject || item.subjectName || 'General',
+            title: item.MESSAGE || item.title || item.topic || 'Homework',
+            description: item.MESSAGE || item.description || item.details || '',
+            dueDate: item.MSG_DATE || item.dueDate || item.submissionDate || new Date().toISOString(),
+            assignedDate: item.MSG_DATE || item.assignedDate || item.createdAt || new Date().toISOString(),
+            status: getHomeworkStatus(item),
+            attachments: parseAttachments(item.event_image, pageParam + index),
+            teacherName: item.teacherName || item.teacher || '',
+            subjectColor: getSubjectColor(item.subject || item.subjectName || ''),
+            isAcknowledged: item.completed_status === '1' || item.completed_status === 1 || item.isAcknowledged || item.acknowledged || false,
+          };
+
+          return homework;
+        });
+
+        return { homework: mappedHomework, totalSize, currentOffset: pageParam };
+      } else {
+        return { homework: [], totalSize, currentOffset: pageParam };
       }
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => {
+      const nextOffset = lastPage.currentOffset + PAGE_SIZE;
+      return nextOffset < lastPage.totalSize ? nextOffset : undefined;
     },
     enabled: !!selectedStudentId,
   });
+
+  // Flatten all pages into a single array
+  const homework = data?.pages.flatMap((page) => page.homework) || [];
+  const totalSize = data?.pages[0]?.totalSize || 0;
 
   const acknowledgeMutation = useMutation({
     mutationFn: async (homeworkId: string) => {
@@ -79,7 +94,7 @@ export const useHomework = () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.HOMEWORK] });
     },
     onError: (error: any) => {
-      throw error; // Re-throw to let the screen handle the error
+      throw error;
     },
   });
 
@@ -88,12 +103,16 @@ export const useHomework = () => {
 
   return {
     homework,
+    totalSize,
     pendingHomework,
     completedHomework,
     isLoading,
     isFetching,
+    isFetchingNextPage,
     error,
     refetch,
+    fetchNextPage,
+    hasNextPage: !!hasNextPage,
     acknowledgeHomework: acknowledgeMutation.mutate,
     acknowledgeHomeworkAsync: acknowledgeMutation.mutateAsync,
     isAcknowledging: acknowledgeMutation.isPending,
@@ -101,7 +120,6 @@ export const useHomework = () => {
 };
 
 const getHomeworkStatus = (item: any): 'pending' | 'completed' | 'overdue' => {
-  // Check completed_status from API (returns '0' or '1')
   if (item.completed_status === '1' || item.completed_status === 1) return 'completed';
   if (item.status === 'completed' || item.isCompleted) return 'completed';
 
@@ -119,7 +137,6 @@ const parseAttachments = (eventImage: any, index: number): HomeworkAttachment[] 
 
   const trimmed = eventImage.trim();
 
-  // Single URL starting with http
   if (trimmed.startsWith('http')) {
     return [{
       id: String(index),
@@ -129,7 +146,6 @@ const parseAttachments = (eventImage: any, index: number): HomeworkAttachment[] 
     }];
   }
 
-  // Stringified JSON array — clean whitespace inside URLs before parsing
   if (trimmed.startsWith('[')) {
     try {
       const sanitized = trimmed.replace(/\s+/g, '');

@@ -24,6 +24,8 @@ import { ROUTES } from '../../../core/constants';
 import { useFeeDetails, useFeeSelection, usePaymentHistory } from '../hooks';
 import { usePayOnline } from '../hooks/usePayOnline';
 import { FeeItemCard, PaymentSummaryBar } from '../components';
+import { feesApi } from '../services/feesApi';
+import { PrintBillRequest } from '../types/fees.types';
 
 type TabType = 'pending' | 'history';
 
@@ -32,6 +34,7 @@ export const FeeDetailsScreen: React.FC = () => {
   const { students, selectedStudentId, selectStudent } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>('pending');
+  const [billLoadingId, setBillLoadingId] = useState<string | null>(null);
 
   // Payment initiation
   const { initiatePayment, isProcessing, error: paymentError } = usePayOnline();
@@ -164,6 +167,41 @@ export const FeeDetailsScreen: React.FC = () => {
     },
     [toggleFeeSelection]
   );
+
+  const handleGetBill = useCallback(async (receiptId: string, items: any[]) => {
+    const student = students.find((s) => s.id === selectedStudentId);
+    const adno = student?.studentId || student?.id;
+    const classId = student?.classId;
+    const studentName = student?.name || '';
+    const firstItem = items[0];
+
+    if (!adno || !classId || !firstItem) {
+      Alert.alert('Error', 'Student details not available.');
+      return;
+    }
+
+    const payload: PrintBillRequest = {
+      rid: receiptId,
+      adno,
+      name: studentName,
+      class_id: classId,
+      year_id: firstItem.YEAR_ID,
+    };
+
+    setBillLoadingId(receiptId);
+    try {
+      const response = await feesApi.getPrintBill(payload);
+      if (response.status && response.data) {
+        await Linking.openURL(response.data);
+      } else {
+        Alert.alert('Error', response.message || 'Unable to get bill.');
+      }
+    } catch {
+      Alert.alert('Error', 'Failed to fetch bill. Please try again.');
+    } finally {
+      setBillLoadingId(null);
+    }
+  }, [students, selectedStudentId]);
 
   const formatCurrency = (amount: number) => {
     return `₹${amount.toLocaleString('en-IN')}`;
@@ -385,6 +423,22 @@ export const FeeDetailsScreen: React.FC = () => {
                       </View>
                     ))}
                   </View>
+
+                  <TouchableOpacity
+                    style={styles.getBillButton}
+                    onPress={() => handleGetBill(receipt.receiptId, receipt.items)}
+                    disabled={billLoadingId === receipt.receiptId}
+                    activeOpacity={0.7}
+                  >
+                    {billLoadingId === receipt.receiptId ? (
+                      <ActivityIndicator size="small" color="#FFFFFF" />
+                    ) : (
+                      <>
+                        <Icon name="receipt" size={16} color="#FFFFFF" />
+                        <Text style={styles.getBillButtonText}>Get Bill</Text>
+                      </>
+                    )}
+                  </TouchableOpacity>
                 </View>
               ))
             )}
@@ -627,5 +681,20 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '500',
     color: colors.textPrimary,
+  },
+  getBillButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    paddingVertical: spacing.sm,
+    marginTop: spacing.md,
+  },
+  getBillButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginLeft: spacing.xs,
   },
 });

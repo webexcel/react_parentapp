@@ -17,6 +17,7 @@ export const ROUTES = {
   // Feature Screens
   CIRCULARS: 'Circulars',
   CIRCULAR_DETAIL: 'CircularDetail',
+  HOMEWORK_DETAIL: 'HomeworkDetail',
   ATTENDANCE: 'Attendance',
   EXAM_SCHEDULE: 'ExamSchedule',
   CALENDAR: 'Calendar',
