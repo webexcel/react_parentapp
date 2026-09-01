@@ -1,4 +1,5 @@
 import { ApiResponse } from '../../../core/api/apiTypes';
+import type { Attachment } from '../../../core/utils/attachments';
 
 // ============================================
 // Batch Count Types (POST /dashboard/batchCount)
@@ -54,7 +55,9 @@ export interface BatchCountResponse extends ApiResponse<BatchCountData> {}
 // ============================================
 
 export interface FlashMessage {
-  id: number;
+  /** Primary key. The column is `nid`; `id` is kept for older payloads. */
+  nid: number;
+  id?: number;
   message: string;
   start_date: string;
   NewsADate: string;
@@ -65,7 +68,10 @@ export interface FlashMessage {
   Discription?: string;
   description?: string;
   image?: string;
+  /** Raw column: a JSON array string (multi-attach) or a bare URL (legacy). */
   event_image?: string;
+  /** Parsed from `event_image` by useFlashMessage. */
+  attachments?: Attachment[];
 }
 
 export interface FlashMessageResponse extends ApiResponse<FlashMessage[]> {}

@@ -71,6 +71,7 @@ export {
   StudentCardSelector,
   QuickAccessGrid,
   BottomNavigation,
+  AttachmentSection,
 } from './organisms';
 
 export type {
@@ -82,6 +83,7 @@ export type {
   QuickAccessItem,
   BottomNavigationProps,
   NavItem,
+  AttachmentSectionProps,
 } from './organisms';
 
 // Templates

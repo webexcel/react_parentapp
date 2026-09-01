@@ -14,3 +14,6 @@ export { StudentCardSelector } from "./StudentCardSelector";
 export type { StudentCardSelectorProps } from "./StudentCardSelector";
 
 export { ForceUpdateScreen } from "./ForceUpdateScreen";
+
+export { AttachmentSection } from "./AttachmentSection";
+export type { AttachmentSectionProps } from "./AttachmentSection";

@@ -1,9 +1,8 @@
-export interface HomeworkAttachment {
-  id: string;
-  type: 'pdf' | 'image' | 'audio' | 'video' | 'document';
-  url: string;
-  name: string;
-}
+// Alias of the shared attachment shape (core/utils/attachments) so homework,
+// circulars and flash messages all render through the same component.
+import type { Attachment } from '../../../core/utils/attachments';
+
+export type HomeworkAttachment = Attachment;
 
 export interface Homework {
   id: string;

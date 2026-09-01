@@ -6,9 +6,9 @@ import {
   StyleSheet,
   ScrollView,
   Dimensions,
-  Image,
 } from 'react-native';
-import { Text, Icon, colors, spacing } from '../../../../design-system';
+import { Text, Icon, AttachmentSection, colors, spacing } from '../../../../design-system';
+import { parseAttachments } from '../../../../core/utils/attachments';
 import { FlashMessage } from '../../types/dashboard.types';
 
 interface FlashMessageModalProps {
@@ -37,6 +37,9 @@ export const FlashMessageModal: React.FC<FlashMessageModalProps> = ({
   if (messages.length === 0) return null;
 
   const currentMessage = messages[currentIndex];
+  const attachments =
+    currentMessage.attachments ??
+    parseAttachments(currentMessage.event_image || currentMessage.image, currentIndex);
 
   const handleNext = () => {
     if (currentIndex < messages.length - 1) {
@@ -52,7 +55,8 @@ export const FlashMessageModal: React.FC<FlashMessageModalProps> = ({
 
   const handleDismiss = () => {
     if (onDismiss) {
-      onDismiss(currentMessage.id);
+      // The row's primary key is `nid`; `id` only exists on older payloads.
+      onDismiss(currentMessage.nid ?? currentMessage.id);
     }
 
     // If there are more messages, show the next one
@@ -88,22 +92,19 @@ export const FlashMessageModal: React.FC<FlashMessageModalProps> = ({
 
           {/* Content */}
           <ScrollView style={styles.content} showsVerticalScrollIndicator={true}>
-            {/* Display image if available */}
-            {((currentMessage.image && currentMessage.image.trim()) ||
-              (currentMessage.event_image && currentMessage.event_image.trim())) && (
+            {/* Attachments — images, video, audio, PDF and documents.
+                `attachments` is normally pre-parsed by useFlashMessage; parse
+                here too so the component works with a raw list. `image` is a
+                legacy single field some payloads still carry. */}
+            {attachments.length > 0 && (
               <View style={styles.imageContainer}>
-                <Image
-                  source={{ uri: currentMessage.image || currentMessage.event_image }}
-                  style={styles.messageImage}
-                  resizeMode="contain"
-                />
+                <AttachmentSection attachments={attachments} variant="compact" />
               </View>
             )}
 
             <View style={[
               styles.textContent,
-              !((currentMessage.image && currentMessage.image.trim()) ||
-                (currentMessage.event_image && currentMessage.event_image.trim())) && styles.textContentNoImage
+              attachments.length === 0 && styles.textContentNoImage
             ]}>
               {/* Display title - Always show, fallback to 'Flash Message' if not provided */}
               <Text style={styles.messageTitle}>
@@ -238,12 +239,8 @@ const styles = StyleSheet.create({
     paddingTop: spacing.lg,
   },
   imageContainer: {
-    marginBottom: spacing.lg,
-  },
-  messageImage: {
-    width: '100%',
-    height: 300,
-    borderRadius: 12,
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.md,
   },
   textContent: {
     paddingHorizontal: spacing.lg,

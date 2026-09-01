@@ -238,6 +238,9 @@ export const CircularDetailScreen: React.FC = () => {
 
   // Download state
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  // Video posters are derived URLs and may 404; remember which failed so we
+  // show the plain play placeholder instead of retrying every render.
+  const [failedPosters, setFailedPosters] = useState<Record<string, boolean>>({});
 
   const formatDate = (dateString: string) => {
     if (!dateString) return '';
@@ -443,6 +446,20 @@ export const CircularDetailScreen: React.FC = () => {
                       onPress={() => toggleVideo(attachment.id)}
                       activeOpacity={0.8}
                     >
+                      {/* Poster frame, derived by convention from the video URL
+                          (see getThumbnailUrl). Not guaranteed to exist — older
+                          uploads have no object there — so failures fall through
+                          to the plain play icon below. */}
+                      {attachment.thumb && !failedPosters[attachment.id] ? (
+                        <Image
+                          source={{ uri: attachment.thumb }}
+                          style={StyleSheet.absoluteFill}
+                          resizeMode="cover"
+                          onError={() =>
+                            setFailedPosters(prev => ({ ...prev, [attachment.id]: true }))
+                          }
+                        />
+                      ) : null}
                       <Icon name="playCircle" size={40} color="#FFFFFF" />
                       <Text variant="caption" style={styles.videoLabel}>
                         Tap to play
@@ -663,6 +680,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   videoLabel: {
     color: '#FFFFFF',

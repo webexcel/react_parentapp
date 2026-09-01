@@ -1,10 +1,7 @@
-export interface Attachment {
-  id: string;
-  type: 'pdf' | 'image' | 'audio' | 'video' | 'document';
-  url: string;
-  name: string;
-  size?: number;
-}
+// One shared shape across circulars, homework and flash messages, so the same
+// parser and the same AttachmentSection renderer serve all three.
+export type { Attachment, AttachmentType } from '../../../core/utils/attachments';
+import type { Attachment } from '../../../core/utils/attachments';
 
 export interface Circular {
   id: string;
