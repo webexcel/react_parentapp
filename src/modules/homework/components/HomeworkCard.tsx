@@ -18,6 +18,7 @@ import ReactNativeBlobUtil from 'react-native-blob-util';
 import FileViewer from 'react-native-file-viewer';
 import {
   Text,
+  LinkedText,
   Badge,
   Button,
   Icon,
@@ -28,6 +29,7 @@ import {
   shadows,
 } from '../../../design-system';
 import { Homework, HomeworkAttachment } from '../types/homework.types';
+import { parseLocalDate, daysFromToday } from '../../../core/utils/dates';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -250,15 +252,21 @@ export const HomeworkCard: React.FC<HomeworkCardProps> = ({
   const docAttachments = homework.attachments.filter(a => a.type === 'document');
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+    // Local-midnight parse: a bare 'YYYY-MM-DD' read via new Date() is UTC
+    // midnight, so toLocaleDateString would print the previous day on any
+    // device at a negative UTC offset.
+    const date = parseLocalDate(dateString);
+    if (!date) return '';
     return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
   };
 
   const getDaysRemaining = () => {
-    const dueDate = new Date(homework.dueDate);
-    const today = new Date();
-    const diffTime = dueDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    // daysFromToday anchors BOTH ends to local midnight. The old version
+    // subtracted `new Date()` (i.e. now, mid-afternoon) from a midnight due
+    // date and took Math.ceil, so a homework due today read as 1 day left for
+    // most of the day and 'Due today' almost never appeared.
+    const diffDays = daysFromToday(homework.dueDate);
+    if (diffDays === null) return '';
     if (diffDays < 0) return 'Overdue';
     if (diffDays === 0) return 'Due today';
     if (diffDays === 1) return 'Due tomorrow';
@@ -377,9 +385,9 @@ export const HomeworkCard: React.FC<HomeworkCardProps> = ({
         </Text>
 
         {homework.description && (
-          <Text variant="bodySmall" color="secondary" numberOfLines={2} style={styles.description}>
+          <LinkedText variant="bodySmall" color="secondary" numberOfLines={2} style={styles.description}>
             {homework.description}
-          </Text>
+          </LinkedText>
         )}
 
         {/* Due Date and Teacher */}

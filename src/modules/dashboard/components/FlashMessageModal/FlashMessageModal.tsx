@@ -7,7 +7,7 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
-import { Text, Icon, AttachmentSection, colors, spacing } from '../../../../design-system';
+import { Text, LinkedText, Icon, AttachmentSection, colors, spacing } from '../../../../design-system';
 import { parseAttachments } from '../../../../core/utils/attachments';
 import { FlashMessage } from '../../types/dashboard.types';
 
@@ -113,9 +113,9 @@ export const FlashMessageModal: React.FC<FlashMessageModalProps> = ({
 
               {/* Display description or message - Always show */}
               {(currentMessage.Discription || currentMessage.description || currentMessage.message) && (
-                <Text style={styles.messageText}>
+                <LinkedText style={styles.messageText}>
                   {currentMessage.Discription || currentMessage.description || currentMessage.message}
-                </Text>
+                </LinkedText>
               )}
 
               {/* Display date */}

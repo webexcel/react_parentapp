@@ -2,6 +2,24 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!--
+      Package visibility (Android 11+ / targetSdk 30+).
+      Without these declarations Linking.canOpenURL() always returns false for
+      the social apps, so every social icon would report "not installed".
+    -->
+    <queries>
+        <package android:name="com.google.android.youtube" />
+        <package android:name="com.whatsapp" />
+        <package android:name="com.whatsapp.w4b" />
+        <package android:name="com.instagram.android" />
+        <package android:name="com.facebook.katana" />
+        <package android:name="com.facebook.lite" />
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
+
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"

@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import {
   ListTemplate,
   Text,
+  LinkedText,
   Badge,
   Icon,
   EmptyState,
@@ -165,9 +166,9 @@ export const CalendarScreen: React.FC = () => {
             />
           </View>
           {item.description && (
-            <Text variant="caption" color="secondary" numberOfLines={2}>
+            <LinkedText variant="caption" color="secondary" numberOfLines={2}>
               {item.description}
-            </Text>
+            </LinkedText>
           )}
         </View>
       </View>

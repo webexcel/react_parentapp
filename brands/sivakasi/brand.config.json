@@ -84,8 +84,18 @@
       "timetable": {
         "enabled": true,
         "breaks": [
-          { "afterPeriod": 2, "label": "Short Break", "startTime": "10:00", "endTime": "10:15" },
-          { "afterPeriod": 4, "label": "Lunch Break", "startTime": "11:45", "endTime": "12:30" }
+          {
+            "afterPeriod": 2,
+            "label": "Short Break",
+            "startTime": "10:00",
+            "endTime": "10:15"
+          },
+          {
+            "afterPeriod": 4,
+            "label": "Lunch Break",
+            "startTime": "11:45",
+            "endTime": "12:30"
+          }
         ]
       },
       "chat": {
@@ -111,5 +121,11 @@
     },
     "offlineMode": true,
     "darkMode": false
+  },
+  "social": {
+    "youtube": "",
+    "whatsapp": "",
+    "instagram": "",
+    "facebook": ""
   }
 }

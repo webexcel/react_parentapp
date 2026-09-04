@@ -1,7 +1,7 @@
 {
   "$schema": "../brand.schema.json",
   "brand": {
-    "id": "stdominicsangloindianhrsecschool",
+    "id": "stdominics",
     "name": "St. Dominic's anglo-indian Hr. Sec. School",
     "shortName": "St. Dominics",
     "tagline": "Excellence in Education"
@@ -89,6 +89,12 @@
       },
       "profile": {
         "enabled": true
+      },
+      "parentMessage": {
+        "enabled": true
+      },
+      "leaveLetter": {
+        "enabled": true
       }
     },
     "notifications": {
@@ -101,5 +107,11 @@
     },
     "offlineMode": true,
     "darkMode": false
+  },
+  "social": {
+    "youtube": "",
+    "whatsapp": "",
+    "instagram": "",
+    "facebook": ""
   }
 }

@@ -15,6 +15,7 @@ export {
 export {
   Button,
   Text,
+  LinkedText,
   Input,
   Avatar,
   Badge,
@@ -33,6 +34,7 @@ export type {
   TextProps,
   TextVariant,
   TextColor,
+  LinkedTextProps,
   InputProps,
   AvatarProps,
   AvatarSize,
@@ -72,6 +74,7 @@ export {
   QuickAccessGrid,
   BottomNavigation,
   AttachmentSection,
+  SocialLinksSection,
 } from './organisms';
 
 export type {
@@ -84,6 +87,7 @@ export type {
   BottomNavigationProps,
   NavItem,
   AttachmentSectionProps,
+  SocialLinksSectionProps,
 } from './organisms';
 
 // Templates

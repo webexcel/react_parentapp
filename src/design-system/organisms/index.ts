@@ -17,3 +17,6 @@ export { ForceUpdateScreen } from "./ForceUpdateScreen";
 
 export { AttachmentSection } from "./AttachmentSection";
 export type { AttachmentSectionProps } from "./AttachmentSection";
+
+export { SocialLinksSection } from "./SocialLinksSection";
+export type { SocialLinksSectionProps } from "./SocialLinksSection";

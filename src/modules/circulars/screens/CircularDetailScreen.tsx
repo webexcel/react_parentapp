@@ -22,6 +22,7 @@ import FileViewer from 'react-native-file-viewer';
 import {
   ScreenHeader,
   Text,
+  LinkedText,
   Badge,
   Icon,
   Divider,
@@ -378,9 +379,9 @@ export const CircularDetailScreen: React.FC = () => {
 
         {/* Message Content */}
         <View style={styles.contentCard}>
-          <Text variant="body" style={styles.bodyText}>
+          <LinkedText variant="body" style={styles.bodyText}>
             {circular.content}
-          </Text>
+          </LinkedText>
         </View>
 
         {/* Image Attachments - Tap to open full-screen viewer */}

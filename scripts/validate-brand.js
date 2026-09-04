@@ -259,6 +259,21 @@ function validateConfig(config, errors, warnings) {
       }
     }
   }
+
+  // Validate social links (all optional - blank links just hide that icon)
+  if (config.social) {
+    const socialPlatforms = ['youtube', 'whatsapp', 'instagram', 'facebook'];
+    for (const key of Object.keys(config.social)) {
+      if (!socialPlatforms.includes(key)) {
+        warnings.push(`Unknown social platform: social.${key}`);
+        continue;
+      }
+      const url = config.social[key];
+      if (url && !/^https?:\/\//i.test(url)) {
+        warnings.push(`social.${key} should be a full http(s) URL: ${url}`);
+      }
+    }
+  }
 }
 
 /**

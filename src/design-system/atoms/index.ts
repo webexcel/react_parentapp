@@ -4,6 +4,9 @@ export type { ButtonProps, ButtonVariant, ButtonSize } from './Button';
 export { Text } from './Text';
 export type { TextProps, TextVariant, TextColor } from './Text';
 
+export { LinkedText } from './LinkedText';
+export type { LinkedTextProps } from './LinkedText';
+
 export { Input } from './Input';
 export type { InputProps } from './Input';
 

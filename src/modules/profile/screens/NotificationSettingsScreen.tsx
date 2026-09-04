@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, Alert, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import {
   ScreenHeader,
   Text,
@@ -83,6 +84,7 @@ const NOTIFICATION_SETTINGS: SettingItem[] = [
 ];
 
 export const NotificationSettingsScreen: React.FC = () => {
+  const navigation = useNavigation<any>();
   const [settings, setSettings] = useState<NotificationSettings | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -190,7 +192,11 @@ export const NotificationSettingsScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <ScreenHeader title="Notification Settings" showBack />
+      <ScreenHeader
+        title="Notification Settings"
+        showBack
+        onBack={() => navigation.goBack()}
+      />
 
       <ScrollView
         style={styles.scrollView}

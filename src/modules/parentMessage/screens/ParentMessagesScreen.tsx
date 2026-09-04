@@ -13,6 +13,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import {
   ListTemplate,
   Text,
+  LinkedText,
   Icon,
   EmptyState,
   colors,
@@ -101,9 +102,9 @@ export const ParentMessagesScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
 
-        <Text variant="body" style={styles.messageText}>
+        <LinkedText variant="body" style={styles.messageText}>
           {item.description}
-        </Text>
+        </LinkedText>
 
         {hasMedia && (
           <View style={styles.mediaContainer}>

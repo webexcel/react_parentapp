@@ -18,13 +18,15 @@ import {
   Icon,
   colors,
   spacing,
+  SocialLinksSection,
 } from '../../../design-system';
 import { useAuth } from '../../../core/auth';
 import { ROUTES } from '../../../core/constants';
 import { useDashboard } from '../hooks';
 import { FlashMessageModal } from '../components';
-import { useIsModuleEnabled } from '../../../core/brand/featureFlags';
+import { useIsModuleEnabled, useSocialLinks } from '../../../core/brand/featureFlags';
 import { useCirculars } from '../../circulars/hooks/useCirculars';
+import { useDrawer } from '../../../app/components';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -55,6 +57,12 @@ export const DashboardScreen: React.FC = () => {
   const isTimetableEnabled = useIsModuleEnabled('timetable');
   const isParentMessageEnabled = useIsModuleEnabled('parentMessage');
   const isLeaveLetterEnabled = useIsModuleEnabled('leaveLetter');
+
+  // Brand social media links - empty when the brand configured none
+  const socialItems = useSocialLinks();
+
+  // Side menu
+  const { openDrawer } = useDrawer();
 
   // Use dashboard hook for all data
   const {
@@ -259,7 +267,12 @@ export const DashboardScreen: React.FC = () => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <TouchableOpacity style={styles.menuButton}>
+          <TouchableOpacity
+            style={styles.menuButton}
+            onPress={openDrawer}
+            accessibilityRole="button"
+            accessibilityLabel="Open menu"
+          >
             <Icon name="menu" size={24} color={colors.textPrimary} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Dashboard</Text>
@@ -624,6 +637,9 @@ export const DashboardScreen: React.FC = () => {
             </View>
           </View>
         )}
+
+        {/* Social Media */}
+        <SocialLinksSection items={socialItems} style={styles.section} />
       </ScrollView>
     </SafeAreaView>
   );

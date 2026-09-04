@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text, colors, spacing, borderRadius } from '../../../design-system';
+import { Text, LinkedText, colors, spacing, borderRadius } from '../../../design-system';
 import { ChatMessage } from '../services/geminiService';
 
 interface MessageBubbleProps {
@@ -27,12 +27,13 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
             <View style={[styles.loadingDot, styles.dot3]} />
           </View>
         ) : (
-          <Text
+          <LinkedText
             variant="body"
             style={[styles.messageText, isUser ? styles.userText : styles.assistantText]}
+            linkStyle={isUser ? styles.userLink : undefined}
           >
             {message.content}
-          </Text>
+          </LinkedText>
         )}
       </View>
       <Text variant="caption" color="muted" style={styles.timestamp}>
@@ -78,6 +79,11 @@ const styles = StyleSheet.create({
   },
   assistantText: {
     color: colors.textPrimary,
+  },
+  // The user bubble is filled with the primary colour, so the default link
+  // colour would vanish into it.
+  userLink: {
+    color: colors.white,
   },
   timestamp: {
     marginTop: spacing.xs,

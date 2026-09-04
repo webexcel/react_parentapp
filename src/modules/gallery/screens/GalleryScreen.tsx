@@ -19,6 +19,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import {
   ListTemplate,
   Text,
+  LinkedText,
   Icon,
   EmptyState,
   colors,
@@ -489,9 +490,9 @@ export const GalleryScreen: React.FC = () => {
                 {formatDate(selectedAlbum.date)} • {selectedAlbum.imageCount} items
               </Text>
               {selectedAlbum.description && (
-                <Text variant="body" color="secondary" style={styles.albumDescription}>
+                <LinkedText variant="body" color="secondary" style={styles.albumDescription}>
                   {selectedAlbum.description}
-                </Text>
+                </LinkedText>
               )}
             </View>
           }

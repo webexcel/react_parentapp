@@ -75,6 +75,14 @@ export interface BrandFeatures {
   splash?: SplashConfig;
 }
 
+// Social media links (all optional - a blank/missing link hides that icon)
+export interface SocialLinks {
+  youtube?: string;
+  whatsapp?: string;
+  instagram?: string;
+  facebook?: string;
+}
+
 // Complete brand configuration
 export interface BrandConfig {
   brand: {
@@ -104,6 +112,7 @@ export interface BrandConfig {
     };
   };
   features: BrandFeatures;
+  social?: SocialLinks;
 }
 
 // Default colors (used as fallback)
@@ -164,6 +173,39 @@ const defaultFeatures: BrandFeatures = {
   splash: defaultSplash,
 };
 
+/**
+ * Merge a brand's `features.modules` over the defaults, one level deeper than a
+ * plain spread.
+ *
+ * A single `{ ...defaults, ...overrides }` at the `modules` level replaces each
+ * module object wholesale, so a brand declaring `timetable: { enabled: true }`
+ * silently discarded the default `breaks` array. 43 of the 48 brands do exactly
+ * that, which is why their timetables rendered with no break rows while the
+ * five brands that happen to list `breaks` showed them.
+ *
+ * Merging per module keeps every default sub-key a brand does not explicitly
+ * set, for `timetable.breaks` and for any future module default alike.
+ *
+ * Arrays are replaced, never concatenated: a brand that DOES list its own
+ * `breaks` gets exactly those, not the defaults plus its own.
+ */
+const mergeModules = (
+  defaults: BrandFeatures['modules'],
+  overrides: Partial<BrandFeatures['modules']> = {},
+): BrandFeatures['modules'] => {
+  const merged: Record<string, unknown> = { ...(defaults as unknown as Record<string, unknown>) };
+  for (const [key, value] of Object.entries(overrides || {})) {
+    const base = (defaults as unknown as Record<string, unknown>)[key];
+    const bothPlainObjects =
+      value !== null && typeof value === 'object' && !Array.isArray(value) &&
+      base !== null && typeof base === 'object' && !Array.isArray(base);
+    merged[key] = bothPlainObjects
+      ? { ...(base as object), ...(value as object) }
+      : value;
+  }
+  return merged as unknown as BrandFeatures['modules'];
+};
+
 // Helper to transform JSON config to BrandConfig
 const transformJsonConfig = (jsonConfig: any): BrandConfig => ({
   brand: jsonConfig.brand,
@@ -184,12 +226,13 @@ const transformJsonConfig = (jsonConfig: any): BrandConfig => ({
     fonts: jsonConfig.theme.fonts,
   },
   features: {
-    modules: { ...defaultFeatures.modules, ...jsonConfig.features.modules },
+    modules: mergeModules(defaultFeatures.modules, jsonConfig.features.modules),
     notifications: jsonConfig.features.notifications,
     offlineMode: jsonConfig.features.offlineMode,
     darkMode: jsonConfig.features.darkMode,
     splash: { ...defaultSplash, ...jsonConfig.features.splash },
   },
+  social: jsonConfig.social || {},
 });
 
 /**
