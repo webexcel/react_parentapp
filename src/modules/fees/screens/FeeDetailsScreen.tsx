@@ -23,7 +23,8 @@ import { useAuth } from '../../../core/auth';
 import { ROUTES } from '../../../core/constants';
 import { useFeeDetails, useFeeSelection, usePaymentHistory } from '../hooks';
 import { usePayOnline } from '../hooks/usePayOnline';
-import { FeeItemCard, PaymentSummaryBar } from '../components';
+import { useRazorpayPayment } from '../hooks/useRazorpayPayment';
+import { FeeItemCard, PaymentSummaryBar, PaymentConfirmModal } from '../components';
 
 type TabType = 'pending' | 'history';
 
@@ -32,9 +33,11 @@ export const FeeDetailsScreen: React.FC = () => {
   const { students, selectedStudentId, selectStudent } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>('pending');
+  const [showConfirm, setShowConfirm] = useState(false);
 
   // Payment initiation
-  const { initiatePayment, isProcessing, error: paymentError } = usePayOnline();
+  const { initiatePayment, isProcessing } = usePayOnline();
+  const { runCheckout, isVerifying } = useRazorpayPayment();
 
   // Fetch fee details
   const {
@@ -104,59 +107,85 @@ export const FeeDetailsScreen: React.FC = () => {
       );
       return;
     }
+    setShowConfirm(true);
+  }, [canProceedToPayment]);
 
-    Alert.alert(
-      'Proceed to Payment',
-      `You are about to pay \u20B9${selectedAmount.toLocaleString('en-IN')} for ${selectedCount} fee(s).`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Continue',
-          onPress: async () => {
-            try {
-              const result = await initiatePayment(selectedFees, selectedAmount);
+  const handleConfirmPayment = useCallback(async () => {
+    setShowConfirm(false);
+    try {
+      const result = await initiatePayment(selectedFees, selectedAmount);
 
-              if (result.paymentFlowType === 'INTENT') {
-                // UPI Intent flow: open PhonePe/UPI app directly
-                const canOpen = await Linking.canOpenURL(result.redirectUrl);
-                if (canOpen) {
-                  // Navigate to processing screen first, then open UPI app
-                  navigation.navigate(ROUTES.PAYMENT_PROCESSING, {
-                    orderId: result.orderId,
-                    merchantId: result.merchantId,
-                    amount: selectedAmount,
-                  });
-                  await Linking.openURL(result.redirectUrl);
-                } else {
-                  // Fallback: try WebView if UPI app not available
-                  navigation.navigate(ROUTES.PAYMENT_WEBVIEW, {
-                    redirectUrl: result.redirectUrl,
-                    orderId: result.orderId,
-                    merchantId: result.merchantId,
-                    amount: selectedAmount,
-                  });
-                }
-              } else {
-                // PG_CHECKOUT flow: open in WebView
-                navigation.navigate(ROUTES.PAYMENT_WEBVIEW, {
-                  redirectUrl: result.redirectUrl,
-                  orderId: result.orderId,
-                  merchantId: result.merchantId,
-                  amount: selectedAmount,
-                });
-              }
-            } catch {
-              Alert.alert(
-                'Payment Error',
-                paymentError || 'Unable to initiate payment. Please try again.',
-                [{ text: 'OK' }]
-              );
-            }
-          },
-        },
-      ]
-    );
-  }, [canProceedToPayment, selectedAmount, selectedCount, selectedFees, initiatePayment, navigation, paymentError]);
+      if (result.gateway === 'RAZORPAY') {
+        // Razorpay opens a native sheet in-process — there is no app
+        // switch and no URL to load, so we go straight to the result.
+        const outcome = await runCheckout(result.order, result.merchantId);
+
+        if (outcome.status === 'cancelled') {
+          return;
+        }
+
+        if (outcome.status === 'pending') {
+          // Possibly paid but unconfirmed — let the processing screen
+          // poll the backend rather than claiming the payment failed.
+          navigation.navigate(ROUTES.PAYMENT_PROCESSING, {
+            orderId: result.orderId,
+            merchantId: result.merchantId,
+            amount: selectedAmount,
+            gateway: 'RAZORPAY',
+            message: outcome.message,
+          });
+          return;
+        }
+
+        navigation.navigate(ROUTES.PAYMENT_RESULT, {
+          status: outcome.status,
+          orderId: result.orderId,
+          merchantId: result.merchantId,
+          amount: selectedAmount,
+          message: outcome.status === 'failed' ? outcome.message : undefined,
+        });
+        return;
+      }
+
+      if (result.paymentFlowType === 'INTENT') {
+        // UPI Intent flow: open PhonePe/UPI app directly
+        const canOpen = await Linking.canOpenURL(result.redirectUrl);
+        if (canOpen) {
+          // Navigate to processing screen first, then open UPI app
+          navigation.navigate(ROUTES.PAYMENT_PROCESSING, {
+            orderId: result.orderId,
+            merchantId: result.merchantId,
+            amount: selectedAmount,
+          });
+          await Linking.openURL(result.redirectUrl);
+        } else {
+          // Fallback: try WebView if UPI app not available
+          navigation.navigate(ROUTES.PAYMENT_WEBVIEW, {
+            redirectUrl: result.redirectUrl,
+            orderId: result.orderId,
+            merchantId: result.merchantId,
+            amount: selectedAmount,
+          });
+        }
+      } else {
+        // PG_CHECKOUT flow: open in WebView
+        navigation.navigate(ROUTES.PAYMENT_WEBVIEW, {
+          redirectUrl: result.redirectUrl,
+          orderId: result.orderId,
+          merchantId: result.merchantId,
+          amount: selectedAmount,
+        });
+      }
+    } catch (err: any) {
+      Alert.alert(
+        'Payment Error',
+        err?.response?.data?.message ||
+          err?.message ||
+          'Unable to initiate payment. Please try again.',
+        [{ text: 'OK' }]
+      );
+    }
+  }, [selectedAmount, selectedFees, initiatePayment, runCheckout, navigation]);
 
   const handleFeePress = useCallback(
     (feeheadId: number) => {
@@ -399,10 +428,18 @@ export const FeeDetailsScreen: React.FC = () => {
           totalFees={fees.length}
           selectedAmount={selectedAmount}
           onPayPress={handlePayPress}
-          disabled={!canProceedToPayment || isProcessing}
-          isProcessing={isProcessing}
+          disabled={!canProceedToPayment || isProcessing || isVerifying}
+          isProcessing={isProcessing || isVerifying}
         />
       )}
+      <PaymentConfirmModal
+        visible={showConfirm}
+        student={students.find((s) => s.id === selectedStudentId)}
+        fees={selectedFees}
+        totalAmount={selectedAmount}
+        onConfirm={handleConfirmPayment}
+        onCancel={() => setShowConfirm(false)}
+      />
     </ListTemplate>
   );
 };

@@ -14,6 +14,8 @@ interface PaymentResultParams {
   orderId?: string;
   merchantId?: number;
   amount: number;
+  /** Gateway-supplied reason, shown instead of the generic copy when present. */
+  message?: string;
 }
 
 const STATUS_CONFIG: Record<
@@ -55,25 +57,28 @@ export const PaymentResultScreen: React.FC = () => {
   const route = useRoute<any>();
   const queryClient = useQueryClient();
 
-  const { status, orderId, amount } = route.params as PaymentResultParams;
+  const { status, orderId, amount, message } = route.params as PaymentResultParams;
   const config = STATUS_CONFIG[status];
 
+  // Fee Details is already below us in the stack. In React Navigation 7,
+  // navigate() no longer walks back to an existing screen - it pushes a new
+  // one on top of this result screen, so back would land here again.
+  // popTo/popToTop unwind the stack instead.
   const handleGoToFees = useCallback(() => {
     // Invalidate fees queries so data is refetched
     queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FEES] });
-    // Navigate back to Fee Details, removing this screen from stack
-    navigation.navigate(ROUTES.FEE_DETAILS);
+    navigation.popTo(ROUTES.FEE_DETAILS);
   }, [navigation, queryClient]);
 
   const handleRetryPayment = useCallback(() => {
     // Go back to Fee Details to re-select fees and retry
     queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FEES] });
-    navigation.navigate(ROUTES.FEE_DETAILS);
+    navigation.popTo(ROUTES.FEE_DETAILS);
   }, [navigation, queryClient]);
 
   const handleGoHome = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FEES] });
-    navigation.navigate(ROUTES.MAIN_TABS);
+    navigation.popToTop();
   }, [navigation, queryClient]);
 
   return (
@@ -93,7 +98,7 @@ export const PaymentResultScreen: React.FC = () => {
         </Text>
 
         {/* Message */}
-        <Text style={styles.message}>{config.message}</Text>
+        <Text style={styles.message}>{message || config.message}</Text>
 
         {/* Order ID */}
         {orderId && (

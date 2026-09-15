@@ -71,6 +71,7 @@ export const API_ENDPOINTS = {
     CHECK_FEES_DEFAULTER: '/payments/checkFeesDefaulter',
     GET_MOB_FEES_STUDENT_DETAIL: '/payments/getMobFeesStudentDetail',
     CHECK_PAYMENT_STATUS: '/payments/checkPaymentStatus',
+    VERIFY_RAZORPAY_PAYMENT: '/payments/verifyRazorpayPayment',
   },
   // Chatbot - Dialogflow CX
   CHATBOT: {

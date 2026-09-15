@@ -112,21 +112,102 @@ export interface PayOnlineResponse extends ApiResponse<number> {} // Returns mer
 // Update Order ID Types (POST /payments/updateOrderId)
 // ============================================
 
+/**
+ * Which gateway the backend used for this order. Chosen per school (per dbname)
+ * on the server — schools with Razorpay credentials get RAZORPAY, the rest stay
+ * on PhonePe. The app never picks the gateway itself.
+ */
+export type PaymentGateway = 'PHONEPE' | 'RAZORPAY';
+
+/** PhonePe only: INTENT opens the UPI app directly, PG_CHECKOUT uses a WebView. */
+export type PaymentFlowType = 'PG_CHECKOUT' | 'INTENT';
+
 export interface UpdateOrderRequest {
   token: string;
   amount: string;
   FEE_DETAILS: FeeItem[];
   id: number;
+  paymentFlowType?: PaymentFlowType;
 }
 
-export interface UpdateOrderData {
+export interface PhonePeOrderData {
+  gateway?: 'PHONEPE';
   orderId: string;
   expireAt: string;
   redirectUrl: string;
+  intentUrl?: string;
   state: string;
 }
 
+/**
+ * Everything the Razorpay checkout sheet needs. `keyId` is the PUBLIC key —
+ * the key secret stays on the backend and is never sent to the app.
+ */
+export interface RazorpayOrderData {
+  gateway: 'RAZORPAY';
+  orderId: string; // Razorpay order id (order_xxx)
+  merchantOrderId: string; // Our `razorpay` table row id
+  keyId: string;
+  amount: number; // In paise
+  currency: string;
+  name: string;
+  description: string;
+  themeColor: string;
+  prefill: {
+    name: string;
+    contact: string;
+    email: string;
+  };
+  notes: Record<string, string>;
+}
+
+export type UpdateOrderData = PhonePeOrderData | RazorpayOrderData;
+
 export interface UpdateOrderResponse extends ApiResponse<UpdateOrderData> {}
+
+// ============================================
+// Razorpay Verification (POST /payments/verifyRazorpayPayment)
+// ============================================
+
+/** The fields the Razorpay checkout sheet hands back on success. */
+export interface RazorpayCheckoutSuccess {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+}
+
+export interface VerifyRazorpayPaymentRequest extends RazorpayCheckoutSuccess {
+  merchantOrderId: number;
+}
+
+export interface VerifyRazorpayPaymentData {
+  merchantOrderId: number;
+  orderId: string;
+  paymentId: string;
+  amount: number;
+  paymentState: PaymentState;
+}
+
+export interface VerifyRazorpayPaymentResponse
+  extends ApiResponse<VerifyRazorpayPaymentData> {}
+
+// ============================================
+// Payment Status Types (POST /payments/checkPaymentStatus)
+// ============================================
+
+export type PaymentState = 'success' | 'failed' | 'pending';
+
+export interface CheckPaymentStatusData {
+  merchantOrderId: number;
+  orderId: string;
+  paymentId: string | null;
+  amount: number;
+  paymentState: PaymentState;
+  rawStatus: string | null;
+}
+
+export interface CheckPaymentStatusResponse
+  extends ApiResponse<CheckPaymentStatusData> {}
 
 // ============================================
 // Print Bill Types (POST /payments/getPrintBill)

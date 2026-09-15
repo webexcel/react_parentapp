@@ -17,29 +17,45 @@ interface PaymentProcessingParams {
   orderId: string;
   merchantId: number;
   amount: number;
+  /**
+   * Which gateway this order belongs to. Razorpay's checkout sheet runs inside
+   * the app, so there is no app switch to wait for — polling starts on mount.
+   */
+  gateway?: 'PHONEPE' | 'RAZORPAY';
+  /** Optional status line, e.g. the reason verification was inconclusive. */
+  message?: string;
 }
 
 const MAX_POLLS = 15; // 15 polls * 2 sec = 30 seconds max
 const POLL_INTERVAL = 2000;
 
 /**
- * Screen shown while user completes payment in the PhonePe / UPI app.
+ * Screen shown while a payment is still being confirmed.
  *
- * Flow:
+ * PhonePe (UPI intent) flow:
  * 1. User is redirected to PhonePe app (Linking.openURL called before navigating here)
  * 2. This screen shows a waiting spinner
  * 3. When user returns (AppState → active), we poll checkPaymentStatus
  * 4. On terminal status (success/failed) → navigate to PaymentResultScreen
  * 5. On timeout → navigate with 'pending' status
+ *
+ * Razorpay flow:
+ * The checkout sheet is in-process, so the app never backgrounds and there is no
+ * AppState transition to key off. We land here only when the payment was made but
+ * couldn't be verified, so polling starts immediately on mount and the backend
+ * webhook/reconciliation sweep settles the order underneath us.
  */
 export const PaymentProcessingScreen: React.FC = () => {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
-  const { orderId, merchantId, amount } =
+  const { orderId, merchantId, amount, gateway, message } =
     route.params as PaymentProcessingParams;
+  const isRazorpay = gateway === 'RAZORPAY';
 
   const [statusMessage, setStatusMessage] = useState(
-    'Complete payment in your UPI app...'
+    isRazorpay
+      ? 'Confirming your payment...'
+      : 'Complete payment in your UPI app...'
   );
   const [isPolling, setIsPolling] = useState(false);
   const hasNavigatedRef = useRef(false);
@@ -111,6 +127,16 @@ export const PaymentProcessingScreen: React.FC = () => {
     poll();
   }, [merchantId, navigateToResult, isPolling]);
 
+  // Razorpay never backgrounds the app, so there is no "user came back" moment
+  // to wait for — start checking as soon as the screen mounts.
+  useEffect(() => {
+    if (isRazorpay) {
+      pollPaymentStatus();
+    }
+    // Mount-only: pollPaymentStatus guards itself against concurrent runs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Listen for AppState changes (user returning from PhonePe)
   useEffect(() => {
     const subscription = AppState.addEventListener(
@@ -136,7 +162,9 @@ export const PaymentProcessingScreen: React.FC = () => {
       const onBackPress = () => {
         Alert.alert(
           'Cancel Payment?',
-          'Are you sure you want to cancel? If you already completed payment in PhonePe, it will still be processed.',
+          isRazorpay
+            ? 'Are you sure you want to leave? If your payment went through, it will still be processed.'
+            : 'Are you sure you want to cancel? If you already completed payment in PhonePe, it will still be processed.',
           [
             { text: 'Wait', style: 'cancel' },
             {
@@ -153,7 +181,7 @@ export const PaymentProcessingScreen: React.FC = () => {
         onBackPress
       );
       return () => sub.remove();
-    }, [navigateToResult])
+    }, [navigateToResult, isRazorpay])
   );
 
   return (
@@ -179,8 +207,10 @@ export const PaymentProcessingScreen: React.FC = () => {
 
         <Text style={styles.statusText}>{statusMessage}</Text>
         <Text style={styles.hintText}>
-          Please complete the payment in your UPI app. You will be redirected
-          automatically once the payment is confirmed.
+          {message ||
+            (isRazorpay
+              ? 'Your payment is being confirmed with the bank. This usually takes a few seconds — please do not pay again.'
+              : 'Please complete the payment in your UPI app. You will be redirected automatically once the payment is confirmed.')}
         </Text>
       </View>
 

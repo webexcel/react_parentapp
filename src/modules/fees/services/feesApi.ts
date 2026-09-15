@@ -14,6 +14,8 @@ import {
   AcademicYearResponse,
   FeeDefaulterResponse,
   CheckPaymentStatusResponse,
+  VerifyRazorpayPaymentRequest,
+  VerifyRazorpayPaymentResponse,
 } from '../types/fees.types';
 
 export const feesApi = {
@@ -159,8 +161,8 @@ export const feesApi = {
   },
 
   /**
-   * Check payment status (for UPI intent flow)
-   * Polls the razorpay table status after user returns from UPI app
+   * Check payment status (PhonePe UPI intent flow, or Razorpay fallback)
+   * Polls the razorpay table status after user returns from the payment app
    */
   checkPaymentStatus: async (
     merchantOrderId: number
@@ -168,6 +170,23 @@ export const feesApi = {
     const response = await apiClient.post<CheckPaymentStatusResponse>(
       API_ENDPOINTS.PAYMENTS.CHECK_PAYMENT_STATUS,
       { merchantOrderId }
+    );
+    return response.data;
+  },
+
+  /**
+   * Verify a Razorpay checkout result.
+   *
+   * The signature returned by the Razorpay SDK proves the payment is genuine,
+   * so this confirms the receipt straight away instead of waiting for the
+   * server-to-server webhook. Safe to call more than once for the same order.
+   */
+  verifyRazorpayPayment: async (
+    data: VerifyRazorpayPaymentRequest
+  ): Promise<VerifyRazorpayPaymentResponse> => {
+    const response = await apiClient.post<VerifyRazorpayPaymentResponse>(
+      API_ENDPOINTS.PAYMENTS.VERIFY_RAZORPAY_PAYMENT,
+      data
     );
     return response.data;
   },

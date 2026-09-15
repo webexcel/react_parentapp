@@ -2,17 +2,33 @@ import { useState, useCallback } from 'react';
 import { Platform } from 'react-native';
 import { useAuth } from '../../../core/auth';
 import { feesApi } from '../services/feesApi';
-import { SelectableFeeItem } from '../types/fees.types';
+import {
+  PaymentFlowType,
+  RazorpayOrderData,
+  SelectableFeeItem,
+} from '../types/fees.types';
 
-export type PaymentFlowType = 'PG_CHECKOUT' | 'INTENT';
+export type { PaymentFlowType };
 
-export interface PaymentInitResult {
+/** PhonePe: the app gets a URL to open, either a UPI intent or a WebView page. */
+export interface PhonePePaymentInit {
+  gateway: 'PHONEPE';
   redirectUrl: string;
   intentUrl?: string;
   orderId: string;
   merchantId: number;
   paymentFlowType: PaymentFlowType;
 }
+
+/** Razorpay: the app gets an order to hand to the native checkout sheet. */
+export interface RazorpayPaymentInit {
+  gateway: 'RAZORPAY';
+  order: RazorpayOrderData;
+  orderId: string;
+  merchantId: number;
+}
+
+export type PaymentInitResult = PhonePePaymentInit | RazorpayPaymentInit;
 
 interface UsePayOnlineResult {
   initiatePayment: (
@@ -27,10 +43,13 @@ interface UsePayOnlineResult {
 /**
  * Hook that handles the 2-step payment initiation flow:
  * 1. Call payOnline → get merchantId
- * 2. Call updateOrderId with fee details → get PhonePe redirectUrl/intentUrl
+ * 2. Call updateOrderId with fee details → get the gateway's order
  *
- * On Android, uses INTENT flow (opens PhonePe app directly).
- * Falls back to PG_CHECKOUT (WebView) if needed.
+ * The gateway is chosen server-side per school: schools with Razorpay
+ * credentials get a Razorpay order for the native checkout sheet, the rest get
+ * a PhonePe redirect/intent URL. `paymentFlowType` only matters to PhonePe —
+ * on Android it asks for the INTENT flow (opens the PhonePe app directly),
+ * otherwise PG_CHECKOUT (WebView).
  */
 export const usePayOnline = (): UsePayOnlineResult => {
   const { token, userData, students, selectedStudentId } = useAuth();
@@ -57,7 +76,8 @@ export const usePayOnline = (): UsePayOnlineResult => {
           throw new Error(`Missing required payment information (adno: ${!!adno}, token: ${!!token}, mobile: ${!!mobileNo})`);
         }
 
-        // Determine payment flow type: INTENT on Android, PG_CHECKOUT otherwise
+        // Determine PhonePe payment flow type: INTENT on Android, PG_CHECKOUT otherwise.
+        // Ignored by the backend when the school is on Razorpay.
         const paymentFlowType: PaymentFlowType =
           Platform.OS === 'android' ? 'INTENT' : 'PG_CHECKOUT';
 
@@ -76,7 +96,7 @@ export const usePayOnline = (): UsePayOnlineResult => {
 
         const merchantId = payOnlineRes.data;
 
-        // Step 2: Create PhonePe order
+        // Step 2: Create the gateway order
         const updateOrderRes = await feesApi.updateOrderId({
           token,
           amount: String(totalAmount),
@@ -90,7 +110,22 @@ export const usePayOnline = (): UsePayOnlineResult => {
           );
         }
 
-        const { redirectUrl, intentUrl, orderId } = updateOrderRes.data;
+        const orderData = updateOrderRes.data;
+
+        if (orderData.gateway === 'RAZORPAY') {
+          if (!orderData.orderId || !orderData.keyId) {
+            throw new Error('Incomplete Razorpay order received from server');
+          }
+
+          return {
+            gateway: 'RAZORPAY',
+            order: orderData,
+            orderId: orderData.orderId,
+            merchantId,
+          };
+        }
+
+        const { redirectUrl, intentUrl, orderId } = orderData;
         const paymentUrl = intentUrl || redirectUrl;
 
         if (!paymentUrl) {
@@ -98,6 +133,7 @@ export const usePayOnline = (): UsePayOnlineResult => {
         }
 
         return {
+          gateway: 'PHONEPE',
           redirectUrl: paymentUrl,
           intentUrl,
           orderId,
