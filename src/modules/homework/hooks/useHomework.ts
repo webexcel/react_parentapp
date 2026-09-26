@@ -2,7 +2,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { QUERY_KEYS } from '../../../core/constants';
 import { useAuth } from '../../../core/auth';
 import { homeworkApi } from '../services/homeworkApi';
-import { Homework, HomeworkAttachment, SUBJECT_COLORS } from '../types/homework.types';
+import { Homework, SUBJECT_COLORS } from '../types/homework.types';
+import { parseAttachments } from '../../../core/utils/attachments';
 
 export const useHomework = () => {
   const { selectedStudentId, students } = useAuth();
@@ -112,57 +113,6 @@ const getHomeworkStatus = (item: any): 'pending' | 'completed' | 'overdue' => {
   return 'pending';
 };
 
-const parseAttachments = (eventImage: any, index: number): HomeworkAttachment[] => {
-  if (!eventImage || typeof eventImage !== 'string' || eventImage.trim() === '') {
-    return [];
-  }
-
-  const trimmed = eventImage.trim();
-
-  // Single URL starting with http
-  if (trimmed.startsWith('http')) {
-    return [{
-      id: String(index),
-      type: getAttachmentType(trimmed),
-      url: trimmed,
-      name: 'Attachment',
-    }];
-  }
-
-  // Stringified JSON array — clean whitespace inside URLs before parsing
-  if (trimmed.startsWith('[')) {
-    try {
-      const sanitized = trimmed.replace(/\s+/g, '');
-      const parsed = JSON.parse(sanitized);
-      if (Array.isArray(parsed)) {
-        const urls = parsed.filter(
-          (u: any) => typeof u === 'string' && u !== '',
-        );
-        if (urls.length > 0) {
-          return urls.map((url: string, idx: number) => ({
-            id: `${index}-${idx}`,
-            type: getAttachmentType(url),
-            url,
-            name: `Attachment ${idx + 1}`,
-          }));
-        }
-      }
-    } catch {
-      // Invalid JSON, fall through
-    }
-  }
-
-  return [];
-};
-
-const getAttachmentType = (url: string): 'pdf' | 'image' | 'audio' | 'video' | 'document' => {
-  const ext = url.split('.').pop()?.toLowerCase() || '';
-  if (['pdf'].includes(ext)) return 'pdf';
-  if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) return 'image';
-  if (['mp3', 'wav', 'aac', 'm4a'].includes(ext)) return 'audio';
-  if (['mp4', 'mov', 'avi', 'mkv', 'webm'].includes(ext)) return 'video';
-  return 'document';
-};
 
 const getSubjectColor = (subject: string): string => {
   const key = subject.toLowerCase().replace(/\s/g, '');

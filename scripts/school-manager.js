@@ -243,6 +243,10 @@ async function addSchool() {
   // Firebase project
   const firebaseProject = await question('Firebase Project ID (default: "schooltrees-69f4b"): ') || 'schooltrees-69f4b';
 
+  // Social media links (all optional - blank links are simply not shown in the app)
+  console.log('\nSocial Media Links (press Enter to skip):');
+  const social = await askSocialLinks();
+
   // Module selection
   console.log('\nModule Configuration (y/n for each):');
   const modules = {
@@ -324,6 +328,11 @@ async function addSchool() {
       darkMode: false,
     },
   };
+
+  // Only write the social block when at least one link was provided
+  if (Object.keys(social).length > 0) {
+    config.social = social;
+  }
 
   // Create directories
   console.log('\nCreating school configuration...');
@@ -409,6 +418,18 @@ async function editSchool(schoolId) {
   // Update derived colors if primary changed
   config.theme.colors.primaryDark = darkenColor(config.theme.colors.primary, 0.2);
   config.theme.colors.primarySoft = lightenColor(config.theme.colors.primary, 0.9);
+
+  // Edit social media links
+  const editSocial = await askYesNo('\nEdit social media links?', false);
+  if (editSocial) {
+    console.log('\nSocial Media Links (Enter keeps current, "-" clears):');
+    const social = await askSocialLinks(config.social || {});
+    if (Object.keys(social).length > 0) {
+      config.social = social;
+    } else {
+      delete config.social;
+    }
+  }
 
   // Edit modules
   const editModules = await askYesNo('\nEdit module settings?', false);
@@ -618,6 +639,42 @@ async function askYesNo(prompt, defaultValue = true) {
   const answer = await question(`${prompt} (${defaultStr}): `);
   if (!answer) return defaultValue;
   return answer.toLowerCase().startsWith('y');
+}
+
+/**
+ * Helper: Ask for the four social media links.
+ *
+ * A blank answer keeps the current value (or leaves it unset when adding a new
+ * school); "-" clears an existing link. Platforms left empty are omitted from
+ * the config so the app hides their icon, and if all four end up empty the
+ * whole social section is hidden.
+ */
+async function askSocialLinks(current = {}) {
+  const platforms = [
+    { key: 'youtube', label: 'YouTube Channel URL', example: 'https://www.youtube.com/@schoolchannel' },
+    { key: 'whatsapp', label: 'WhatsApp URL', example: 'https://wa.me/919876543210' },
+    { key: 'instagram', label: 'Instagram Page URL', example: 'https://www.instagram.com/schoolpage' },
+    { key: 'facebook', label: 'Facebook Page URL', example: 'https://www.facebook.com/schoolpage' },
+  ];
+
+  const social = {};
+
+  for (const { key, label, example } of platforms) {
+    const existing = current[key] || '';
+    const hint = existing ? `current: ${existing}` : `e.g. ${example}`;
+    const answer = (await question(`  ${label} (${hint}): `)).trim();
+
+    if (answer === '-') {
+      continue; // cleared
+    }
+
+    const value = answer || existing;
+    if (value) {
+      social[key] = value;
+    }
+  }
+
+  return social;
 }
 
 /**

@@ -7,6 +7,8 @@ import {ROUTES} from '../core/constants';
 import {Spinner, Icon} from '../design-system';
 import {useTheme} from '../design-system/theme/ThemeContext';
 import {useBrand, useAuthType} from '../core/brand';
+import {navigationRef} from './navigationRef';
+import {DrawerProvider} from './components';
 
 // Auth Screens
 import {LoginScreen, OtpScreen, PasswordScreen, CreatePasswordScreen} from '../modules/auth';
@@ -280,14 +282,18 @@ export const Navigation = () => {
   const showPasswordSetup = requiresPasswordSetup && (authType === 'password' || authType === 'both');
 
   return (
-    <NavigationContainer>
-      {isAuthenticated && showPasswordSetup ? (
-        <PasswordSetupNavigator />
-      ) : isAuthenticated ? (
-        <MainNavigator />
-      ) : (
-        <AuthNavigator />
-      )}
-    </NavigationContainer>
+    // DrawerProvider wraps the container so the side menu can render above the
+    // whole app and navigate through navigationRef.
+    <DrawerProvider>
+      <NavigationContainer ref={navigationRef}>
+        {isAuthenticated && showPasswordSetup ? (
+          <PasswordSetupNavigator />
+        ) : isAuthenticated ? (
+          <MainNavigator />
+        ) : (
+          <AuthNavigator />
+        )}
+      </NavigationContainer>
+    </DrawerProvider>
   );
 };

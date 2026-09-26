@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { QUERY_KEYS } from '../../../core/constants';
+import { parseAttachments } from '../../../core/utils/attachments';
 import { dashboardApi } from '../services/dashboardApi';
 import { FlashMessage } from '../types/dashboard.types';
 
@@ -25,7 +26,12 @@ export const useFlashMessage = (): UseFlashMessageResult => {
       const response = await dashboardApi.getFlashMessage();
 
       if (response.status && response.data) {
-        return response.data;
+        // event_image holds a JSON array of URLs (multi-attach) or a single
+        // bare URL on legacy rows — parseAttachments normalises both.
+        return response.data.map((item, index) => ({
+          ...item,
+          attachments: parseAttachments(item.event_image, index),
+        }));
       }
 
       return [];

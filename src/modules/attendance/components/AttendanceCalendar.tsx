@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Text, colors, spacing, borderRadius } from '../../../design-system';
 import { DayAttendance, AttendanceStatus } from '../types/attendance.types';
+import { parseLocalDate } from '../../../core/utils/dates';
 
 interface AttendanceCalendarProps {
   month: number;
@@ -62,7 +63,12 @@ export const AttendanceCalendar: React.FC<AttendanceCalendarProps> = ({
   const attendanceMap = useMemo(() => {
     const map: Record<number, DayAttendance> = {};
     days.forEach((item) => {
-      const date = new Date(item.date);
+      // parseLocalDate, not new Date(): item.date is a bare 'YYYY-MM-DD',
+      // which the spec parses as UTC midnight — reading .getDate() off that
+      // maps attendance onto the WRONG calendar day on any device at a
+      // negative UTC offset.
+      const date = parseLocalDate(item.date);
+      if (!date) return;
       const dayNum = date.getDate();
       map[dayNum] = item;
     });

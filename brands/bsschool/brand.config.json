@@ -9,8 +9,8 @@
   "app": {
     "android": {
       "applicationId": "com.schooltree.bs",
-      "versionCode": 1,
-      "versionName": "1.0.0"
+      "versionCode": 7,
+      "versionName": "7.0"
     },
     "ios": {
       "bundleId": "com.schooltree.bs",
@@ -84,14 +84,30 @@
       "timetable": {
         "enabled": true,
         "breaks": [
-          { "afterPeriod": 2, "label": "Short Break", "startTime": "10:00", "endTime": "10:15" },
-          { "afterPeriod": 4, "label": "Lunch Break", "startTime": "11:45", "endTime": "12:30" }
+          {
+            "afterPeriod": 2,
+            "label": "Short Break",
+            "startTime": "10:00",
+            "endTime": "10:15"
+          },
+          {
+            "afterPeriod": 4,
+            "label": "Lunch Break",
+            "startTime": "11:45",
+            "endTime": "12:30"
+          }
         ]
       },
       "chat": {
         "enabled": true
       },
       "profile": {
+        "enabled": true
+      },
+      "parentMessage": {
+        "enabled": true
+      },
+      "leaveLetter": {
         "enabled": true
       }
     },
@@ -105,5 +121,11 @@
     },
     "offlineMode": true,
     "darkMode": false
+  },
+  "social": {
+    "youtube": "",
+    "whatsapp": "",
+    "instagram": "",
+    "facebook": ""
   }
 }

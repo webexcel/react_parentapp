@@ -22,6 +22,7 @@ export type {
   AuthType,
   SplashConfig,
   SplashVariant,
+  SocialLinks,
 } from './BrandConfig';
 
 // React context and hooks
@@ -42,6 +43,7 @@ export {
   useModuleConfig,
   useFeatureFlag,
   useEnabledModules,
+  useSocialLinks,
   withModuleEnabled,
   ModuleGuard,
   AuthGuard,

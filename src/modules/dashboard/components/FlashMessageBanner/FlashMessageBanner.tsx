@@ -49,7 +49,8 @@ export const FlashMessageBanner: React.FC<FlashMessageBannerProps> = ({
 
   const handleDismiss = () => {
     if (onDismiss) {
-      onDismiss(currentMessage.id);
+      // The row's primary key is `nid`; `id` only exists on older payloads.
+      onDismiss(currentMessage.nid ?? currentMessage.id);
     }
   };
 

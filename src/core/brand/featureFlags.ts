@@ -1,5 +1,6 @@
 import React from 'react';
 import {useBrand, ModuleName} from './BrandContext';
+import {getSocialItems, SocialLinkItem} from '../utils/socialLinks';
 
 /**
  * useIsModuleEnabled - Check if a specific module is enabled
@@ -103,6 +104,29 @@ export const useEnabledModules = (): ModuleName[] => {
   return (Object.keys(modules) as ModuleName[]).filter(
     moduleName => modules[moduleName]?.enabled,
   );
+};
+
+/**
+ * useSocialLinks - Get the brand's configured social media links
+ *
+ * Platforms without a link in brand.config.json are left out, so an empty
+ * array means the brand has no social presence and the section should be
+ * hidden entirely.
+ *
+ * @returns Array of renderable social link items
+ *
+ * @example
+ * ```tsx
+ * const socialItems = useSocialLinks();
+ * if (socialItems.length > 0) {
+ *   // Render social section
+ * }
+ * ```
+ */
+export const useSocialLinks = (): SocialLinkItem[] => {
+  const {brand} = useBrand();
+
+  return React.useMemo(() => getSocialItems(brand.social), [brand.social]);
 };
 
 /**

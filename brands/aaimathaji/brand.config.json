@@ -89,6 +89,12 @@
       },
       "profile": {
         "enabled": true
+      },
+      "parentMessage": {
+        "enabled": true
+      },
+      "leaveLetter": {
+        "enabled": true
       }
     },
     "notifications": {
@@ -101,5 +107,11 @@
     },
     "offlineMode": true,
     "darkMode": false
+  },
+  "social": {
+    "youtube": "",
+    "whatsapp": "",
+    "instagram": "",
+    "facebook": ""
   }
 }

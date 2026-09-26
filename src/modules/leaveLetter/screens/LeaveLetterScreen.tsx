@@ -25,6 +25,7 @@ import {useLeaveLetter} from '../hooks/useLeaveLetter';
 import {LeaveRequestForm} from '../components/LeaveRequestForm';
 import {LeaveRequestCard} from '../components/LeaveRequestCard';
 import {LeaveRequest, LeaveFormData} from '../types/leaveLetter.types';
+import {parseLocalDate} from '../../../core/utils/dates';
 
 export const LeaveLetterScreen: React.FC = () => {
   const navigation = useNavigation<any>();
@@ -145,8 +146,10 @@ export const LeaveLetterScreen: React.FC = () => {
     if (!editingRequest) return undefined;
     return {
       sessionType: String(editingRequest.abtype),
-      startDate: new Date(editingRequest.fdate),
-      endDate: new Date(editingRequest.tdate),
+      // fdate/tdate are bare calendar dates. new Date() would read them as UTC
+      // midnight and could hand the picker the previous day.
+      startDate: parseLocalDate(editingRequest.fdate) ?? undefined,
+      endDate: parseLocalDate(editingRequest.tdate) ?? undefined,
       message: editingRequest.reson,
     };
   };

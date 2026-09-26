@@ -21,6 +21,7 @@ import holycresentnazConfig from './holycresentnaz/brand.config.json';
 import holycresentsriConfig from './holycresentsri/brand.config.json';
 import holycresentthiruConfig from './holycresentthiru/brand.config.json';
 import infantConfig from './infant/brand.config.json';
+import islamiahConfig from './islamiah/brand.config.json';
 import joshuaConfig from './joshua/brand.config.json';
 import kalaimagalConfig from './kalaimagal/brand.config.json';
 import kamalanehruConfig from './kamalanehru/brand.config.json';
@@ -30,6 +31,7 @@ import mountcarmelConfig from './mountcarmel/brand.config.json';
 import mountsenoConfig from './mountseno/brand.config.json';
 import nationallotusConfig from './nationallotus/brand.config.json';
 import ourladyexcelConfig from './ourladyexcel/brand.config.json';
+import ourladynpConfig from './ourladynp/brand.config.json';
 import periyarConfig from './periyar/brand.config.json';
 import psseniorConfig from './pssenior/brand.config.json';
 import railwaybalabhavanConfig from './railwaybalabhavan/brand.config.json';
@@ -37,11 +39,14 @@ import rpccbseConfig from './rpccbse/brand.config.json';
 import rukmaniConfig from './rukmani/brand.config.json';
 import sivakasiConfig from './sivakasi/brand.config.json';
 import stdominicsConfig from './stdominics/brand.config.json';
+import stjosephkoduConfig from './stjosephkodu/brand.config.json';
+import stmosesConfig from './stmoses/brand.config.json';
 import templegreenConfig from './templegreen/brand.config.json';
 import templeparkConfig from './templepark/brand.config.json';
 import udhayamglobalConfig from './udhayamglobal/brand.config.json';
 import venkateshwaraConfig from './venkateshwara/brand.config.json';
-import vidhyaratnaConfig from './vidhyaratna/brand.config.json';
+import vidyaratnaConfig from './vidyaratna/brand.config.json';
+import vipschoolConfig from './vipschool/brand.config.json';
 import vnrvivekanandaConfig from './vnrvivekananda/brand.config.json';
 import vsnmatricConfig from './vsnmatric/brand.config.json';
 
@@ -67,6 +72,7 @@ export const brandRegistry: Record<string, any> = {
   holycresentsri: holycresentsriConfig,
   holycresentthiru: holycresentthiruConfig,
   infant: infantConfig,
+  islamiah: islamiahConfig,
   joshua: joshuaConfig,
   kalaimagal: kalaimagalConfig,
   kamalanehru: kamalanehruConfig,
@@ -76,6 +82,7 @@ export const brandRegistry: Record<string, any> = {
   mountseno: mountsenoConfig,
   nationallotus: nationallotusConfig,
   ourladyexcel: ourladyexcelConfig,
+  ourladynp: ourladynpConfig,
   periyar: periyarConfig,
   pssenior: psseniorConfig,
   railwaybalabhavan: railwaybalabhavanConfig,
@@ -83,14 +90,17 @@ export const brandRegistry: Record<string, any> = {
   rukmani: rukmaniConfig,
   sivakasi: sivakasiConfig,
   stdominics: stdominicsConfig,
+  stjosephkodu: stjosephkoduConfig,
+  stmoses: stmosesConfig,
   templegreen: templegreenConfig,
   templepark: templeparkConfig,
   udhayamglobal: udhayamglobalConfig,
   venkateshwara: venkateshwaraConfig,
-  vidhyaratna: vidhyaratnaConfig,
+  vidyaratna: vidyaratnaConfig,
+  vipschool: vipschoolConfig,
   vnrvivekananda: vnrvivekanandaConfig,
   vsnmatric: vsnmatricConfig,
 };
 
 // Export individual configs if needed
-export { aadhithyaConfig, aaimathajiConfig, alphacbseConfig, alphamatConfig, alphatechnoConfig, avlConfig, balakrishnaConfig, bsschoolConfig, carmelnpConfig, crescentConfig, csistthomasConfig, doonConfig, gloryConfig, greenworldschoolConfig, holyangelsConfig, holycresentmatricConfig, holycresentnazConfig, holycresentsriConfig, holycresentthiruConfig, infantConfig, joshuaConfig, kalaimagalConfig, kamalanehruConfig, littleflowerConfig, measiConfig, mountcarmelConfig, mountsenoConfig, nationallotusConfig, ourladyexcelConfig, periyarConfig, psseniorConfig, railwaybalabhavanConfig, rpccbseConfig, rukmaniConfig, sivakasiConfig, stdominicsConfig, templegreenConfig, templeparkConfig, udhayamglobalConfig, venkateshwaraConfig, vidhyaratnaConfig, vnrvivekanandaConfig, vsnmatricConfig };
+export { aadhithyaConfig, aaimathajiConfig, alphacbseConfig, alphamatConfig, alphatechnoConfig, avlConfig, balakrishnaConfig, bsschoolConfig, carmelnpConfig, crescentConfig, csistthomasConfig, doonConfig, gloryConfig, greenworldschoolConfig, holyangelsConfig, holycresentmatricConfig, holycresentnazConfig, holycresentsriConfig, holycresentthiruConfig, infantConfig, islamiahConfig, joshuaConfig, kalaimagalConfig, kamalanehruConfig, littleflowerConfig, measiConfig, mountcarmelConfig, mountsenoConfig, nationallotusConfig, ourladyexcelConfig, ourladynpConfig, periyarConfig, psseniorConfig, railwaybalabhavanConfig, rpccbseConfig, rukmaniConfig, sivakasiConfig, stdominicsConfig, stjosephkoduConfig, stmosesConfig, templegreenConfig, templeparkConfig, udhayamglobalConfig, venkateshwaraConfig, vidyaratnaConfig, vipschoolConfig, vnrvivekanandaConfig, vsnmatricConfig };

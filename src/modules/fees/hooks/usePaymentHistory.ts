@@ -3,6 +3,7 @@ import { QUERY_KEYS } from '../../../core/constants';
 import { useAuth } from '../../../core/auth';
 import { feesApi } from '../services/feesApi';
 import { PaymentHistoryItem } from '../types/fees.types';
+import { dateSortValue } from '../../../core/utils/dates';
 
 interface PaymentReceipt {
   receiptId: string;
@@ -64,11 +65,7 @@ export const usePaymentHistory = (
         );
 
         // Sort by date descending (newest first)
-        receipts.sort((a, b) => {
-          const dateA = new Date(a.date).getTime();
-          const dateB = new Date(b.date).getTime();
-          return dateB - dateA;
-        });
+        receipts.sort((a, b) => dateSortValue(b.date) - dateSortValue(a.date));
 
         return {
           receipts,
