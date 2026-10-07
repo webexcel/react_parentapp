@@ -10,10 +10,11 @@ export const useReportCard = (
   classId: number,
   examGroupId: number | undefined,
   yearId: number,
-  termType: string | undefined | null
+  termType: string | undefined | null,
+  examId?: number
 ) => {
   const query = useQuery({
-    queryKey: [QUERY_KEYS.REPORT_CARD, adno, classId, examGroupId, yearId, termType],
+    queryKey: [QUERY_KEYS.REPORT_CARD, adno, classId, examGroupId, yearId, termType, examId],
     queryFn: async () => {
       if (!examGroupId || !termType) {
         return { status: false, message: 'Missing parameters', data: '' };
@@ -24,6 +25,7 @@ export const useReportCard = (
         EXGRPID: examGroupId,
         YEARID: yearId,
         TERMTYPE: termType,
+        EXAMID: examId,
       });
       return response;
     },

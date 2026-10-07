@@ -131,6 +131,9 @@ export const MarksScreen: React.FC = () => {
   // Only fetch marks if we have a valid exam from API
   const {
     marks,
+    feeBlocked,
+    feeMessage,
+    blockedSubjects,
     isLoading: isLoadingMarks,
     isFetching: isFetchingMarks,
     error,
@@ -150,7 +153,8 @@ export const MarksScreen: React.FC = () => {
     Number(classId) || 0,
     selectedStudent?.examgrpid ?? undefined,  // From student (student_class_map)
     selectedExam?.year_id || 0,
-    selectedExam?.term_type
+    selectedExam?.term_type,
+    selectedExam?.id
   );
 
   // Auto-fetch when screen comes into focus
@@ -253,6 +257,59 @@ export const MarksScreen: React.FC = () => {
             title="Unable to Load Marks"
             description="Please check your connection and try again."
           />
+        ) : feeBlocked && blockedSubjects.length === 0 ? (
+          <EmptyState
+            icon="marks"
+            title="Term Fees Pending"
+            description={feeMessage}
+          />
+        ) : feeBlocked ? (
+          <>
+            <View style={styles.feeBanner}>
+              <Icon name="lock-closed" size={20} color={colors.warning} />
+              <View style={styles.feeBannerText}>
+                <Text variant="body" semibold>
+                  Term Fees Pending
+                </Text>
+                <Text variant="caption" color="secondary">
+                  {feeMessage}
+                </Text>
+              </View>
+            </View>
+
+            <Text variant="h3" style={styles.sectionTitle}>
+              Subject-wise Marks
+            </Text>
+
+            {/* Placeholders only — the backend sends no marks while fees are pending */}
+            {blockedSubjects.map((subject, index) => {
+              const color = getSubjectColor(subject);
+              return (
+                <View key={index} style={styles.markCard}>
+                  <View style={styles.markHeader}>
+                    <View style={[styles.subjectDot, { backgroundColor: color }]} />
+                    <Text variant="body" semibold style={styles.subjectName}>
+                      {subject}
+                    </Text>
+                    <Icon name="lock-closed" size={16} color={colors.textSecondary} />
+                  </View>
+
+                  {/* Soft stacked layers read as a blurred score */}
+                  <View style={styles.blurredScore}>
+                    <View style={[styles.blurLayer, styles.blurOuter, { backgroundColor: color }]} />
+                    <View style={[styles.blurLayer, styles.blurMiddle, { backgroundColor: color }]} />
+                    <View style={[styles.blurLayer, styles.blurInner, { backgroundColor: color }]} />
+                  </View>
+
+                  <View style={styles.progressContainer}>
+                    <View style={styles.progressBar}>
+                      <View style={[styles.progressFill, styles.blurredFill, { backgroundColor: color }]} />
+                    </View>
+                  </View>
+                </View>
+              );
+            })}
+          </>
         ) : (
           <>
             {/* Subject-wise Marks */}
@@ -424,5 +481,52 @@ const styles = StyleSheet.create({
   progressFill: {
     height: '100%',
     borderRadius: 3,
+  },
+  feeBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: `${colors.warning}1A`,
+    borderWidth: 1,
+    borderColor: colors.warning,
+    borderRadius: borderRadius.lg,
+    marginHorizontal: spacing.base,
+    marginTop: spacing.md,
+    padding: spacing.md,
+  },
+  feeBannerText: {
+    flex: 1,
+    marginLeft: spacing.sm,
+  },
+  blurredScore: {
+    width: 96,
+    height: 36,
+    marginBottom: spacing.sm,
+    justifyContent: 'center',
+  },
+  blurLayer: {
+    position: 'absolute',
+    alignSelf: 'center',
+  },
+  blurOuter: {
+    width: 96,
+    height: 36,
+    borderRadius: 18,
+    opacity: 0.08,
+  },
+  blurMiddle: {
+    width: 76,
+    height: 26,
+    borderRadius: 13,
+    opacity: 0.12,
+  },
+  blurInner: {
+    width: 56,
+    height: 16,
+    borderRadius: 8,
+    opacity: 0.18,
+  },
+  blurredFill: {
+    width: '60%',
+    opacity: 0.25,
   },
 });

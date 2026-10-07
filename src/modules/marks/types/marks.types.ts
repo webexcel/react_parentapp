@@ -16,6 +16,9 @@ export interface SubjectMark {
 export interface MarksResponse {
   status: boolean;
   message: string;
+  /** Exam needs fees confirmed and they are pending; `message` says what to pay. */
+  fee_blocked?: boolean;
+  pending_amount?: number;
   data: {
     exam_name?: string;
     exam_id?: number;
@@ -23,6 +26,8 @@ export interface MarksResponse {
     student_name?: string;
     class?: string;
     marks: SubjectMark[];
+    /** When fee_blocked: subject names only, rendered as blurred placeholders. */
+    blocked_subjects?: string[];
     total_marks?: number;
     total_possible?: number;
     overall_percentage?: number;
@@ -70,10 +75,14 @@ export interface ReportCardRequest {
   EXGRPID: number;
   YEARID: number;
   TERMTYPE: string;
+  /** Exam being viewed — the backend applies its "Fees confirmation needed" check. */
+  EXAMID?: number;
 }
 
 export interface ReportCardResponse {
   status: boolean;
   message: string;
+  fee_blocked?: boolean;
+  pending_amount?: number;
   data: string;
 }

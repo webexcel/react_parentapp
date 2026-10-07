@@ -7,6 +7,7 @@ import {
   Linking,
   Alert,
   ActivityIndicator,
+  Dimensions,
 } from 'react-native';
 import Video from 'react-native-video';
 import ReactNativeBlobUtil from 'react-native-blob-util';
@@ -96,6 +97,36 @@ const VideoTile: React.FC<{ attachment: Attachment; compact: boolean }> = ({
         </Text>
       </View>
     </TouchableOpacity>
+  );
+};
+
+// Tallest a compact image may grow — leaves the popup's text and Dismiss
+// button reachable (the modal body scrolls for anything beyond).
+const COMPACT_IMAGE_MAX_HEIGHT = Dimensions.get('window').height * 0.55;
+
+/**
+ * Compact image sized to its own aspect ratio once loaded. A fixed-height box
+ * with resizeMode "contain" shrank portrait images to a thin strip in the
+ * middle of the flash popup; sizing by the real ratio lets a portrait image
+ * grow taller (up to COMPACT_IMAGE_MAX_HEIGHT) and a landscape one stay short.
+ */
+const CompactImage: React.FC<{ uri: string }> = ({ uri }) => {
+  const [ratio, setRatio] = useState<number | null>(null);
+  return (
+    <Image
+      source={{ uri }}
+      style={[
+        styles.image,
+        ratio
+          ? { height: undefined, aspectRatio: ratio, maxHeight: COMPACT_IMAGE_MAX_HEIGHT }
+          : styles.imageCompact,
+      ]}
+      resizeMode="contain"
+      onLoad={e => {
+        const { width, height } = e.nativeEvent.source || {};
+        if (width && height) setRatio(width / height);
+      }}
+    />
   );
 };
 
@@ -203,11 +234,15 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({
               activeOpacity={onImagePress ? 0.9 : 1}
               disabled={!onImagePress}
             >
-              <Image
-                source={{ uri: attachment.url }}
-                style={[styles.image, compact && styles.imageCompact]}
-                resizeMode="contain"
-              />
+              {compact ? (
+                <CompactImage uri={attachment.url} />
+              ) : (
+                <Image
+                  source={{ uri: attachment.url }}
+                  style={styles.image}
+                  resizeMode="contain"
+                />
+              )}
             </TouchableOpacity>
           ))}
         </View>
