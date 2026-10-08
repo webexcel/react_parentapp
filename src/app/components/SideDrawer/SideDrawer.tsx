@@ -10,10 +10,9 @@ import {
   TouchableWithoutFeedback,
   PanResponder,
   Dimensions,
-  Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Text, Icon, colors } from '../../../design-system';
+import { Text, Icon, ConfirmDialog, colors } from '../../../design-system';
 import { useAuth } from '../../../core/auth';
 import { useBrand } from '../../../core/brand';
 import { getBrandLogo } from '../../../core/brand/BrandAssets';
@@ -121,14 +120,24 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({ visible, onClose }) => {
     [closeThen],
   );
 
+  // The confirm dialog outlives the drawer's own Modal, so it is rendered
+  // outside it and opened once the panel has slid away.
+  const [confirmLogout, setConfirmLogout] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+
   const handleLogout = useCallback(() => {
-    closeThen(() => {
-      Alert.alert('Logout', 'Are you sure you want to logout?', [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Logout', style: 'destructive', onPress: () => logout() },
-      ]);
-    });
-  }, [closeThen, logout]);
+    closeThen(() => setConfirmLogout(true));
+  }, [closeThen]);
+
+  const handleConfirmLogout = useCallback(async () => {
+    setLoggingOut(true);
+    try {
+      await logout();
+    } finally {
+      setLoggingOut(false);
+      setConfirmLogout(false);
+    }
+  }, [logout]);
 
   // The menu mirrors the brand's enabled modules, so a disabled module never
   // shows a dead entry here.
@@ -196,8 +205,22 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({ visible, onClose }) => {
     return { mainItems: main, accountItems: account };
   }, [isModuleEnabled]);
 
+  const logoutDialog = (
+    <ConfirmDialog
+      visible={confirmLogout}
+      icon="logout"
+      title="Logout"
+      message="Are you sure you want to logout?"
+      confirmLabel="Logout"
+      destructive
+      loading={loggingOut}
+      onConfirm={handleConfirmLogout}
+      onCancel={() => setConfirmLogout(false)}
+    />
+  );
+
   if (!mounted) {
-    return null;
+    return logoutDialog;
   }
 
   const translateX = Animated.add(
@@ -225,6 +248,8 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({ visible, onClose }) => {
   );
 
   return (
+    <>
+    {logoutDialog}
     <Modal
       visible
       transparent
@@ -347,5 +372,6 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({ visible, onClose }) => {
         </Animated.View>
       </View>
     </Modal>
+    </>
   );
 };

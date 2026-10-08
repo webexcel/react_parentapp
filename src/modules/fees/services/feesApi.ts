@@ -1,5 +1,7 @@
+import ReactNativeBlobUtil from 'react-native-blob-util';
 import { apiClient } from '../../../core/api/apiClient';
 import { API_ENDPOINTS } from '../../../core/api/apiEndpoints';
+import { downloadPdf } from '../../../core/api/downloadPdf';
 import {
   FeeDetailsResponse,
   FeeInstallmentResponse,
@@ -133,6 +135,19 @@ export const feesApi = {
     );
     return response.data;
   },
+
+  /**
+   * Downloads the fee bill PDF for a receipt into the app cache.
+   * Returns the local file path; throws with the backend's message when the
+   * response isn't a PDF (e.g. the school has no fee bill template yet).
+   */
+  downloadFeeBill: (receiptID: string, yearid: number): Promise<string> =>
+    downloadPdf(
+      API_ENDPOINTS.PAYMENTS.GET_FEE_BILL,
+      { receiptID, yearid },
+      `${ReactNativeBlobUtil.fs.dirs.CacheDir}/fee_receipt_${receiptID}.pdf`,
+      'Could not load the receipt. Please try again.'
+    ),
 
   /**
    * Get list of academic years

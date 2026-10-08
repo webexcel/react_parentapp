@@ -7,8 +7,10 @@ export interface MarksRequest {
 export interface SubjectMark {
   subject: string;
   subject_code?: string;
-  marks: number;
-  total: number;
+  /** Number, text such as "A" (absent), or null when not entered. */
+  marks: number | string | null;
+  /** Max marks; null when none is configured for the subject. */
+  total: number | null;
   grade?: string;
   percentage?: number;
 }

@@ -10,6 +10,7 @@ export const ROUTES = {
   DASHBOARD: 'Dashboard',
   HOMEWORK: 'Homework',
   MARKS: 'Marks',
+  REPORT_CARD: 'ReportCard',
   CHAT: 'Chat',
   PROFILE: 'Profile',
   NOTIFICATION_SETTINGS: 'NotificationSettings',

@@ -28,6 +28,7 @@ import {GalleryScreen} from '../modules/gallery';
 import {TimetableScreen} from '../modules/timetable';
 import {ChatScreen} from '../modules/chat';
 import {MarksScreen} from '../modules/marks';
+import {ReportCardScreen} from '../modules/reportCard';
 import {ParentMessagesScreen, SendMessageScreen} from '../modules/parentMessage';
 import {LeaveLetterScreen} from '../modules/leaveLetter';
 
@@ -219,6 +220,11 @@ const MainNavigator = () => {
       {/* Marks - Conditional */}
       {isModuleEnabled('marks') && (
         <MainStack.Screen name={ROUTES.MARKS} component={MarksScreen} />
+      )}
+
+      {/* Report Card - opened from View Marks */}
+      {isModuleEnabled('marks') && (
+        <MainStack.Screen name={ROUTES.REPORT_CARD} component={ReportCardScreen} />
       )}
 
       {/* Parent Message - Always registered (visibility controlled in Dashboard) */}

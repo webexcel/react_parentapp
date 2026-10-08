@@ -10,6 +10,7 @@ import {
   Linking,
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import FileViewer from 'react-native-file-viewer';
 import {
   Text,
   Icon,
@@ -24,6 +25,7 @@ import { ROUTES } from '../../../core/constants';
 import { useFeeDetails, useFeeSelection, usePaymentHistory } from '../hooks';
 import { usePayOnline } from '../hooks/usePayOnline';
 import { FeeItemCard, PaymentSummaryBar } from '../components';
+import { feesApi } from '../services/feesApi';
 
 type TabType = 'pending' | 'history';
 
@@ -54,6 +56,22 @@ export const FeeDetailsScreen: React.FC = () => {
     isLoading: isHistoryLoading,
     refetch: refetchHistory,
   } = usePaymentHistory();
+
+  // Receipt whose bill PDF is being fetched (one at a time)
+  const [openingReceiptId, setOpeningReceiptId] = useState<string | null>(null);
+
+  const handleViewReceipt = async (receiptId: string, yearId?: number) => {
+    if (openingReceiptId || !yearId) return;
+    setOpeningReceiptId(receiptId);
+    try {
+      const path = await feesApi.downloadFeeBill(receiptId, yearId);
+      await FileViewer.open(path, { showOpenWithDialog: true, displayName: `Receipt ${receiptId}` });
+    } catch (e: any) {
+      Alert.alert('Receipt', e?.message || 'Could not open the receipt.');
+    } finally {
+      setOpeningReceiptId(null);
+    }
+  };
 
   // Auto-fetch when screen comes into focus
   useFocusEffect(
@@ -385,6 +403,22 @@ export const FeeDetailsScreen: React.FC = () => {
                       </View>
                     ))}
                   </View>
+
+                  <TouchableOpacity
+                    style={styles.viewReceiptButton}
+                    onPress={() => handleViewReceipt(receipt.receiptId, receipt.items[0]?.YEAR_ID)}
+                    disabled={openingReceiptId !== null}
+                    activeOpacity={0.7}
+                  >
+                    {openingReceiptId === receipt.receiptId ? (
+                      <ActivityIndicator size="small" color={colors.primary} />
+                    ) : (
+                      <>
+                        <Icon name="pdf" size={16} color={colors.primary} />
+                        <Text style={styles.viewReceiptText}>View Receipt</Text>
+                      </>
+                    )}
+                  </TouchableOpacity>
                 </View>
               ))
             )}
@@ -627,5 +661,22 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '500',
     color: colors.textPrimary,
+  },
+  viewReceiptButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: spacing.sm,
+    paddingVertical: spacing.sm,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    minHeight: 36,
+  },
+  viewReceiptText: {
+    marginLeft: spacing.xs,
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.primary,
   },
 });

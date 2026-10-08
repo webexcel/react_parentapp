@@ -58,6 +58,12 @@ export const API_ENDPOINTS = {
     GET_TERM_REPORTCARD: '/reportCard/getTermReportcardAdno',
   },
 
+  // Report Card (PDF generated from schooltree's report card templates)
+  REPORT_CARD: {
+    GET_TYPES: '/reportCard/getReportCardType',
+    GENERATE: '/reportCard/generateReportCard',
+  },
+
   // Payments/Fees
   PAYMENTS: {
     GET_STUDENT_PAY_DETAILS: '/payments/getStudentPayDetails',
@@ -65,6 +71,7 @@ export const API_ENDPOINTS = {
     GET_FEE_INSTALLMENT: '/payments/getFeeInstallment',
     GET_STUDENT_PAY_HISTORY: '/payments/getStudentPayHistory',
     GET_PRINT_BILL: '/payments/getPrintBill',
+    GET_FEE_BILL: '/payments/getFeeBill',
     PAY_ONLINE: '/payments/payOnline',
     UPDATE_ORDER_ID: '/payments/updateOrderId',
     GET_YEAR_ID: '/payments/getYearId',

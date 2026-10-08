@@ -19,6 +19,7 @@ export const QUERY_KEYS = {
   ATTENDANCE: 'attendance',
   EXAM_SCHEDULE: 'examSchedule',
   MARKS: 'marks',
+  REPORT_CARD_TYPES: 'reportCardTypes',
   FEES: 'fees',
   CALENDAR: 'calendar',
   DASHBOARD: 'dashboard',

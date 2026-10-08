@@ -56,6 +56,7 @@ export {
   StatCard,
   EmptyState,
   AudioPlayer,
+  ConfirmDialog,
 } from './molecules';
 
 export type {
@@ -64,6 +65,7 @@ export type {
   StudentChipProps,
   StatCardProps,
   EmptyStateProps,
+  ConfirmDialogProps,
 } from './molecules';
 
 // Organisms

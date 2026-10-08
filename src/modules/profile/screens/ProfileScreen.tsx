@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,6 +8,7 @@ import {
   Avatar,
   Icon,
   Divider,
+  ConfirmDialog,
   colors,
   spacing,
   borderRadius,
@@ -44,21 +45,19 @@ export const ProfileScreen: React.FC = () => {
     }
   };
 
-  const handleLogout = () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Logout',
-          style: 'destructive',
-          onPress: async () => {
-            await logout();
-          },
-        },
-      ]
-    );
+  const [confirmLogout, setConfirmLogout] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const handleLogout = () => setConfirmLogout(true);
+
+  const handleConfirmLogout = async () => {
+    setLoggingOut(true);
+    try {
+      await logout();
+    } finally {
+      setLoggingOut(false);
+      setConfirmLogout(false);
+    }
   };
 
   const menuItems: MenuItem[] = [
@@ -206,6 +205,18 @@ export const ProfileScreen: React.FC = () => {
           {brandName} v1.0.0
         </Text>
       </ScrollView>
+
+      <ConfirmDialog
+        visible={confirmLogout}
+        icon="logout"
+        title="Logout"
+        message="Are you sure you want to logout?"
+        confirmLabel="Logout"
+        destructive
+        loading={loggingOut}
+        onConfirm={handleConfirmLogout}
+        onCancel={() => setConfirmLogout(false)}
+      />
     </SafeAreaView>
   );
 };

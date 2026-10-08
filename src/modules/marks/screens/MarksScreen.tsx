@@ -17,6 +17,8 @@ import { useMarks } from '../hooks/useMarks';
 import { useExams } from '../hooks/useExams';
 import { useReportCard } from '../hooks/useReportCard';
 import { ReportCardWebView } from '../components/ReportCardWebView';
+import { useReportCardTypes } from '../../reportCard';
+import { ROUTES } from '../../../core/constants';
 
 // Subject color mapping (lowercase keys for case-insensitive matching)
 const SUBJECT_COLORS: { [key: string]: string } = {
@@ -108,7 +110,7 @@ const calculateGrade = (percentage: number): string => {
 
 
 export const MarksScreen: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const { students, selectedStudentId, selectStudent } = useAuth();
   const [selectedExamIndex, setSelectedExamIndex] = useState(0);
   const [showReportCard, setShowReportCard] = useState(false);
@@ -142,6 +144,12 @@ export const MarksScreen: React.FC = () => {
     selectedExam?.id ?? 0,
     selectedExam?.year_id ?? 0
   );
+
+  // Report cards from schooltree templates: available when the school has set
+  // up a template for the student's exam group. Takes over from the per-school
+  // PHP report card below, which stays only for schools without templates.
+  const { types: reportCardTypes } = useReportCardTypes(selectedStudent?.studentId);
+  const hasTemplateReportCard = reportCardTypes.length > 0;
 
   // Get report card URL - examgrpid from student (source of truth), term_type from exam
   const {
@@ -222,11 +230,16 @@ export const MarksScreen: React.FC = () => {
           </ScrollView>
         )}
 
-        {/* Report Card Button - Only show when exam has term_type and report card is available */}
-        {selectedExam?.term_type && isReportCardAvailable && (
+        {/* Report Card Button - template report card when the school has one,
+            otherwise the PHP one (only for exams with a term_type) */}
+        {(hasTemplateReportCard || (selectedExam?.term_type && isReportCardAvailable)) && (
           <TouchableOpacity
             style={styles.reportCardButton}
-            onPress={() => setShowReportCard(true)}
+            onPress={() =>
+              hasTemplateReportCard
+                ? navigation.navigate(ROUTES.REPORT_CARD)
+                : setShowReportCard(true)
+            }
             activeOpacity={0.7}
           >
             <Icon name="document-text-outline" size={20} color={colors.primary} />
@@ -319,8 +332,15 @@ export const MarksScreen: React.FC = () => {
 
             {marks.length > 0 ? (
               marks.map((mark, index) => {
-                const subjectPercentage = Math.round((mark.marks / mark.total) * 100);
-                const grade = calculateGrade(subjectPercentage);
+                // Only when both are real numbers: the API sends text such as
+                // "A" (absent), null for blank marks, and a null total when no
+                // max marks are configured for the subject.
+                const hasPercentage =
+                  typeof mark.marks === 'number' && typeof mark.total === 'number' && mark.total > 0;
+                const subjectPercentage = hasPercentage
+                  ? Math.round(((mark.marks as number) / (mark.total as number)) * 100)
+                  : null;
+                const grade = subjectPercentage !== null ? calculateGrade(subjectPercentage) : null;
                 const color = getSubjectColor(mark.subject);
 
                 return (
@@ -330,20 +350,24 @@ export const MarksScreen: React.FC = () => {
                       <Text variant="body" semibold style={styles.subjectName}>
                         {mark.subject}
                       </Text>
-                      <View style={[styles.gradeBadge, { backgroundColor: `${color}20` }]}>
-                        <Text variant="caption" semibold style={{ color }}>
-                          {grade}
-                        </Text>
-                      </View>
+                      {grade && (
+                        <View style={[styles.gradeBadge, { backgroundColor: `${color}20` }]}>
+                          <Text variant="caption" semibold style={{ color }}>
+                            {grade}
+                          </Text>
+                        </View>
+                      )}
                     </View>
 
                     <View style={styles.markDetails}>
                       <Text variant="h3" style={{ color }}>
-                        {mark.marks}
+                        {mark.marks ?? '–'}
                       </Text>
-                      <Text variant="caption" color="muted">
-                        /{mark.total}
-                      </Text>
+                      {mark.total != null && (
+                        <Text variant="caption" color="muted">
+                          /{mark.total}
+                        </Text>
+                      )}
                     </View>
 
                     {/* Progress Bar */}
@@ -353,14 +377,14 @@ export const MarksScreen: React.FC = () => {
                           style={[
                             styles.progressFill,
                             {
-                              width: `${subjectPercentage}%`,
+                              width: `${Math.min(Math.max(subjectPercentage ?? 0, 0), 100)}%`,
                               backgroundColor: color,
                             },
                           ]}
                         />
                       </View>
                       <Text variant="caption" color="secondary">
-                        {subjectPercentage}%
+                        {subjectPercentage !== null ? `${subjectPercentage}%` : '–'}
                       </Text>
                     </View>
                   </View>

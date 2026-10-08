@@ -37,8 +37,13 @@ export const useMarks = (examId: number, yearId: number) => {
   });
 
   const marks = query.data?.data?.marks || [];
-  const totalMarks = marks.reduce((acc, m) => acc + m.marks, 0);
-  const totalPossible = marks.reduce((acc, m) => acc + m.total, 0);
+  // Only subjects with a numeric mark and max count — absent ("A"), blank
+  // marks and subjects with no max configured would skew the totals.
+  const scored = marks.filter(
+    (m) => typeof m.marks === 'number' && typeof m.total === 'number' && m.total > 0
+  );
+  const totalMarks = scored.reduce((acc, m) => acc + (m.marks as number), 0);
+  const totalPossible = scored.reduce((acc, m) => acc + (m.total as number), 0);
   const percentage = totalPossible > 0 ? Math.round((totalMarks / totalPossible) * 100) : 0;
 
   // Don't expose error if we got a valid response (even if empty)
