@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useAuth } from '../../../core/auth';
-import { useBatchCount } from './useBatchCount';
+import { useBatchCount, StudentDashboardCounts } from './useBatchCount';
 import { useFlashMessage } from './useFlashMessage';
 import { useLatestMessages } from './useLatestMessages';
 import { DashboardSummary, FlashMessage, LatestMessage } from '../types/dashboard.types';
@@ -8,6 +8,9 @@ import { DashboardSummary, FlashMessage, LatestMessage } from '../types/dashboar
 interface UseDashboardResult {
   // Selected student summary data
   summary: DashboardSummary;
+
+  // Homework / attendance counts for every child, keyed by student id
+  byStudent: Record<string, StudentDashboardCounts>;
 
   // Flash messages
   flashMessages: FlashMessage[];
@@ -33,6 +36,7 @@ export const useDashboard = (): UseDashboardResult => {
   // Get data for selected student (now includes leaveCount from absent_days)
   const {
     summary,
+    byStudent,
     isLoading: isBatchCountLoading,
     isFetching: isBatchCountFetching,
     error: batchCountError,
@@ -68,6 +72,7 @@ export const useDashboard = (): UseDashboardResult => {
 
   return {
     summary,
+    byStudent,
     flashMessages,
     hasFlashMessage,
     latestMessages,

@@ -5,7 +5,6 @@ import {
   StyleSheet,
   Linking,
   Image,
-  Alert,
   Modal,
   ScrollView,
   Dimensions,
@@ -30,6 +29,7 @@ import {
 } from '../../../design-system';
 import { Homework, HomeworkAttachment } from '../types/homework.types';
 import { parseLocalDate, daysFromToday } from '../../../core/utils/dates';
+import { AppAlert } from '../../../design-system/molecules/AppAlert';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -261,6 +261,8 @@ export const HomeworkCard: React.FC<HomeworkCardProps> = ({
   };
 
   const getDaysRemaining = () => {
+    // No due date from the API: dueDate is only the posted date
+    if (homework.hasDueDate === false) return 'Pending';
     // daysFromToday anchors BOTH ends to local midnight. The old version
     // subtracted `new Date()` (i.e. now, mid-afternoon) from a midnight due
     // date and took Math.ceil, so a homework due today read as 1 day left for
@@ -294,7 +296,7 @@ export const HomeworkCard: React.FC<HomeworkCardProps> = ({
     try {
       await Linking.openURL(url);
     } catch {
-      Alert.alert('Error', 'Could not open PDF.');
+      AppAlert.alert('Error', 'Could not open PDF.');
     }
   }, []);
 
@@ -333,7 +335,7 @@ export const HomeworkCard: React.FC<HomeworkCardProps> = ({
       const downloadedPath = res.path();
       await FileViewer.open(downloadedPath, { showOpenWithDialog: true });
     } catch {
-      Alert.alert('Error', 'Could not download or open the file.');
+      AppAlert.alert('Error', 'Could not download or open the file.');
     } finally {
       setDownloadingId(null);
     }
@@ -379,12 +381,19 @@ export const HomeworkCard: React.FC<HomeworkCardProps> = ({
           />
         </View>
 
-        {/* Title and Description */}
-        <Text variant="body" semibold style={styles.title} numberOfLines={2}>
-          {homework.title}
-        </Text>
+        {/* Title and Description - the API sends one message for both, so
+            show it once instead of printing the same text twice */}
+        {homework.title.trim() === homework.description.trim() ? (
+          <LinkedText variant="body" semibold style={styles.title} numberOfLines={4}>
+            {homework.title}
+          </LinkedText>
+        ) : (
+          <Text variant="body" semibold style={styles.title} numberOfLines={2}>
+            {homework.title}
+          </Text>
+        )}
 
-        {homework.description && (
+        {!!homework.description && homework.title.trim() !== homework.description.trim() && (
           <LinkedText variant="bodySmall" color="secondary" numberOfLines={2} style={styles.description}>
             {homework.description}
           </LinkedText>
@@ -395,7 +404,9 @@ export const HomeworkCard: React.FC<HomeworkCardProps> = ({
           <View style={styles.metaItem}>
             <Icon name="calendar" size={14} color={colors.textMuted} />
             <Text variant="caption" color="muted" style={styles.metaText}>
-              Due: {formatDate(homework.dueDate)}
+              {homework.hasDueDate === false
+                ? `Posted: ${formatDate(homework.assignedDate)}`
+                : `Due: ${formatDate(homework.dueDate)}`}
             </Text>
           </View>
           {homework.teacherName && (
@@ -456,7 +467,7 @@ export const HomeworkCard: React.FC<HomeworkCardProps> = ({
                         onEnd={() => setPlayingVideoId(null)}
                         onError={() => {
                           setPlayingVideoId(null);
-                          Alert.alert('Error', 'Could not play video.');
+                          AppAlert.alert('Error', 'Could not play video.');
                         }}
                       />
                     </View>

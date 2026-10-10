@@ -4,6 +4,7 @@ import { useAuth } from '../../../core/auth';
 import { homeworkApi } from '../services/homeworkApi';
 import { Homework, SUBJECT_COLORS } from '../types/homework.types';
 import { parseAttachments } from '../../../core/utils/attachments';
+import { daysFromToday } from '../../../core/utils/dates';
 
 export const useHomework = () => {
   const { selectedStudentId, students } = useAuth();
@@ -45,7 +46,9 @@ export const useHomework = () => {
               subject: item.subject || item.subjectName || 'General',
               title: item.MESSAGE || item.title || item.topic || 'Homework',
               description: item.MESSAGE || item.description || item.details || '',
-              dueDate: item.MSG_DATE || item.dueDate || item.submissionDate || new Date().toISOString(),
+              dueDate: item.dueDate || item.submissionDate || item.MSG_DATE || new Date().toISOString(),
+              // getSaveHomeworkByClass only sends MSG_DATE, the day it was posted
+              hasDueDate: !!(item.dueDate || item.submissionDate),
               assignedDate: item.MSG_DATE || item.assignedDate || item.createdAt || new Date().toISOString(),
               status: getHomeworkStatus(item),
               attachments: parseAttachments(item.event_image, index),
@@ -106,10 +109,12 @@ const getHomeworkStatus = (item: any): 'pending' | 'completed' | 'overdue' => {
   if (item.completed_status === '1' || item.completed_status === 1) return 'completed';
   if (item.status === 'completed' || item.isCompleted) return 'completed';
 
-  const dueDate = new Date(item.MSG_DATE || item.dueDate || item.submissionDate);
-  const now = new Date();
-
-  if (dueDate < now) return 'overdue';
+  // Only a real due date can make homework overdue. MSG_DATE is when it was
+  // posted, so using it marked everything posted before today as "Overdue".
+  const due = item.dueDate || item.submissionDate;
+  if (!due) return 'pending';
+  const diffDays = daysFromToday(due);
+  if (diffDays !== null && diffDays < 0) return 'overdue';
   return 'pending';
 };
 

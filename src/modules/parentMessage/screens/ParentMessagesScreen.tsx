@@ -6,7 +6,6 @@ import {
   RefreshControl,
   ActivityIndicator,
   TouchableOpacity,
-  Alert,
   Image,
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -25,6 +24,7 @@ import { useAuth } from '../../../core/auth';
 import { useParentMessages, useDeleteMessage } from '../hooks/useParentMessages';
 import { ParentMessage } from '../types/parentMessage.types';
 import { ROUTES } from '../../../core/constants';
+import { AppAlert } from '../../../design-system/molecules/AppAlert';
 
 export const ParentMessagesScreen: React.FC = () => {
   const navigation = useNavigation<any>();
@@ -53,7 +53,7 @@ export const ParentMessagesScreen: React.FC = () => {
   };
 
   const handleDelete = (id: number) => {
-    Alert.alert(
+    AppAlert.alert(
       'Delete Message',
       'Are you sure you want to delete this message?',
       [

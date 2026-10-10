@@ -8,6 +8,10 @@ export const useReportCardTypes = (admissionId: string | undefined) => {
     queryKey: [QUERY_KEYS.REPORT_CARD_TYPES, admissionId],
     queryFn: () => reportCardApi.getReportCardTypes(admissionId as string),
     enabled: !!admissionId,
+    // Lock state (unpublished / fees) changes on the school's side; the app-wide
+    // 5 min staleTime kept showing "Not Published Yet" after marks were published.
+    staleTime: 0,
+    refetchOnMount: 'always',
   });
 
   return {

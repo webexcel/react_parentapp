@@ -3,6 +3,8 @@ export interface ExamScheduleRequest {
 }
 
 export interface ExamScheduleItem {
+  /** e.g. "Half Yearly" - sent by newer backends only */
+  exam_name?: string | null;
   subject: string;
   time: string;
   portion: string | null;

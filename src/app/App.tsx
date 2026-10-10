@@ -1,13 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {StyleSheet, Alert} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {AppProviders} from './AppProviders';
 import {Navigation} from './Navigation';
 import {fcmService} from '../core/notifications';
+import {NotificationOpener, openNotification} from '../core/notifications/NotificationOpener';
 import crashlytics from '@react-native-firebase/crashlytics';
 import {SplashScreen} from '../design-system/atoms';
 import {ForceUpdateScreen} from '../design-system/organisms';
+import {AppAlert, AppAlertHost} from '../design-system/molecules';
 import {useForceUpdate} from '../core/hooks/useForceUpdate';
 
 const AppContent = () => {
@@ -17,21 +19,27 @@ const AppContent = () => {
   useEffect(() => {
     // Initialize FCM
     const initFCM = async () => {
+      // Tapped notification while the app was in the background. Registered
+      // before initialize(), which can wait on the permission prompt.
+      fcmService.onNotificationOpened(openNotification);
+
       await fcmService.initialize();
 
-      // Check if app was opened from notification
+      // App was started by tapping a notification
       const initialNotification = await fcmService.getInitialNotification();
       if (initialNotification) {
-        // Handle navigation based on notification data
+        openNotification(initialNotification);
       }
 
-      // Set foreground notification handler
+      // Notification arrived while the app is open: show it, View opens it
       fcmService.setForegroundHandler(notification => {
-        // Show alert for foreground notifications
-        Alert.alert(
+        AppAlert.alert(
           notification.title || 'Notification',
           notification.body || '',
-          [{text: 'OK'}],
+          [
+            {text: 'Close', style: 'cancel'},
+            {text: 'View', onPress: () => openNotification(notification)},
+          ],
         );
       });
     };
@@ -70,6 +78,8 @@ const App = () => {
     <GestureHandlerRootView style={styles.container}>
       <AppProviders>
         <AppContent />
+        <NotificationOpener />
+        <AppAlertHost />
       </AppProviders>
     </GestureHandlerRootView>
   );

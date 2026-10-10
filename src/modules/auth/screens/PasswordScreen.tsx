@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import {
     AuthTemplate,
@@ -11,6 +11,7 @@ import {
 } from '../../../design-system';
 import { usePasswordLogin } from '../hooks/usePasswordLogin';
 import { useForgotPassword } from '../hooks/useForgotPassword';
+import { AppAlert } from '../../../design-system/molecules/AppAlert';
 
 type RootStackParamList = {
     Password: { mobileNumber: string; installId?: string };
@@ -31,13 +32,13 @@ export const PasswordScreen: React.FC = () => {
 
     const handleVerify = async () => {
         if (password.length === 0) {
-            Alert.alert('Invalid Password', 'Please enter your password');
+            AppAlert.alert('Invalid Password', 'Please enter your password');
             return;
         }
 
         const result = await verifyPassword(mobileNumber, password, installId);
         if (!result.success) {
-            Alert.alert('Login Failed', result.message || 'Invalid password');
+            AppAlert.alert('Login Failed', result.message || 'Invalid password');
         }
         // If success, AuthContext will update and navigation will handle the redirect
     };
@@ -86,9 +87,9 @@ export const PasswordScreen: React.FC = () => {
                     onPress={async () => {
                         const result = await forgotPassword(mobileNumber);
                         if (result.success) {
-                            Alert.alert('Password Sent', result.message, [{ text: 'OK' }]);
+                            AppAlert.alert('Password Sent', result.message, [{ text: 'OK' }]);
                         } else {
-                            Alert.alert('Forgot Password', result.message, [{ text: 'OK' }]);
+                            AppAlert.alert('Forgot Password', result.message, [{ text: 'OK' }]);
                         }
                     }}
                     disabled={isForgotLoading}

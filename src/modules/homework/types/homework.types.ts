@@ -10,6 +10,8 @@ export interface Homework {
   title: string;
   description: string;
   dueDate: string;
+  /** False when the API sent no due date (dueDate then holds the posted date). */
+  hasDueDate?: boolean;
   assignedDate: string;
   status: 'pending' | 'completed' | 'overdue';
   attachments: HomeworkAttachment[];

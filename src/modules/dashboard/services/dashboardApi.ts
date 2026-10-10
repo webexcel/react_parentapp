@@ -15,10 +15,11 @@ export const dashboardApi = {
    * Returns circulars count, attendance %, homework count, payment due
    * Sends students array with adno and class_id
    */
-  getBatchCount: async (adno: string, classId?: string): Promise<BatchCountResponse> => {
-    // Backend expects ADNO as an array of admission numbers
+  getBatchCount: async (adno: string | string[]): Promise<BatchCountResponse> => {
+    // Backend expects ADNO as an array of admission numbers and answers with
+    // one homework/attendance entry per admission number.
     const payload = {
-      ADNO: [adno],
+      ADNO: Array.isArray(adno) ? adno : [adno],
     };
 
     const response = await apiClient.post<BatchCountResponse>(

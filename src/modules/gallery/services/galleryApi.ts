@@ -5,7 +5,7 @@ export const galleryApi = {
   /**
    * Get gallery categories for parent based on class IDs
    */
-  getCategories: async (classIds: string[]): Promise<GalleryCategoriesResponse> => {
+  getCategories: async (classIds: Array<string | number>): Promise<GalleryCategoriesResponse> => {
     try {
       const response = await apiClient.post<GalleryCategoriesResponse>(
         API_ENDPOINTS.GALLERY.GET_CATEGORIES,

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -14,6 +14,7 @@ import {
 } from '../../../design-system';
 import { useAuth } from '../../../core/auth';
 import { authService } from '../../../core/auth/authService';
+import { AppAlert } from '../../../design-system/molecules/AppAlert';
 
 export const ChangePasswordScreen: React.FC = () => {
     const navigation = useNavigation();
@@ -33,22 +34,22 @@ export const ChangePasswordScreen: React.FC = () => {
         setError(null);
 
         if (!isValidOldPassword) {
-            Alert.alert('Invalid Password', 'Current password must be 5 digits.');
+            AppAlert.alert('Invalid Password', 'Current password must be 5 digits.');
             return;
         }
 
         if (!isValidNewPassword) {
-            Alert.alert('Invalid Password', 'New password must be exactly 5 digits.');
+            AppAlert.alert('Invalid Password', 'New password must be exactly 5 digits.');
             return;
         }
 
         if (!passwordsMatch) {
-            Alert.alert('Mismatch', 'New passwords do not match. Please try again.');
+            AppAlert.alert('Mismatch', 'New passwords do not match. Please try again.');
             return;
         }
 
         if (isSamePassword) {
-            Alert.alert('Same Password', 'New password must be different from current password.');
+            AppAlert.alert('Same Password', 'New password must be different from current password.');
             return;
         }
 
@@ -57,26 +58,26 @@ export const ChangePasswordScreen: React.FC = () => {
             const mobileNumber = userData?.mobileNumber || userData?.mobile_number || '';
 
             if (!mobileNumber) {
-                Alert.alert('Error', 'Mobile number not found. Please login again.');
+                AppAlert.alert('Error', 'Mobile number not found. Please login again.');
                 return;
             }
 
             const result = await authService.changePassword(oldPassword, newPassword, mobileNumber);
 
             if (result.status) {
-                Alert.alert(
+                AppAlert.alert(
                     'Password Changed',
                     'Your password has been changed successfully.',
                     [{ text: 'OK', onPress: () => navigation.goBack() }]
                 );
             } else {
                 setError(result.message);
-                Alert.alert('Error', result.message);
+                AppAlert.alert('Error', result.message);
             }
         } catch (err: any) {
             const errorMessage = err.message || 'Something went wrong. Please try again.';
             setError(errorMessage);
-            Alert.alert('Error', errorMessage);
+            AppAlert.alert('Error', errorMessage);
         } finally {
             setIsLoading(false);
         }

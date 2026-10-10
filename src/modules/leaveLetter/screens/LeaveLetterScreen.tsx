@@ -6,7 +6,6 @@ import {
   RefreshControl,
   ActivityIndicator,
   TouchableOpacity,
-  Alert,
   Modal,
   ScrollView,
 } from 'react-native';
@@ -26,6 +25,7 @@ import {LeaveRequestForm} from '../components/LeaveRequestForm';
 import {LeaveRequestCard} from '../components/LeaveRequestCard';
 import {LeaveRequest, LeaveFormData} from '../types/leaveLetter.types';
 import {parseLocalDate} from '../../../core/utils/dates';
+import { AppAlert } from '../../../design-system/molecules/AppAlert';
 
 export const LeaveLetterScreen: React.FC = () => {
   const navigation = useNavigation<any>();
@@ -85,7 +85,7 @@ export const LeaveLetterScreen: React.FC = () => {
           endDate: formatDateForApi(data.endDate),
           message: data.message,
         });
-        Alert.alert('Success', 'Leave request updated successfully');
+        AppAlert.alert('Success', 'Leave request updated successfully');
       } else {
         await insertLeaveRequest({
           sessionType: data.sessionType,
@@ -93,12 +93,12 @@ export const LeaveLetterScreen: React.FC = () => {
           endDate: formatDateForApi(data.endDate),
           message: data.message,
         });
-        Alert.alert('Success', 'Leave request submitted successfully');
+        AppAlert.alert('Success', 'Leave request submitted successfully');
       }
       setShowFormModal(false);
       setEditingRequest(null);
     } catch (err) {
-      Alert.alert('Error', 'Failed to submit leave request. Please try again.');
+      AppAlert.alert('Error', 'Failed to submit leave request. Please try again.');
     }
   };
 
@@ -108,7 +108,7 @@ export const LeaveLetterScreen: React.FC = () => {
   };
 
   const handleDelete = (request: LeaveRequest) => {
-    Alert.alert(
+    AppAlert.alert(
       'Delete Request',
       'Are you sure you want to delete this leave request?',
       [
@@ -120,9 +120,9 @@ export const LeaveLetterScreen: React.FC = () => {
             setDeletingId(request.id);
             try {
               await deleteLeaveRequest(request.id);
-              Alert.alert('Success', 'Leave request deleted successfully');
+              AppAlert.alert('Success', 'Leave request deleted successfully');
             } catch (err) {
-              Alert.alert('Error', 'Failed to delete leave request');
+              AppAlert.alert('Error', 'Failed to delete leave request');
             } finally {
               setDeletingId(null);
             }

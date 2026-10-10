@@ -1,10 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Alert } from 'react-native';
+import {  } from 'react-native';
 import { QUERY_KEYS } from '../../../core/constants';
 import { useAuth } from '../../../core/auth';
 import { circularsApi } from '../services/circularsApi';
 import { Circular } from '../types/circular.types';
 import { parseAttachments } from '../../../core/utils/attachments';
+import { AppAlert } from '../../../design-system/molecules/AppAlert';
 
 export const useCirculars = () => {
   const { userData } = useAuth();
@@ -73,7 +74,7 @@ export const useCirculars = () => {
           context.previousCirculars
         );
       }
-      Alert.alert('Error', 'Failed to acknowledge circular. Please try again.');
+      AppAlert.alert('Error', 'Failed to acknowledge circular. Please try again.');
     },
     onSettled: () => {
       // Silently refetch in background without showing loading state

@@ -10,6 +10,11 @@ interface UsePasswordLoginReturn {
     error: string | null;
 }
 
+// The verify endpoint is shared with OTP login, so its errors say "OTP".
+// This screen asks for a password, so word them that way.
+const toPasswordMessage = (message?: string): string =>
+    !message || /otp/i.test(message) ? 'Incorrect password, please try again.' : message;
+
 export const usePasswordLogin = (): UsePasswordLoginReturn => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -93,14 +98,17 @@ export const usePasswordLogin = (): UsePasswordLoginReturn => {
 
                 return { success: true };
             } else {
-                setError(response.message || 'Invalid password');
+                const message = toPasswordMessage(response.message);
+                setError(message);
                 return {
                     success: false,
-                    message: response.message || 'Invalid password',
+                    message,
                 };
             }
         } catch (err: any) {
-            const errorMessage = err.response?.data?.message || err.message || 'Login failed. Please try again.';
+            const errorMessage = err.response?.status === 401
+                ? toPasswordMessage(err.response?.data?.message)
+                : err.response?.data?.message || err.message || 'Login failed. Please try again.';
             setError(errorMessage);
             return {
                 success: false,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Pdf from 'react-native-pdf';
 import FileViewer from 'react-native-file-viewer';
@@ -20,6 +20,7 @@ import { useReportCardTypes, useReportCardPdf } from '../hooks/useReportCard';
 import { ReportTypeDropdown } from '../components/ReportTypeDropdown';
 import { reportCardApi } from '../services/reportCardApi';
 import { ReportCardType } from '../types/reportCard.types';
+import { AppAlert } from '../../../design-system/molecules/AppAlert';
 
 export const ReportCardScreen: React.FC = () => {
   const navigation = useNavigation<any>();
@@ -55,7 +56,7 @@ export const ReportCardScreen: React.FC = () => {
       // Open the generated file (same content as the saved copy).
       await FileViewer.open(pdfPath, { showOpenWithDialog: true, displayName: fileName });
     } catch (e: any) {
-      Alert.alert('Download failed', e?.message || 'Could not download the report card.');
+      AppAlert.alert('Download failed', e?.message || 'Could not download the report card.');
     } finally {
       setDownloading(false);
     }
@@ -149,7 +150,7 @@ export const ReportCardScreen: React.FC = () => {
             source={{ uri: `file://${pdfPath}` }}
             style={styles.pdf}
             trustAllCerts={false}
-            onError={() => Alert.alert('Error', 'Could not display the report card.')}
+            onError={() => AppAlert.alert('Error', 'Could not display the report card.')}
           />
         </View>
         <Button

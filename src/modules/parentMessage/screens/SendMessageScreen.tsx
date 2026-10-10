@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
-  Alert,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
@@ -23,6 +22,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../../core/auth';
 import { useSendMessage } from '../hooks/useParentMessages';
+import { AppAlert } from '../../../design-system/molecules/AppAlert';
 
 // Optional image picker - may not be installed
 let launchImageLibrary: any = null;
@@ -54,14 +54,14 @@ export const SendMessageScreen: React.FC = () => {
 
   const handlePickImage = () => {
     if (!isImagePickerAvailable) {
-      Alert.alert(
+      AppAlert.alert(
         'Feature Not Available',
         'Image attachment feature requires react-native-image-picker to be installed.'
       );
       return;
     }
 
-    Alert.alert(
+    AppAlert.alert(
       'Add Attachment',
       'Choose an option',
       [
@@ -99,7 +99,7 @@ export const SendMessageScreen: React.FC = () => {
   const handleMediaResponse = (response: any) => {
     if (response.didCancel) return;
     if (response.errorCode) {
-      Alert.alert('Error', response.errorMessage || 'Failed to pick media');
+      AppAlert.alert('Error', response.errorMessage || 'Failed to pick media');
       return;
     }
 
@@ -121,7 +121,7 @@ export const SendMessageScreen: React.FC = () => {
 
   const handleSend = async () => {
     if (!message.trim() && !attachment) {
-      Alert.alert('Error', 'Please enter a message or add an attachment');
+      AppAlert.alert('Error', 'Please enter a message or add an attachment');
       return;
     }
 
@@ -134,14 +134,14 @@ export const SendMessageScreen: React.FC = () => {
       });
 
       if (response?.status) {
-        Alert.alert('Success', 'Message sent successfully', [
+        AppAlert.alert('Success', 'Message sent successfully', [
           { text: 'OK', onPress: () => navigation.goBack() },
         ]);
       } else {
-        Alert.alert('Error', response?.message || 'Failed to send message');
+        AppAlert.alert('Error', response?.message || 'Failed to send message');
       }
     } catch (err: any) {
-      Alert.alert('Error', err.message || 'Failed to send message');
+      AppAlert.alert('Error', err.message || 'Failed to send message');
     }
   };
 

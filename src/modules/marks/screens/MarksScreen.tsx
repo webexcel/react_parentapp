@@ -74,6 +74,22 @@ const COLOR_PALETTE = [
 const dynamicColorCache: { [key: string]: string } = {};
 let colorIndex = 0;
 
+// Subject names come straight from the subject master ("II_LANGUAGE",
+// "Social_Science"): show them with spaces, and long ALL-CAPS words in title
+// case, keeping short codes such as II, EVS or GK as they are.
+const formatSubjectName = (subject: string): string =>
+  subject
+    .replace(/_+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .split(' ')
+    .map((word) =>
+      word.length > 3 && word === word.toUpperCase()
+        ? word.charAt(0) + word.slice(1).toLowerCase()
+        : word
+    )
+    .join(' ');
+
 const getSubjectColor = (subject: string): string => {
   const normalizedSubject = subject.toLowerCase().trim();
 
@@ -302,7 +318,7 @@ export const MarksScreen: React.FC = () => {
                   <View style={styles.markHeader}>
                     <View style={[styles.subjectDot, { backgroundColor: color }]} />
                     <Text variant="body" semibold style={styles.subjectName}>
-                      {subject}
+                      {formatSubjectName(subject)}
                     </Text>
                     <Icon name="lock-closed" size={16} color={colors.textSecondary} />
                   </View>
@@ -348,7 +364,7 @@ export const MarksScreen: React.FC = () => {
                     <View style={styles.markHeader}>
                       <View style={[styles.subjectDot, { backgroundColor: color }]} />
                       <Text variant="body" semibold style={styles.subjectName}>
-                        {mark.subject}
+                        {formatSubjectName(mark.subject)}
                       </Text>
                       {grade && (
                         <View style={[styles.gradeBadge, { backgroundColor: `${color}20` }]}>

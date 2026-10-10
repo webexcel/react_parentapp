@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, SectionList, StyleSheet, RefreshControl, Alert } from 'react-native';
+import { View, SectionList, StyleSheet, RefreshControl } from 'react-native';
 import { useNavigation, useRoute, RouteProp, useFocusEffect } from '@react-navigation/native';
 import {
   ListTemplate,
@@ -14,6 +14,7 @@ import { useAuth } from '../../../core/auth';
 import { useHomework } from '../hooks/useHomework';
 import { HomeworkCard } from '../components/HomeworkCard';
 import { Homework } from '../types/homework.types';
+import { AppAlert } from '../../../design-system/molecules/AppAlert';
 
 type FilterType = 'all' | 'pending' | 'completed';
 
@@ -68,7 +69,7 @@ export const HomeworkScreen: React.FC = () => {
   };
 
   const handleAcknowledge = (homework: Homework) => {
-    Alert.alert(
+    AppAlert.alert(
       'Mark as Complete',
       `Are you sure you want to mark "${homework.title}" as complete?`,
       [
@@ -79,9 +80,9 @@ export const HomeworkScreen: React.FC = () => {
             try {
               setAcknowledgingId(homework.id);
               await acknowledgeHomeworkAsync(homework.id);
-              Alert.alert('Success', 'Homework marked as complete');
+              AppAlert.alert('Success', 'Homework marked as complete');
             } catch (error: any) {
-              Alert.alert('Error', error.message || 'Failed to mark homework as complete');
+              AppAlert.alert('Error', error.message || 'Failed to mark homework as complete');
             } finally {
               setAcknowledgingId(null);
             }

@@ -8,7 +8,6 @@ import {
   Image,
   Dimensions,
   Platform,
-  Alert,
   ActivityIndicator,
   Modal,
   Animated,
@@ -34,6 +33,7 @@ import {
 } from '../../../design-system';
 import { Circular, Attachment } from '../types/circular.types';
 import { useCirculars } from '../hooks/useCirculars';
+import { AppAlert } from '../../../design-system/molecules/AppAlert';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -267,7 +267,7 @@ export const CircularDetailScreen: React.FC = () => {
     try {
       await Linking.openURL(url);
     } catch {
-      Alert.alert('Error', 'Could not open PDF.');
+      AppAlert.alert('Error', 'Could not open PDF.');
     }
   }, []);
 
@@ -294,7 +294,7 @@ export const CircularDetailScreen: React.FC = () => {
       const downloadedPath = res.path();
       await FileViewer.open(downloadedPath, { showOpenWithDialog: true });
     } catch {
-      Alert.alert('Error', 'Could not download or open the file.');
+      AppAlert.alert('Error', 'Could not download or open the file.');
     } finally {
       setDownloadingId(null);
     }
@@ -437,7 +437,7 @@ export const CircularDetailScreen: React.FC = () => {
                         onEnd={() => setPlayingVideoId(null)}
                         onError={() => {
                           setPlayingVideoId(null);
-                          Alert.alert('Error', 'Could not play video.');
+                          AppAlert.alert('Error', 'Could not play video.');
                         }}
                       />
                     </View>

@@ -67,6 +67,7 @@ export const DashboardScreen: React.FC = () => {
   // Use dashboard hook for all data
   const {
     summary,
+    byStudent,
     flashMessages,
     hasFlashMessage,
     latestMessages,
@@ -124,21 +125,21 @@ export const DashboardScreen: React.FC = () => {
   const attendanceData = useMemo(() => {
     return students.map((student, index) => ({
       ...student,
-      percentage: student.id === selectedStudentId ? summary.attendancePercentage : 0,
-      leaveCount: student.id === selectedStudentId ? summary.leaveCount : 0,
+      percentage: byStudent[student.id]?.attendancePercentage ?? 0,
+      leaveCount: byStudent[student.id]?.leaveCount ?? 0,
       color: getAvatarColor(index),
     }));
-  }, [students, selectedStudentId, summary.attendancePercentage, summary.leaveCount]);
+  }, [students, byStudent]);
 
   // Transform API data for homework display - show all students
   const homeworkData = useMemo(() => {
     return students.map((student, index) => ({
       ...student,
-      pending: student.id === selectedStudentId ? summary.homeworkCount : 0,
-      completed: student.id === selectedStudentId ? summary.homeworkCompleted : 0,
+      pending: byStudent[student.id]?.homeworkCount ?? 0,
+      completed: byStudent[student.id]?.homeworkCompleted ?? 0,
       color: getAvatarColor(index),
     }));
-  }, [students, selectedStudentId, summary.homeworkCount, summary.homeworkCompleted]);
+  }, [students, byStudent]);
 
   // Transform API latest messages to news format
   const latestNews = useMemo(() => {

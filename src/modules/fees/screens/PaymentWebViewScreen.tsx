@@ -4,13 +4,13 @@ import {
   StyleSheet,
   ActivityIndicator,
   BackHandler,
-  Alert,
 } from 'react-native';
 import { WebView, WebViewNavigation } from 'react-native-webview';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { Text, Icon, colors, spacing } from '../../../design-system';
 import { TouchableOpacity } from 'react-native';
 import { ROUTES } from '../../../core/constants';
+import { AppAlert } from '../../../design-system/molecules/AppAlert';
 
 interface PaymentWebViewParams {
   redirectUrl: string;
@@ -41,7 +41,7 @@ export const PaymentWebViewScreen: React.FC = () => {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        Alert.alert(
+        AppAlert.alert(
           'Cancel Payment?',
           'Are you sure you want to cancel this payment?',
           [
@@ -132,7 +132,7 @@ export const PaymentWebViewScreen: React.FC = () => {
   );
 
   const handleClose = useCallback(() => {
-    Alert.alert(
+    AppAlert.alert(
       'Cancel Payment?',
       'Are you sure you want to cancel this payment?',
       [

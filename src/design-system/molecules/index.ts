@@ -17,3 +17,5 @@ export { AudioPlayer } from './AudioPlayer';
 
 export { ConfirmDialog } from './ConfirmDialog';
 export type { ConfirmDialogProps } from './ConfirmDialog';
+
+export { AppAlert, AppAlertHost } from './AppAlert';

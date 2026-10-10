@@ -5,7 +5,6 @@ import {
   ScrollView,
   RefreshControl,
   ActivityIndicator,
-  Alert,
   TouchableOpacity,
   Linking,
 } from 'react-native';
@@ -26,6 +25,7 @@ import { useFeeDetails, useFeeSelection, usePaymentHistory } from '../hooks';
 import { usePayOnline } from '../hooks/usePayOnline';
 import { FeeItemCard, PaymentSummaryBar } from '../components';
 import { feesApi } from '../services/feesApi';
+import { AppAlert } from '../../../design-system/molecules/AppAlert';
 
 type TabType = 'pending' | 'history';
 
@@ -67,7 +67,7 @@ export const FeeDetailsScreen: React.FC = () => {
       const path = await feesApi.downloadFeeBill(receiptId, yearId);
       await FileViewer.open(path, { showOpenWithDialog: true, displayName: `Receipt ${receiptId}` });
     } catch (e: any) {
-      Alert.alert('Receipt', e?.message || 'Could not open the receipt.');
+      AppAlert.alert('Receipt', e?.message || 'Could not open the receipt.');
     } finally {
       setOpeningReceiptId(null);
     }
@@ -115,7 +115,7 @@ export const FeeDetailsScreen: React.FC = () => {
 
   const handlePayPress = useCallback(() => {
     if (!canProceedToPayment) {
-      Alert.alert(
+      AppAlert.alert(
         'Invalid Selection',
         'Please select fees in order. You cannot skip fees in the payment sequence.',
         [{ text: 'OK' }]
@@ -123,7 +123,7 @@ export const FeeDetailsScreen: React.FC = () => {
       return;
     }
 
-    Alert.alert(
+    AppAlert.alert(
       'Proceed to Payment',
       `You are about to pay \u20B9${selectedAmount.toLocaleString('en-IN')} for ${selectedCount} fee(s).`,
       [
@@ -164,7 +164,7 @@ export const FeeDetailsScreen: React.FC = () => {
                 });
               }
             } catch {
-              Alert.alert(
+              AppAlert.alert(
                 'Payment Error',
                 paymentError || 'Unable to initiate payment. Please try again.',
                 [{ text: 'OK' }]

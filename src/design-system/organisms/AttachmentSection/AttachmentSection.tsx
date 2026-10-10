@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   Image,
   Linking,
-  Alert,
   ActivityIndicator,
   Dimensions,
 } from 'react-native';
@@ -17,6 +16,7 @@ import { Icon } from '../../atoms/Icon';
 import { AudioPlayer } from '../../molecules/AudioPlayer';
 import { colors, spacing, borderRadius } from '../../theme';
 import type { Attachment } from '../../../core/utils/attachments';
+import { AppAlert } from '../../molecules/AppAlert';
 
 export interface AttachmentSectionProps {
   attachments: Attachment[];
@@ -69,7 +69,7 @@ const VideoTile: React.FC<{ attachment: Attachment; compact: boolean }> = ({
           onEnd={() => setPlaying(false)}
           onError={() => {
             setPlaying(false);
-            Alert.alert('Error', 'Could not play video.');
+            AppAlert.alert('Error', 'Could not play video.');
           }}
         />
       </View>
@@ -154,7 +154,7 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({
     try {
       await Linking.openURL(url);
     } catch {
-      Alert.alert('Error', 'Could not open this file.');
+      AppAlert.alert('Error', 'Could not open this file.');
     }
   }, []);
 
@@ -179,7 +179,7 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({
 
       await FileViewer.open(res.path(), { showOpenWithDialog: true });
     } catch {
-      Alert.alert('Error', 'Could not download or open the file.');
+      AppAlert.alert('Error', 'Could not download or open the file.');
     } finally {
       setDownloadingId(null);
     }

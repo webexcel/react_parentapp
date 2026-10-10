@@ -57,6 +57,8 @@ export {
   EmptyState,
   AudioPlayer,
   ConfirmDialog,
+  AppAlert,
+  AppAlertHost,
 } from './molecules';
 
 export type {

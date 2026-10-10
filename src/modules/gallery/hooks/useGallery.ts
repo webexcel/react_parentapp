@@ -5,12 +5,14 @@ import { galleryApi } from '../services/galleryApi';
 import { GalleryAlbum, GalleryImage } from '../types/gallery.types';
 
 export const useGallery = () => {
-  const { students, selectedStudentId } = useAuth();
+  const { students } = useAuth();
 
-  // Get the selected student's class ID
-  const selectedStudent = students.find((s) => s.id === selectedStudentId);
-  const classId = selectedStudent?.classId;
-  const classIds = classId ? [classId] : [];
+  // Albums for every child's class plus school-wide ones (class_id 0 - what
+  // the web and teacher app save). The screen has no student selector, so
+  // using only the selected child hid albums of the other children.
+  const classIds = Array.from(
+    new Set<string | number>([...students.map((s) => s.classId).filter((c): c is string => !!c), 0])
+  );
 
   const {
     data: albums = [],

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -17,6 +17,11 @@ import {
 import { useAuth } from '../../../core/auth';
 import { useBrandName } from '../../../core/brand';
 import { ROUTES } from '../../../core/constants';
+import { AppAlert } from '../../../design-system/molecules/AppAlert';
+import DeviceInfo from 'react-native-device-info';
+
+// Real build version (versionName from the brand's build.gradle flavor)
+const APP_VERSION = DeviceInfo.getVersion();
 
 interface MenuItem {
   id: string;
@@ -32,16 +37,16 @@ export const ProfileScreen: React.FC = () => {
   const brandName = useBrandName();
 
   const handleRefreshPhotos = async () => {
-    Alert.alert(
+    AppAlert.alert(
       'Refresh Photos',
       'Fetching latest student photos...',
       [{ text: 'OK' }]
     );
     try {
       await refreshStudentPhotos();
-      Alert.alert('Success', 'Student photos refreshed successfully!');
+      AppAlert.alert('Success', 'Student photos refreshed successfully!');
     } catch (error) {
-      Alert.alert('Error', 'Failed to refresh photos. Please try again.');
+      AppAlert.alert('Error', 'Failed to refresh photos. Please try again.');
     }
   };
 
@@ -83,25 +88,25 @@ export const ProfileScreen: React.FC = () => {
       id: 'language',
       icon: 'settings',
       label: 'Language',
-      onPress: () => Alert.alert('Coming Soon', 'This feature will be available soon.'),
+      onPress: () => AppAlert.alert('Coming Soon', 'This feature will be available soon.'),
     },
     {
       id: 'about',
       icon: 'circular',
       label: 'About App',
-      onPress: () => Alert.alert(brandName, 'Version 1.0.0\n\nStay connected with your child\'s education.'),
+      onPress: () => AppAlert.alert(brandName, `Version ${APP_VERSION}\n\nStay connected with your child's education.`),
     },
     {
       id: 'privacy',
       icon: 'profile',
       label: 'Privacy Policy',
-      onPress: () => Alert.alert('Coming Soon', 'This feature will be available soon.'),
+      onPress: () => AppAlert.alert('Coming Soon', 'This feature will be available soon.'),
     },
     {
       id: 'terms',
       icon: 'circular',
       label: 'Terms & Conditions',
-      onPress: () => Alert.alert('Coming Soon', 'This feature will be available soon.'),
+      onPress: () => AppAlert.alert('Coming Soon', 'This feature will be available soon.'),
     },
     {
       id: 'logout',
@@ -202,7 +207,7 @@ export const ProfileScreen: React.FC = () => {
 
         {/* App Version */}
         <Text variant="caption" color="muted" center style={styles.version}>
-          {brandName} v1.0.0
+          {brandName} v{APP_VERSION}
         </Text>
       </ScrollView>
 

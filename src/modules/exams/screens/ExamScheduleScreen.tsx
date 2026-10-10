@@ -174,6 +174,11 @@ export const ExamScheduleScreen: React.FC = () => {
 
         {/* Exam Details */}
         <View style={styles.examDetails}>
+          {!!item.exam_name && (
+            <Text variant="caption" semibold style={[styles.examName, { color }, isPast && styles.textFaded]}>
+              {item.exam_name}
+            </Text>
+          )}
           <View style={styles.examHeader}>
             <Text variant="body" semibold style={[isPast && styles.textFaded]}>
               {item.subject}
@@ -254,6 +259,11 @@ export const ExamScheduleScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  examName: {
+    marginBottom: 2,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
   loadingContainer: {
     flex: 1,
     alignItems: 'center',
