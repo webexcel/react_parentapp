@@ -26,12 +26,17 @@ import { usePayOnline } from '../hooks/usePayOnline';
 import { FeeItemCard, PaymentSummaryBar } from '../components';
 import { feesApi } from '../services/feesApi';
 import { AppAlert } from '../../../design-system/molecules/AppAlert';
+import { useFeatureFlag } from '../../../core/brand';
 
 type TabType = 'pending' | 'history';
 
 export const FeeDetailsScreen: React.FC = () => {
   const navigation = useNavigation<any>();
   const { students, selectedStudentId, selectStudent } = useAuth();
+  // brand.config features.modules.fees.showPaymentGateway: when off the school
+  // collects fees at the office, so fees are listed read-only - no checkboxes,
+  // no "pay in order" notice and no Pay bar.
+  const canPayOnline = useFeatureFlag('paymentGateway');
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>('pending');
 
@@ -327,11 +332,23 @@ export const FeeDetailsScreen: React.FC = () => {
               <View style={styles.noticeCard}>
                 <Icon name="info" size={20} color={colors.primary} />
                 <View style={styles.noticeContent}>
-                  <Text style={styles.noticeTitle}>Payment Order</Text>
-                  <Text style={styles.noticeText}>
-                    Fees must be paid in sequence. Select fees starting from the first
-                    pending fee. You can pay multiple fees together, but cannot skip any.
-                  </Text>
+                  {canPayOnline ? (
+                    <>
+                      <Text style={styles.noticeTitle}>Payment Order</Text>
+                      <Text style={styles.noticeText}>
+                        Fees must be paid in sequence. Select fees starting from the first
+                        pending fee. You can pay multiple fees together, but cannot skip any.
+                      </Text>
+                    </>
+                  ) : (
+                    <>
+                      <Text style={styles.noticeTitle}>Pending Fees</Text>
+                      <Text style={styles.noticeText}>
+                        Online payment is not available for this school. Please pay the
+                        pending fees at the school office.
+                      </Text>
+                    </>
+                  )}
                 </View>
               </View>
             )}
@@ -352,6 +369,7 @@ export const FeeDetailsScreen: React.FC = () => {
                   fee={fee}
                   onPress={handleFeePress}
                   showOrder
+                  selectable={canPayOnline}
                 />
               ))
             )}
@@ -390,7 +408,8 @@ export const FeeDetailsScreen: React.FC = () => {
                   <View style={styles.receiptItems}>
                     {receipt.items.map((item, index) => (
                       <View
-                        key={item.FEE_REC_DET_ID}
+                        // getStudentPayHistory does not send FEE_REC_DET_ID
+                        key={item.FEE_REC_DET_ID ?? `${receipt.receiptId}-${item.FEE_HEAD}-${index}`}
                         style={[
                           styles.receiptItem,
                           index < receipt.items.length - 1 && styles.receiptItemBorder,
@@ -427,7 +446,7 @@ export const FeeDetailsScreen: React.FC = () => {
       </ScrollView>
 
       {/* Bottom Payment Bar - Only show on pending tab */}
-      {activeTab === 'pending' && fees.length > 0 && (
+      {canPayOnline && activeTab === 'pending' && fees.length > 0 && (
         <PaymentSummaryBar
           selectedCount={selectedCount}
           totalFees={fees.length}
