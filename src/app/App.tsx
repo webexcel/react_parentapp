@@ -9,7 +9,7 @@ import {NotificationOpener, openNotification} from '../core/notifications/Notifi
 import crashlytics from '@react-native-firebase/crashlytics';
 import {SplashScreen} from '../design-system/atoms';
 import {ForceUpdateScreen} from '../design-system/organisms';
-import {AppAlert, AppAlertHost} from '../design-system/molecules';
+import {AppAlert, AppAlertHost, AppToastHost} from '../design-system/molecules';
 import {useForceUpdate} from '../core/hooks/useForceUpdate';
 
 const AppContent = () => {
@@ -80,6 +80,7 @@ const App = () => {
         <AppContent />
         <NotificationOpener />
         <AppAlertHost />
+        <AppToastHost />
       </AppProviders>
     </GestureHandlerRootView>
   );

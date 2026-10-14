@@ -1,6 +1,7 @@
 import React from 'react';
 import {useBrand, ModuleName} from './BrandContext';
 import {getSocialItems, SocialLinkItem} from '../utils/socialLinks';
+import {useOptionalMenuAccess} from '../menu/MenuContext';
 
 /**
  * useIsModuleEnabled - Check if a specific module is enabled
@@ -18,7 +19,10 @@ import {getSocialItems, SocialLinkItem} from '../utils/socialLinks';
  */
 export const useIsModuleEnabled = (moduleName: ModuleName): boolean => {
   const {isModuleEnabled} = useBrand();
-  return isModuleEnabled(moduleName);
+  // Server-configured menus for the selected child win once the school is
+  // configured; MenuProvider itself falls back to the brand config otherwise.
+  const menu = useOptionalMenuAccess();
+  return menu ? menu.isMenuEnabled(moduleName) : isModuleEnabled(moduleName);
 };
 
 /**

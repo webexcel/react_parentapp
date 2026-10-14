@@ -6,7 +6,8 @@ import {useAuth} from '../core/auth';
 import {ROUTES} from '../core/constants';
 import {Spinner, Icon} from '../design-system';
 import {useTheme} from '../design-system/theme/ThemeContext';
-import {useBrand, useAuthType} from '../core/brand';
+import {useAuthType} from '../core/brand';
+import {useMenuAccess} from '../core/menu';
 import {navigationRef} from './navigationRef';
 import {DrawerProvider} from './components';
 
@@ -60,13 +61,20 @@ const AuthNavigator = () => {
   );
 };
 
+// A tab the selected child doesn't have keeps its screen registered (so the
+// screen's access guard can send the parent to the Dashboard with a message)
+// but its button is hidden.
+const HIDDEN_TAB = {tabBarButton: () => null};
+
 /**
- * Bottom Tab Navigator - Shows tabs based on enabled modules
- * Modules are configured per brand in brand.config.json
+ * Bottom Tab Navigator - Shows the selected child's tabs.
+ * Menus come from SchoolTree (or brand.config.json until the school is configured).
  */
 const TabNavigator = () => {
   const {colors} = useTheme();
-  const {isModuleEnabled} = useBrand();
+  const {isMenuEnabled, isMenuEnabledForAny: isModuleEnabled} = useMenuAccess();
+  const tabOptions = (key: Parameters<typeof isMenuEnabled>[0], label: string) =>
+    isMenuEnabled(key) ? {tabBarLabel: label} : {tabBarLabel: label, ...HIDDEN_TAB};
 
   return (
     <Tab.Navigator
@@ -107,7 +115,7 @@ const TabNavigator = () => {
         <Tab.Screen
           name={ROUTES.HOMEWORK}
           component={HomeworkScreen}
-          options={{tabBarLabel: 'Homework'}}
+          options={tabOptions('homework', 'Homework')}
         />
       )}
 
@@ -116,7 +124,7 @@ const TabNavigator = () => {
         <Tab.Screen
           name={ROUTES.CIRCULARS}
           component={CircularsListScreen}
-          options={{tabBarLabel: 'Circulars'}}
+          options={tabOptions('circulars', 'Circulars')}
         />
       )}
 
@@ -125,7 +133,7 @@ const TabNavigator = () => {
         <Tab.Screen
           name={ROUTES.CHAT}
           component={ChatScreen}
-          options={{tabBarLabel: 'Chat'}}
+          options={tabOptions('chat', 'Chat')}
         />
       )}
 
@@ -146,7 +154,9 @@ const TabNavigator = () => {
  * Feature screens are conditionally included based on brand configuration
  */
 const MainNavigator = () => {
-  const {isModuleEnabled} = useBrand();
+  // Registered when any child has the menu; the screen itself redirects a
+  // child without access (useModuleAccessGuard).
+  const {isMenuEnabledForAny: isModuleEnabled} = useMenuAccess();
 
   return (
     <MainStack.Navigator

@@ -109,4 +109,9 @@ export const API_ENDPOINTS = {
   APP_VERSION: {
     CHECK: '/appVersion/check',
   },
+
+  // Parent menus configured in SchoolTree
+  PARENT_MENU: {
+    GET_MENUS: '/parentMenu/getMenus',
+  },
 } as const;

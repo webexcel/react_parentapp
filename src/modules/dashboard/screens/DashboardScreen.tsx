@@ -25,6 +25,8 @@ import { ROUTES } from '../../../core/constants';
 import { useDashboard } from '../hooks';
 import { FlashMessageModal } from '../components';
 import { useIsModuleEnabled, useSocialLinks } from '../../../core/brand/featureFlags';
+import { useMenuAccess } from '../../../core/menu';
+import type { ModuleName } from '../../../core/brand/BrandContext';
 import { useCirculars } from '../../circulars/hooks/useCirculars';
 import { useDrawer } from '../../../app/components';
 
@@ -41,7 +43,10 @@ const avatarColors = [
 
 export const DashboardScreen: React.FC = () => {
   const navigation = useNavigation<any>();
-  const { students, selectedStudentId, userData } = useAuth();
+  const { students, selectedStudentId, userData, selectStudent } = useAuth();
+  // With 2+ children the hero card is the child selector: the selected child's
+  // menus drive the tiles, drawer and tabs.
+  const canSwitchStudent = students.length > 1;
   const [refreshing, setRefreshing] = React.useState(false);
   const [showFlashModal, setShowFlashModal] = React.useState(false);
   const hasShownModalRef = React.useRef(false);
@@ -52,11 +57,13 @@ export const DashboardScreen: React.FC = () => {
   const isExamsEnabled = useIsModuleEnabled('exams');
   const isCalendarEnabled = useIsModuleEnabled('calendar');
   const isFeesEnabled = useIsModuleEnabled('fees');
+  const isCircularsEnabled = useIsModuleEnabled('circulars');
   const isHomeworkEnabled = useIsModuleEnabled('homework');
   const isAttendanceEnabled = useIsModuleEnabled('attendance');
   const isTimetableEnabled = useIsModuleEnabled('timetable');
   const isParentMessageEnabled = useIsModuleEnabled('parentMessage');
   const isLeaveLetterEnabled = useIsModuleEnabled('leaveLetter');
+  const { getMenu, configured: menusConfigured } = useMenuAccess();
 
   // Brand social media links - empty when the brand configured none
   const socialItems = useSocialLinks();
@@ -246,8 +253,15 @@ export const DashboardScreen: React.FC = () => {
     },
   ];
 
-  // Filter to only show enabled modules
-  const quickAccessItems = allQuickAccessItems.filter(item => item.enabled);
+  // Filter to only show enabled modules. A school configured in SchoolTree
+  // also decides which are tiles, their labels and their order.
+  const menuOf = (id: string) => getMenu(id as ModuleName);
+  const quickAccessItems = menusConfigured
+    ? allQuickAccessItems
+        .filter(item => item.enabled && menuOf(item.id)?.quickAccess === 1)
+        .map(item => ({ ...item, title: menuOf(item.id)?.name || item.title }))
+        .sort((a, b) => (menuOf(a.id)?.order ?? 0) - (menuOf(b.id)?.order ?? 0))
+    : allQuickAccessItems.filter(item => item.enabled);
 
   const displayName = 'Parent';
 
@@ -319,7 +333,17 @@ export const DashboardScreen: React.FC = () => {
               {students.map((student, index) => (
                 <React.Fragment key={student.id}>
                   {index > 0 && <View style={styles.heroStudentDivider} />}
-                  <View style={styles.heroStudentRow}>
+                  <TouchableOpacity
+                    style={[
+                      styles.heroStudentRow,
+                      canSwitchStudent && student.id === selectedStudentId && styles.heroStudentRowSelected,
+                    ]}
+                    disabled={!canSwitchStudent || student.id === selectedStudentId}
+                    onPress={() => selectStudent(student.id)}
+                    activeOpacity={0.7}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: student.id === selectedStudentId }}
+                  >
                     <View
                       style={[
                         styles.heroStudentAvatar,
@@ -345,7 +369,10 @@ export const DashboardScreen: React.FC = () => {
                         {student.className} | Adm No: {student.admissionNo || student.studentId}
                       </Text>
                     </View>
-                  </View>
+                    {canSwitchStudent && student.id === selectedStudentId && (
+                      <Icon name="check" size={22} color="#FFFFFF" />
+                    )}
+                  </TouchableOpacity>
                 </React.Fragment>
               ))}
             </View>
@@ -355,6 +382,7 @@ export const DashboardScreen: React.FC = () => {
         {/* Summary Cards */}
         <View style={styles.cardsContainer}>
           {/* Circulars Card */}
+          {isCircularsEnabled && (
           <TouchableOpacity
             style={styles.circularsCard}
             onPress={() => navigation.navigate(ROUTES.CIRCULARS)}
@@ -382,6 +410,7 @@ export const DashboardScreen: React.FC = () => {
               <Icon name="campaign" size={24} color="#2563EB" />
             </View>
           </TouchableOpacity>
+          )}
 
           {/* Homework Card - Bigger for 2+ students, compact for 1 */}
           {isHomeworkEnabled && (students.length >= 2 ? (
@@ -672,6 +701,13 @@ const styles = StyleSheet.create({
   heroStudentRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    borderRadius: 14,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    marginHorizontal: -spacing.sm,
+  },
+  heroStudentRowSelected: {
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
   },
   heroStudentAvatar: {
     width: 48,

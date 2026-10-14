@@ -27,10 +27,12 @@ import { FeeItemCard, PaymentSummaryBar } from '../components';
 import { feesApi } from '../services/feesApi';
 import { AppAlert } from '../../../design-system/molecules/AppAlert';
 import { useFeatureFlag } from '../../../core/brand';
+import { useModuleAccessGuard } from '../../../core/menu';
 
 type TabType = 'pending' | 'history';
 
 export const FeeDetailsScreen: React.FC = () => {
+  useModuleAccessGuard('fees');
   const navigation = useNavigation<any>();
   const { students, selectedStudentId, selectStudent } = useAuth();
   // brand.config features.modules.fees.showPaymentGateway: when off the school

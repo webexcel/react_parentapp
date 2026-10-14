@@ -5,27 +5,27 @@
  * before the app is ready for it (cold start: splash, auth restore, a parent
  * still on the login screen), so the request is parked here and carried out
  * once the user is signed in, the main navigator is mounted and the children
- * are loaded - then the child the message names is selected first.
+ * are loaded - then the child the message names is selected first. If that
+ * child doesn't have the menu, the Dashboard opens with a short message.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../auth';
-import { getBrandConfig } from '../brand';
 import { ROUTES } from '../constants';
+import { useMenuAccess } from '../menu';
+import type { ModuleName } from '../brand/BrandContext';
 import { navigationRef } from '../../app/navigationRef';
+import { AppToast } from '../../design-system/molecules/AppToast';
 import type { FCMNotification } from './fcmService';
-import { resolveNotificationRoute, NotificationRoute } from './notificationRouting';
+import { resolveNotificationRoute, NotificationRoute, TARGET_MODULE } from './notificationRouting';
 
 let pending: NotificationRoute | null = null;
 const listeners = new Set<(route: NotificationRoute | null) => void>();
 
-const isModuleEnabled = (module: string): boolean => {
-  const modules = getBrandConfig().features.modules as unknown as Record<string, { enabled?: boolean } | undefined>;
-  return modules[module]?.enabled !== false;
-};
-
 /** Queue a tapped notification; NotificationOpener navigates when the app is ready. */
 export const openNotification = (notification: FCMNotification): void => {
-  pending = resolveNotificationRoute(notification, isModuleEnabled);
+  // Menu access is per child, so it is checked when opening, once the child
+  // the message is about is known (see tryOpen).
+  pending = resolveNotificationRoute(notification, () => true);
   listeners.forEach((l) => l(pending));
 };
 
@@ -39,7 +39,12 @@ const MAX_WAIT_MS = 2 * 60 * 1000;
 const POLL_MS = 400;
 
 export const NotificationOpener: React.FC = () => {
-  const { isAuthenticated, students, selectStudent } = useAuth();
+  const { isAuthenticated, students, selectedStudentId, selectStudent } = useAuth();
+  const menuAccess = useMenuAccess();
+  // Read through a ref: these change when the child is selected below, and
+  // re-running the effect then would open the screen twice.
+  const latest = useRef({ selectedStudentId, menuAccess });
+  latest.current = { selectedStudentId, menuAccess };
   const [request, setRequest] = useState<NotificationRoute | null>(pending);
 
   useEffect(() => {
@@ -62,15 +67,26 @@ export const NotificationOpener: React.FC = () => {
         return;
       }
 
+      const { isMenuEnabledFor, getMenuLabel } = latest.current.menuAccess;
+      let child = students.find((s) => s.id === latest.current.selectedStudentId);
       if (request.adno) {
-        const child = students.find(
+        const named = students.find(
           (s) => String(s.studentId || s.id) === request.adno || String(s.admissionNo) === request.adno
         );
-        if (child) await selectStudent(child.id);
+        if (named) {
+          child = named;
+          await selectStudent(named.id);
+        }
       }
 
       const nav = navigationRef.navigate as (name: string, params?: object) => void;
-      nav(request.route, request.screen ? { screen: request.screen } : undefined);
+      const module = TARGET_MODULE[request.target] as ModuleName | null;
+      if (module && child && !isMenuEnabledFor(module, child.id)) {
+        AppToast.show(`${getMenuLabel(module)} is not available for ${child.name?.trim() || 'this student'}`);
+        nav(ROUTES.MAIN_TABS, { screen: ROUTES.DASHBOARD });
+      } else {
+        nav(request.route, request.screen ? { screen: request.screen } : undefined);
+      }
 
       pending = null;
       setRequest(null);

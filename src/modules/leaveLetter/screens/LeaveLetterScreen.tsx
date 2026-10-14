@@ -26,8 +26,10 @@ import {LeaveRequestCard} from '../components/LeaveRequestCard';
 import {LeaveRequest, LeaveFormData} from '../types/leaveLetter.types';
 import {parseLocalDate} from '../../../core/utils/dates';
 import { AppAlert } from '../../../design-system/molecules/AppAlert';
+import { useModuleAccessGuard } from '../../../core/menu';
 
 export const LeaveLetterScreen: React.FC = () => {
+  useModuleAccessGuard('leaveLetter');
   const navigation = useNavigation<any>();
   const {students, selectedStudentId, selectStudent} = useAuth();
   const [refreshing, setRefreshing] = useState(false);

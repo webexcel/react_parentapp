@@ -30,6 +30,7 @@ import {
 import { useAuth } from '../../../core/auth';
 import { useGallery } from '../hooks/useGallery';
 import { GalleryAlbum, GalleryImage } from '../types/gallery.types';
+import { useModuleAccessGuard } from '../../../core/menu';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const IMAGE_SIZE = (SCREEN_WIDTH - spacing.base * 3) / 2;
@@ -246,6 +247,7 @@ const GalleryVideoPlayer: React.FC<{ uri: string; isActive: boolean }> = ({ uri,
 };
 
 export const GalleryScreen: React.FC = () => {
+  useModuleAccessGuard('gallery');
   const navigation = useNavigation();
   const { students, selectedStudentId, selectStudent } = useAuth();
   const { albums, isLoading, isFetching, error, refetch } = useGallery();
