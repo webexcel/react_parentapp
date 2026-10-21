@@ -22,6 +22,7 @@ import { MessageBubble, ChatInput, SuggestedQuestions, ProviderSelector } from '
 import { ChatMessage, StudentContext, ChatProvider } from '../types/chat.types';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppAlert } from '../../../design-system/molecules/AppAlert';
+import { useModuleAccessGuard } from '../../../core/menu';
 
 const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -37,6 +38,7 @@ const getWelcomeMessage = (provider: ChatProvider): ChatMessage => ({
 });
 
 export const ChatScreen: React.FC = () => {
+  useModuleAccessGuard('chat');
   const { students, selectedStudentId } = useAuth();
   const flatListRef = useRef<FlatList>(null);
 

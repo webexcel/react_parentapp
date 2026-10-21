@@ -23,6 +23,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../../core/auth';
 import { useSendMessage } from '../hooks/useParentMessages';
 import { AppAlert } from '../../../design-system/molecules/AppAlert';
+import { useModuleAccessGuard } from '../../../core/menu';
 
 // Optional image picker - may not be installed
 let launchImageLibrary: any = null;
@@ -36,6 +37,7 @@ try {
 }
 
 export const SendMessageScreen: React.FC = () => {
+  useModuleAccessGuard('parentMessage');
   const navigation = useNavigation<any>();
   const { students, selectedStudentId } = useAuth();
   const selectedStudent = students.find(s => s.id === selectedStudentId);

@@ -15,6 +15,7 @@ import {
 import { useAuth } from '../../../core/auth';
 import { useExamSchedule } from '../hooks/useExamSchedule';
 import { ExamScheduleItem } from '../types/examSchedule.types';
+import { useModuleAccessGuard } from '../../../core/menu';
 
 // Subject color mapping
 const SUBJECT_COLORS: { [key: string]: string } = {
@@ -48,6 +49,7 @@ const getSubjectColor = (subject: string): string => {
 };
 
 export const ExamScheduleScreen: React.FC = () => {
+  useModuleAccessGuard('exams');
   const navigation = useNavigation();
   const { students, selectedStudentId, selectStudent } = useAuth();
   const [refreshing, setRefreshing] = useState(false);

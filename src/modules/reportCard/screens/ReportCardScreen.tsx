@@ -21,8 +21,10 @@ import { ReportTypeDropdown } from '../components/ReportTypeDropdown';
 import { reportCardApi } from '../services/reportCardApi';
 import { ReportCardType } from '../types/reportCard.types';
 import { AppAlert } from '../../../design-system/molecules/AppAlert';
+import { useModuleAccessGuard } from '../../../core/menu';
 
 export const ReportCardScreen: React.FC = () => {
+  useModuleAccessGuard('marks');
   const navigation = useNavigation<any>();
   const { students, selectedStudentId, selectStudent } = useAuth();
   const selectedStudent = students.find(s => s.id === selectedStudentId);

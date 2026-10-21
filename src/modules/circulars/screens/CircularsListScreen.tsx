@@ -14,10 +14,12 @@ import { ROUTES } from '../../../core/constants';
 import { useCirculars } from '../hooks/useCirculars';
 import { CircularCard } from '../components/CircularCard';
 import { Circular } from '../types/circular.types';
+import { useModuleAccessGuard } from '../../../core/menu';
 
 type FilterType = 'all' | 'today' | 'pending' | 'acknowledged';
 
 export const CircularsListScreen: React.FC = () => {
+  useModuleAccessGuard('circulars');
   const navigation = useNavigation<any>();
   const { circulars, isLoading, isFetching, refetch, acknowledgeCircular } = useCirculars();
 

@@ -480,6 +480,8 @@ android {
         pssenior {
             dimension "brand"
             applicationId "com.schooltree.pssenior"
+            versionCode 11
+            versionName "11.0"
             resValue "string", "app_name", "P.S. Senior Secondary School Parent"
             buildConfigField "String", "BRAND_ID", "\"pssenior\""
             buildConfigField "String", "AUTH_TYPE", "\"password\""
@@ -532,7 +534,7 @@ android {
         stdominics {
             dimension "brand"
             applicationId "com.schooltree.dominics"
-            resValue "string", "app_name", "St. Dominic's anglo-indian Hr. Sec. School Parent"
+            resValue "string", "app_name", "St. Dominic\\'s anglo-indian Hr. Sec. School Parent"
             buildConfigField "String", "BRAND_ID", "\"stdominics\""
             buildConfigField "String", "AUTH_TYPE", "\"otp\""
             buildConfigField "String", "DB_NAME", "\"dominic\""

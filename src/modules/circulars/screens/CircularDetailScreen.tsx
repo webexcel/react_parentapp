@@ -34,6 +34,7 @@ import {
 import { Circular, Attachment } from '../types/circular.types';
 import { useCirculars } from '../hooks/useCirculars';
 import { AppAlert } from '../../../design-system/molecules/AppAlert';
+import { useModuleAccessGuard } from '../../../core/menu';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -222,6 +223,7 @@ type RouteParams = {
 };
 
 export const CircularDetailScreen: React.FC = () => {
+  useModuleAccessGuard('circulars');
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RouteParams, 'CircularDetail'>>();
   const { circular: routeCircular } = route.params;

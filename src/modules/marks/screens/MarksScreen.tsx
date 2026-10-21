@@ -19,6 +19,7 @@ import { useReportCard } from '../hooks/useReportCard';
 import { ReportCardWebView } from '../components/ReportCardWebView';
 import { useReportCardTypes } from '../../reportCard';
 import { ROUTES } from '../../../core/constants';
+import { useModuleAccessGuard } from '../../../core/menu';
 
 // Subject color mapping (lowercase keys for case-insensitive matching)
 const SUBJECT_COLORS: { [key: string]: string } = {
@@ -126,6 +127,7 @@ const calculateGrade = (percentage: number): string => {
 
 
 export const MarksScreen: React.FC = () => {
+  useModuleAccessGuard('marks');
   const navigation = useNavigation<any>();
   const { students, selectedStudentId, selectStudent } = useAuth();
   const [selectedExamIndex, setSelectedExamIndex] = useState(0);

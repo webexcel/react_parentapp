@@ -25,7 +25,7 @@ export type { SpinnerProps } from './Spinner';
 export { Divider } from './Divider';
 export type { DividerProps } from './Divider';
 
-export { Icon, iconMap } from './Icon';
+export { Icon, iconMap, isIconName } from './Icon';
 export type { IconProps, IconName } from './Icon';
 
 export { Switch } from './Switch';

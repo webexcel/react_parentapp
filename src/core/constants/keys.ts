@@ -9,6 +9,7 @@ export const STORAGE_KEYS = {
   THEME_MODE: '@theme_mode',
   ONBOARDING_COMPLETE: '@onboarding_complete',
   NOTIFICATION_SETTINGS: '@notification_settings',
+  PARENT_MENUS: '@parent_menus',
 } as const;
 
 // Query Keys for React Query

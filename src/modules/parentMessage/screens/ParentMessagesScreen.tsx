@@ -25,8 +25,10 @@ import { useParentMessages, useDeleteMessage } from '../hooks/useParentMessages'
 import { ParentMessage } from '../types/parentMessage.types';
 import { ROUTES } from '../../../core/constants';
 import { AppAlert } from '../../../design-system/molecules/AppAlert';
+import { useModuleAccessGuard } from '../../../core/menu';
 
 export const ParentMessagesScreen: React.FC = () => {
+  useModuleAccessGuard('parentMessage');
   const navigation = useNavigation<any>();
   const { students, selectedStudentId, selectStudent } = useAuth();
   const [refreshing, setRefreshing] = useState(false);

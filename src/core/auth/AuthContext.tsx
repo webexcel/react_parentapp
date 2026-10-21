@@ -87,7 +87,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const setStudents = async (students: Student[]) => {
     await storeStudents(students);
-    const selectedId = students.length > 0 ? students[0].id : null;
+    // Keep the child the parent is viewing (e.g. on a photo refresh); fall back
+    // to the first child when there's no selection yet or it's no longer listed.
+    const keepCurrent = students.some((s) => s.id === state.selectedStudentId);
+    const selectedId = keepCurrent ? state.selectedStudentId : students.length > 0 ? students[0].id : null;
     if (selectedId) {
       await storeSelectedStudent(selectedId);
     }

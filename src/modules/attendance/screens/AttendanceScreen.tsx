@@ -14,6 +14,7 @@ import {
 import { useAuth } from '../../../core/auth';
 import { useAttendance } from '../hooks/useAttendance';
 import { AttendanceCalendar } from '../components/AttendanceCalendar';
+import { useModuleAccessGuard } from '../../../core/menu';
 
 type AttendanceRouteParams = {
   Attendance: {
@@ -27,6 +28,7 @@ const MONTHS = [
 ];
 
 export const AttendanceScreen: React.FC = () => {
+  useModuleAccessGuard('attendance');
   const navigation = useNavigation();
   const route = useRoute<RouteProp<AttendanceRouteParams, 'Attendance'>>();
   const { students, selectedStudentId, selectStudent } = useAuth();

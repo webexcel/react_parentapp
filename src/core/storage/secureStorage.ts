@@ -126,6 +126,7 @@ export const clearAuthData = async (): Promise<void> => {
       STORAGE_KEYS.STUDENTS,
       STORAGE_KEYS.SELECTED_STUDENT,
       STORAGE_KEYS.STUDENT_PHOTOS,
+      STORAGE_KEYS.PARENT_MENUS,
     ]);
   } catch (error) {
     // Error clearing auth data

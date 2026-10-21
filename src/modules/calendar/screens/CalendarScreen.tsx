@@ -14,6 +14,7 @@ import {
   shadows,
 } from '../../../design-system';
 import { useAuth } from '../../../core/auth';
+import { useModuleAccessGuard } from '../../../core/menu';
 
 interface CalendarEvent {
   id: string;
@@ -47,6 +48,7 @@ const CATEGORY_COLORS = {
 };
 
 export const CalendarScreen: React.FC = () => {
+  useModuleAccessGuard('calendar');
   const navigation = useNavigation();
   const { students, selectedStudentId, selectStudent } = useAuth();
 

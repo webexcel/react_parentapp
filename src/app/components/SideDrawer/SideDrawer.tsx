@@ -15,6 +15,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text, Icon, ConfirmDialog, colors } from '../../../design-system';
 import { useAuth } from '../../../core/auth';
 import { useBrand } from '../../../core/brand';
+import { useMenuAccess } from '../../../core/menu';
+import { isIconName } from '../../../design-system/atoms/Icon';
 import { getBrandLogo } from '../../../core/brand/BrandAssets';
 import { ROUTES } from '../../../core/constants';
 import { navigateFromRoot } from '../../navigationRef';
@@ -33,7 +35,10 @@ const getInitial = (name?: string): string =>
 export const SideDrawer: React.FC<SideDrawerProps> = ({ visible, onClose }) => {
   const insets = useSafeAreaInsets();
   const { students, logout } = useAuth();
-  const { brand, brandId, isModuleEnabled } = useBrand();
+  const { brand, brandId } = useBrand();
+  // The selected child's menus (server-configured, or the brand's when the
+  // school isn't configured yet).
+  const { isMenuEnabled: isModuleEnabled, getMenu, configured } = useMenuAccess();
 
   // Keeps the Modal mounted while the close animation plays
   const [mounted, setMounted] = useState(visible);
@@ -139,14 +144,21 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({ visible, onClose }) => {
     }
   }, [logout]);
 
-  // The menu mirrors the brand's enabled modules, so a disabled module never
-  // shows a dead entry here.
+  // The menu mirrors the selected child's enabled modules, so a disabled
+  // module never shows a dead entry here. Configured schools also set the
+  // label, icon and order from SchoolTree.
   const { mainItems, accountItems } = useMemo(() => {
     const main: DrawerMenuItem[] = [];
     const push = (enabled: boolean, item: DrawerMenuItem) => {
-      if (enabled) {
-        main.push(item);
+      if (!enabled) {
+        return;
       }
+      const server = getMenu(item.id as Parameters<typeof getMenu>[0]);
+      main.push(
+        server
+          ? { ...item, label: server.name || item.label, icon: isIconName(server.icon) ? server.icon : item.icon }
+          : item,
+      );
     };
 
     push(isModuleEnabled('dashboard'), {
@@ -189,6 +201,13 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({ visible, onClose }) => {
       id: 'chat', label: 'Chat', icon: 'chat', route: ROUTES.CHAT, isTab: true,
     });
 
+    if (configured) {
+      // Home stays first; the rest follow the server's menu order.
+      const orderOf = (item: DrawerMenuItem) =>
+        item.id === 'dashboard' ? -1 : getMenu(item.id as Parameters<typeof getMenu>[0])?.order ?? Number.MAX_SAFE_INTEGER;
+      main.sort((a, b) => orderOf(a) - orderOf(b));
+    }
+
     const account: DrawerMenuItem[] = [];
     if (isModuleEnabled('profile')) {
       account.push({
@@ -203,7 +222,7 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({ visible, onClose }) => {
     });
 
     return { mainItems: main, accountItems: account };
-  }, [isModuleEnabled]);
+  }, [isModuleEnabled, getMenu, configured]);
 
   const logoutDialog = (
     <ConfirmDialog

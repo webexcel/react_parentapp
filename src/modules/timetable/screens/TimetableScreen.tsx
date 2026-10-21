@@ -30,6 +30,7 @@ import {
   TT_TYPE_LABEL,
   TimetableType,
 } from '../types/timetable.types';
+import { useModuleAccessGuard } from '../../../core/menu';
 
 interface BreakConfig {
   afterPeriod: number;
@@ -58,6 +59,7 @@ const getSubjectColor = (subject: string): string => {
 };
 
 export const TimetableScreen: React.FC = () => {
+  useModuleAccessGuard('timetable');
   const navigation = useNavigation();
   const { students, selectedStudentId, selectStudent } = useAuth();
   const { getModuleConfig } = useBrand();
