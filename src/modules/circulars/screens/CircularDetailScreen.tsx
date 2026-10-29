@@ -278,7 +278,7 @@ export const CircularDetailScreen: React.FC = () => {
       const dirs = ReactNativeBlobUtil.fs.dirs;
       const filePath = `${dirs.DownloadDir}/${fileName}`;
 
-      const res = await ReactNativeBlobUtil.config({
+      await ReactNativeBlobUtil.config({
         fileCache: true,
         path: filePath,
         addAndroidDownloads: {
@@ -291,9 +291,11 @@ export const CircularDetailScreen: React.FC = () => {
         },
       }).fetch('GET', attachment.url);
 
-      const downloadedPath = res.path();
-      await FileViewer.open(downloadedPath, { showOpenWithDialog: true });
-    } catch {
+      // With useDownloadManager, res.path() points at the provider's private cache,
+      // which FileViewer's FileProvider can't share; open the Downloads path instead.
+      await FileViewer.open(filePath, { showOpenWithDialog: true });
+    } catch (e) {
+      console.warn('[CircularDetail] download/open failed', attachment.url, e);
       Alert.alert('Error', 'Could not download or open the file.');
     } finally {
       setDownloadingId(null);

@@ -133,7 +133,7 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({
       const fileName = attachment.url.split('/').pop() || `document_${Date.now()}`;
       const filePath = `${ReactNativeBlobUtil.fs.dirs.DownloadDir}/${fileName}`;
 
-      const res = await ReactNativeBlobUtil.config({
+      await ReactNativeBlobUtil.config({
         fileCache: true,
         path: filePath,
         addAndroidDownloads: {
@@ -146,7 +146,8 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({
         },
       }).fetch('GET', attachment.url);
 
-      await FileViewer.open(res.path(), { showOpenWithDialog: true });
+      // res.path() points at the download provider's private cache with useDownloadManager.
+      await FileViewer.open(filePath, { showOpenWithDialog: true });
     } catch {
       Alert.alert('Error', 'Could not download or open the file.');
     } finally {

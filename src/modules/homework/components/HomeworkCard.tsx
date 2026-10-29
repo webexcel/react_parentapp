@@ -317,7 +317,7 @@ export const HomeworkCard: React.FC<HomeworkCardProps> = ({
       const dirs = ReactNativeBlobUtil.fs.dirs;
       const filePath = `${dirs.DownloadDir}/${fileName}`;
 
-      const res = await ReactNativeBlobUtil.config({
+      await ReactNativeBlobUtil.config({
         fileCache: true,
         path: filePath,
         addAndroidDownloads: {
@@ -330,8 +330,8 @@ export const HomeworkCard: React.FC<HomeworkCardProps> = ({
         },
       }).fetch('GET', attachment.url);
 
-      const downloadedPath = res.path();
-      await FileViewer.open(downloadedPath, { showOpenWithDialog: true });
+      // res.path() points at the download provider's private cache with useDownloadManager.
+      await FileViewer.open(filePath, { showOpenWithDialog: true });
     } catch {
       Alert.alert('Error', 'Could not download or open the file.');
     } finally {
