@@ -63,7 +63,7 @@ export const DashboardScreen: React.FC = () => {
   const isTimetableEnabled = useIsModuleEnabled('timetable');
   const isParentMessageEnabled = useIsModuleEnabled('parentMessage');
   const isLeaveLetterEnabled = useIsModuleEnabled('leaveLetter');
-  const { getMenu, configured: menusConfigured } = useMenuAccess();
+  const { getMenu, configured: menusConfigured, refetch: refetchMenus } = useMenuAccess();
 
   // Brand social media links - empty when the brand configured none
   const socialItems = useSocialLinks();
@@ -93,11 +93,13 @@ export const DashboardScreen: React.FC = () => {
 
   const selectedStudent = students.find((s) => s.id === selectedStudentId) || students[0];
 
-  // Auto-fetch when screen comes into focus
+  // Auto-fetch when screen comes into focus. getMenus runs every time; the
+  // provider only re-renders consumers if the response differs from current menus.
   useFocusEffect(
     useCallback(() => {
       refresh();
-    }, [refresh])
+      refetchMenus();
+    }, [refresh, refetchMenus])
   );
 
   // Show modal only on first load when flash messages are available
@@ -110,9 +112,10 @@ export const DashboardScreen: React.FC = () => {
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
+    refetchMenus();
     await refresh();
     setRefreshing(false);
-  }, [refresh]);
+  }, [refresh, refetchMenus]);
 
   const getStudentInitial = (name: string) => {
     return name?.charAt(0)?.toUpperCase() || '?';

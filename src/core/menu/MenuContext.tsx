@@ -1,4 +1,5 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../api/apiClient';
@@ -43,8 +44,14 @@ interface MenuContextType {
   getMenu: (key: ModuleName) => ParentMenu | undefined;
   /** Display name for a menu, even one the selected child doesn't have */
   getMenuLabel: (key: ModuleName) => string;
+  /** Force a refetch now (e.g. pull-to-refresh) */
   refetch: () => void;
+  /** Refetch only if the last fetch is older than the throttle window (app resume, dashboard focus) */
+  refreshMenus: () => void;
 }
+
+// Minimum gap between automatic menu refetches.
+const REFRESH_THROTTLE_MS = 15 * 60 * 1000;
 
 // Always shown; not configurable from SchoolTree.
 const ALWAYS_ON: ModuleName[] = ['dashboard', 'profile'];
@@ -72,6 +79,7 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { isAuthenticated, token, students, selectedStudentId } = useAuth();
   const { isModuleEnabled: isBrandEnabled } = useBrand();
   const [cached, setCached] = useState<MenuData | null>(null);
+  const lastFetchedAt = useRef(0);
 
   // Last fetched menus, so a cold start (or no network) shows the same menus.
   useEffect(() => {
@@ -92,13 +100,57 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
         configured: response.data?.configured === true,
         byStudent: response.data?.byStudent || {},
       };
-      await AsyncStorage.setItem(STORAGE_KEYS.PARENT_MENUS, JSON.stringify(data));
+      lastFetchedAt.current = Date.now();
+      // Only touch storage when something actually changed.
+      const serialized = JSON.stringify(data);
+      if (serialized !== JSON.stringify(dataRef.current)) {
+        await AsyncStorage.setItem(STORAGE_KEYS.PARENT_MENUS, serialized);
+      }
       return data;
     },
     enabled: isAuthenticated && !!token,
+    // Re-render this provider only when the data changes, not on isFetching etc.
+    notifyOnChangeProps: ['data'],
   });
 
-  const data = query.data ?? cached;
+  // Stable refs so refreshMenus/refetch keep one identity (safe in effect deps).
+  const queryRef = useRef(query);
+  queryRef.current = query;
+  const enabledRef = useRef(false);
+  enabledRef.current = isAuthenticated && !!token;
+  const inFlight = useRef(false);
+
+  const refetch = useCallback(() => {
+    if (!enabledRef.current) return;
+    // Join an in-flight fetch instead of cancelling and restarting it.
+    queryRef.current.refetch({ cancelRefetch: false });
+  }, []);
+
+  const refreshMenus = useCallback(() => {
+    if (!enabledRef.current || inFlight.current) return;
+    if (Date.now() - lastFetchedAt.current < REFRESH_THROTTLE_MS) return;
+    inFlight.current = true;
+    Promise.resolve(queryRef.current.refetch()).finally(() => {
+      inFlight.current = false;
+    });
+  }, []);
+
+  // Refresh when the app returns to the foreground.
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') refreshMenus();
+    });
+    return () => sub.remove();
+  }, [refreshMenus]);
+
+  // Keep the SAME object unless the menus really changed (cached copy vs.
+  // server copy, or an identical refetch) so consumers don't re-render.
+  const incoming = query.data ?? cached;
+  const dataRef = useRef<MenuData | null>(incoming);
+  if (JSON.stringify(dataRef.current) !== JSON.stringify(incoming)) {
+    dataRef.current = incoming;
+  }
+  const data = dataRef.current;
   const configured = !!data?.configured;
 
   const isMenuEnabledFor = useCallback(
@@ -127,11 +179,10 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
           .find((m) => m.key === key)?.name;
         return fromServer || DEFAULT_LABELS[key] || key;
       },
-      refetch: () => {
-        query.refetch();
-      },
+      refetch,
+      refreshMenus,
     };
-  }, [configured, data, isMenuEnabledFor, selectedStudentId, students, query]);
+  }, [configured, data, isMenuEnabledFor, selectedStudentId, students, refetch, refreshMenus]);
 
   return <MenuContext.Provider value={value}>{children}</MenuContext.Provider>;
 };
