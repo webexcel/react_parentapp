@@ -5,12 +5,19 @@ export const galleryApi = {
   /**
    * Get gallery categories for parent based on class IDs
    */
-  getCategories: async (classIds: Array<string | number>): Promise<GalleryCategoriesResponse> => {
+  getCategories: async (
+    classIds: Array<string | number>,
+    adnos?: string[]
+  ): Promise<GalleryCategoriesResponse> => {
     try {
       const response = await apiClient.post<GalleryCategoriesResponse>(
         API_ENDPOINTS.GALLERY.GET_CATEGORIES,
         {
+          // Legacy input, still read by a backend that doesn't know `adnos`
           class_id: classIds,
+          // Preferred: the children who have the Gallery menu. The server checks
+          // them against the login and derives the classes itself.
+          ...(adnos ? { adnos } : {}),
         }
       );
       return response.data;

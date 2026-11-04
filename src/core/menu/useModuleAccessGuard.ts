@@ -8,26 +8,46 @@ import { AppToast } from '../../design-system/molecules/AppToast';
 import { useMenuAccess } from './MenuContext';
 
 /**
- * Put on every module screen. When the selected child doesn't have this menu
- * (typically right after the parent switches child inside the module), go to
- * the Dashboard — which now shows that child's menus — and say why.
+ * Put on every module screen. A menu is visible when ANY child has it, so the
+ * selected child may not be one of them (e.g. the parent tapped Homework on the
+ * Dashboard while a child without Homework is selected). Then switch to the
+ * first child who does have it. Only when NO child has the menu (it was removed
+ * while the parent was inside) go back to the Dashboard and say why.
  */
 export const useModuleAccessGuard = (key: ModuleName): void => {
   const isFocused = useIsFocused();
-  const { students, selectedStudentId } = useAuth();
-  const { isMenuEnabled, getMenuLabel } = useMenuAccess();
-  const allowed = isMenuEnabled(key);
+  const { selectedStudentId, selectStudent } = useAuth();
+  const { isMenuEnabledFor, studentsWithMenu, getMenuLabel } = useMenuAccess();
+  const allowed = isMenuEnabledFor(key, selectedStudentId);
+  const firstPermittedId = studentsWithMenu(key)[0]?.id;
 
-  // Read through a ref so a re-render alone never fires the redirect twice.
-  const latest = useRef({ students, getMenuLabel });
-  latest.current = { students, getMenuLabel };
+  // Read through a ref so a re-render alone never fires the effect twice.
+  const latest = useRef({ selectStudent, getMenuLabel });
+  latest.current = { selectStudent, getMenuLabel };
 
   useEffect(() => {
     if (!isFocused || !selectedStudentId || allowed) return;
-    const student = latest.current.students.find((s) => s.id === selectedStudentId);
-    const studentName = student?.name?.trim() || 'this student';
-    AppToast.show(`${latest.current.getMenuLabel(key)} is not available for ${studentName}`);
+    if (firstPermittedId) {
+      latest.current.selectStudent(firstPermittedId);
+      return;
+    }
+    AppToast.show(`${latest.current.getMenuLabel(key)} is not available`);
     const nav = navigationRef.navigate as (name: string, params?: object) => void;
     nav(ROUTES.MAIN_TABS, { screen: ROUTES.DASHBOARD });
-  }, [isFocused, selectedStudentId, allowed, key]);
+  }, [isFocused, selectedStudentId, allowed, firstPermittedId, key]);
+};
+
+/**
+ * The children a module should list and fetch: only those who have this menu.
+ * `selectedStudentId` is always one of them (the guard switches the global
+ * selection if needed; until it does, the first permitted child is reported).
+ */
+export const useMenuStudents = (key: ModuleName) => {
+  const { selectedStudentId, selectStudent } = useAuth();
+  const { studentsWithMenu } = useMenuAccess();
+  const students = studentsWithMenu(key);
+  const effectiveId = students.some((s) => s.id === selectedStudentId)
+    ? selectedStudentId
+    : students[0]?.id ?? selectedStudentId;
+  return { students, selectedStudentId: effectiveId, selectStudent };
 };

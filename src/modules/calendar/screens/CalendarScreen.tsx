@@ -13,26 +13,8 @@ import {
   borderRadius,
   shadows,
 } from '../../../design-system';
-import { useAuth } from '../../../core/auth';
-import { useModuleAccessGuard } from '../../../core/menu';
-
-interface CalendarEvent {
-  id: string;
-  title: string;
-  date: string;
-  category: 'holiday' | 'event' | 'exam' | 'meeting' | 'activity';
-  description?: string;
-}
-
-// Mock data - replace with API call
-const MOCK_EVENTS: CalendarEvent[] = [
-  { id: '1', title: 'Republic Day', date: '2024-01-26', category: 'holiday', description: 'National Holiday' },
-  { id: '2', title: 'Annual Sports Day', date: '2024-02-05', category: 'event', description: 'Sports competitions and games' },
-  { id: '3', title: 'Parent-Teacher Meeting', date: '2024-02-10', category: 'meeting', description: 'Discuss student progress' },
-  { id: '4', title: 'Science Exhibition', date: '2024-02-15', category: 'activity', description: 'Student project showcase' },
-  { id: '5', title: 'Unit Test 1', date: '2024-02-20', category: 'exam', description: 'First unit test' },
-  { id: '6', title: 'Holi', date: '2024-03-25', category: 'holiday', description: 'Festival of Colors' },
-];
+import { useModuleAccessGuard, useMenuStudents } from '../../../core/menu';
+import { useCalendar, CalendarEvent } from '../hooks/useCalendar';
 
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -50,22 +32,29 @@ const CATEGORY_COLORS = {
 export const CalendarScreen: React.FC = () => {
   useModuleAccessGuard('calendar');
   const navigation = useNavigation();
-  const { students, selectedStudentId, selectStudent } = useAuth();
+  const { students, selectedStudentId, selectStudent } = useMenuStudents('calendar');
 
   const currentDate = new Date();
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const { events, refetch } = useCalendar();
 
+  // Events overlapping the shown month (a multi-day event is listed in every
+  // month it touches), narrowed to the tapped date when there is one.
   const filteredEvents = useMemo(() => {
-    return MOCK_EVENTS.filter((event) => {
-      const eventDate = new Date(event.date);
-      const monthMatch = eventDate.getMonth() === selectedMonth && eventDate.getFullYear() === selectedYear;
-      const dateMatch = selectedDate ? event.date === selectedDate : true;
-      return monthMatch && dateMatch;
-    }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  }, [selectedMonth, selectedYear, selectedDate]);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const monthStart = `${selectedYear}-${pad(selectedMonth + 1)}-01`;
+    const monthEnd = `${selectedYear}-${pad(selectedMonth + 1)}-${pad(new Date(selectedYear, selectedMonth + 1, 0).getDate())}`;
+    return events
+      .filter((event) => {
+        const monthMatch = event.date <= monthEnd && event.endDate >= monthStart;
+        const dateMatch = selectedDate ? event.date <= selectedDate && selectedDate <= event.endDate : true;
+        return monthMatch && dateMatch;
+      })
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }, [events, selectedMonth, selectedYear, selectedDate]);
 
   // Generate calendar days
   const calendarDays = useMemo(() => {
@@ -84,19 +73,22 @@ export const CalendarScreen: React.FC = () => {
     // Add days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       const dateString = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      const hasEvent = MOCK_EVENTS.some(event => event.date === dateString);
+      const hasEvent = events.some(event => event.date <= dateString && dateString <= event.endDate);
       const today = new Date();
       const isToday = day === today.getDate() && selectedMonth === today.getMonth() && selectedYear === today.getFullYear();
       days.push({ date: day, dateString, hasEvent, isToday });
     }
 
     return days;
-  }, [selectedMonth, selectedYear]);
+  }, [events, selectedMonth, selectedYear]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    // Fetch events from API
-    setTimeout(() => setRefreshing(false), 1000);
+    try {
+      await refetch();
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const handlePreviousMonth = () => {
@@ -135,7 +127,11 @@ export const CalendarScreen: React.FC = () => {
 
   const renderEvent = ({ item }: { item: CalendarEvent }) => {
     const { day, weekday } = formatDate(item.date);
-    const categoryColor = CATEGORY_COLORS[item.category];
+    const categoryColor = item.color || CATEGORY_COLORS[item.category];
+    const multiDay = item.endDate !== item.date;
+    const endLabel = multiDay
+      ? new Date(item.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
+      : '';
 
     return (
       <View style={styles.eventCard}>
@@ -153,20 +149,15 @@ export const CalendarScreen: React.FC = () => {
             </Text>
             <Badge
               label={item.category.charAt(0).toUpperCase() + item.category.slice(1)}
-              variant={
-                item.category === 'holiday'
-                  ? 'warning'
-                  : item.category === 'exam'
-                  ? 'error'
-                  : item.category === 'meeting'
-                  ? 'info'
-                  : item.category === 'activity'
-                  ? 'success'
-                  : 'primary'
-              }
+              variant={item.category === 'holiday' ? 'warning' : 'primary'}
               size="sm"
             />
           </View>
+          {multiDay && (
+            <Text variant="caption" color="secondary">
+              {`Until ${endLabel}`}
+            </Text>
+          )}
           {item.description && (
             <LinkedText variant="caption" color="secondary" numberOfLines={2}>
               {item.description}

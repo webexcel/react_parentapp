@@ -67,22 +67,33 @@ export const NotificationOpener: React.FC = () => {
         return;
       }
 
-      const { isMenuEnabledFor, getMenuLabel } = latest.current.menuAccess;
+      const { isMenuEnabledFor, isMenuEnabled, getMenuLabel } = latest.current.menuAccess;
       let child = students.find((s) => s.id === latest.current.selectedStudentId);
+      let namedChild = false;
       if (request.adno) {
         const named = students.find(
           (s) => String(s.studentId || s.id) === request.adno || String(s.admissionNo) === request.adno
         );
         if (named) {
           child = named;
+          namedChild = true;
           await selectStudent(named.id);
         }
       }
 
       const nav = navigationRef.navigate as (name: string, params?: object) => void;
       const module = TARGET_MODULE[request.target] as ModuleName | null;
-      if (module && child && !isMenuEnabledFor(module, child.id)) {
-        AppToast.show(`${getMenuLabel(module)} is not available for ${child.name?.trim() || 'this student'}`);
+      // A message that names a child opens only if THAT child has the menu. One
+      // that names nobody opens when any child has it (the module then switches
+      // to a child who does), so it isn't refused just because the selected
+      // child happens to lack it.
+      const allowed = !module || (namedChild ? !child || isMenuEnabledFor(module, child.id) : isMenuEnabled(module));
+      if (!allowed && module) {
+        AppToast.show(
+          namedChild && child
+            ? `${getMenuLabel(module)} is not available for ${child.name?.trim() || 'this student'}`
+            : `${getMenuLabel(module)} is not available`
+        );
         nav(ROUTES.MAIN_TABS, { screen: ROUTES.DASHBOARD });
       } else {
         nav(request.route, request.screen ? { screen: request.screen } : undefined);

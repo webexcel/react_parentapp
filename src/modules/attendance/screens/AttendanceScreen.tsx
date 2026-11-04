@@ -11,10 +11,9 @@ import {
   borderRadius,
   shadows,
 } from '../../../design-system';
-import { useAuth } from '../../../core/auth';
 import { useAttendance } from '../hooks/useAttendance';
 import { AttendanceCalendar } from '../components/AttendanceCalendar';
-import { useModuleAccessGuard } from '../../../core/menu';
+import { useModuleAccessGuard, useMenuStudents } from '../../../core/menu';
 
 type AttendanceRouteParams = {
   Attendance: {
@@ -31,7 +30,7 @@ export const AttendanceScreen: React.FC = () => {
   useModuleAccessGuard('attendance');
   const navigation = useNavigation();
   const route = useRoute<RouteProp<AttendanceRouteParams, 'Attendance'>>();
-  const { students, selectedStudentId, selectStudent } = useAuth();
+  const { students, selectedStudentId, selectStudent } = useMenuStudents('attendance');
 
   // Auto-select student from route params if provided
   useEffect(() => {

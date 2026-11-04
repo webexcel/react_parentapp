@@ -19,7 +19,6 @@ import {
   borderRadius,
   shadows,
 } from '../../../design-system';
-import { useAuth } from '../../../core/auth';
 import { useBrand } from '../../../core/brand';
 import { useTimetable } from '../hooks/useTimetable';
 import {
@@ -30,7 +29,7 @@ import {
   TT_TYPE_LABEL,
   TimetableType,
 } from '../types/timetable.types';
-import { useModuleAccessGuard } from '../../../core/menu';
+import { useModuleAccessGuard, useMenuStudents } from '../../../core/menu';
 
 interface BreakConfig {
   afterPeriod: number;
@@ -61,7 +60,7 @@ const getSubjectColor = (subject: string): string => {
 export const TimetableScreen: React.FC = () => {
   useModuleAccessGuard('timetable');
   const navigation = useNavigation();
-  const { students, selectedStudentId, selectStudent } = useAuth();
+  const { students, selectedStudentId, selectStudent } = useMenuStudents('timetable');
   const { getModuleConfig } = useBrand();
 
   const timetableConfig = getModuleConfig('timetable');

@@ -1,18 +1,26 @@
 import { useQuery } from '@tanstack/react-query';
 import { QUERY_KEYS } from '../../../core/constants';
 import { useAuth } from '../../../core/auth';
+import { useOptionalMenuAccess } from '../../../core/menu';
 import { galleryApi } from '../services/galleryApi';
 import { GalleryAlbum, GalleryImage } from '../types/gallery.types';
 
 export const useGallery = () => {
   const { students } = useAuth();
+  const menu = useOptionalMenuAccess();
 
-  // Albums for every child's class plus school-wide ones (class_id 0 - what
-  // the web and teacher app save). The screen has no student selector, so
-  // using only the selected child hid albums of the other children.
+  // Albums for the class of every child WHO HAS the Gallery menu, plus
+  // school-wide ones (class_id 0 - what the web and teacher app save). Using
+  // only the selected child hid albums of the other children; using all
+  // children would show albums of a child whose Gallery menu is off.
+  const galleryStudents = menu ? menu.studentsWithMenu('gallery') : students;
   const classIds = Array.from(
-    new Set<string | number>([...students.map((s) => s.classId).filter((c): c is string => !!c), 0])
+    new Set<string | number>([...galleryStudents.map((s) => s.classId).filter((c): c is string => !!c), 0])
   );
+  // The server derives the classes from these (after checking them against the
+  // login and the Gallery menu). Nothing is sent before the children are known.
+  const adnos =
+    students.length > 0 ? galleryStudents.map((s) => String(s.studentId || s.id)).filter(Boolean) : undefined;
 
   const {
     data: albums = [],
@@ -21,14 +29,15 @@ export const useGallery = () => {
     error,
     refetch,
   } = useQuery({
-    queryKey: [QUERY_KEYS.GALLERY, classIds],
+    queryKey: [QUERY_KEYS.GALLERY, classIds, adnos ? adnos.join(',') : 'all'],
     queryFn: async (): Promise<GalleryAlbum[]> => {
-      if (classIds.length === 0) {
+      // Children are known but none has the Gallery menu: nothing to fetch.
+      if (classIds.length === 0 || (adnos && adnos.length === 0)) {
         return [];
       }
 
       try {
-        const response = await galleryApi.getCategories(classIds);
+        const response = await galleryApi.getCategories(classIds, adnos);
 
         if (response.status && response.data) {
           const baseUrl = response.url || '';

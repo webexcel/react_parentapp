@@ -15,11 +15,13 @@ export const dashboardApi = {
    * Returns circulars count, attendance %, homework count, payment due
    * Sends students array with adno and class_id
    */
-  getBatchCount: async (adno: string | string[]): Promise<BatchCountResponse> => {
+  getBatchCount: async (adno: string | string[], circularAdnos?: string[]): Promise<BatchCountResponse> => {
     // Backend expects ADNO as an array of admission numbers and answers with
-    // one homework/attendance entry per admission number.
+    // one homework/attendance entry per admission number. circular_adnos (the
+    // children who have the Circulars menu) limits the circulars count to them.
     const payload = {
       ADNO: Array.isArray(adno) ? adno : [adno],
+      ...(circularAdnos ? { circular_adnos: circularAdnos } : {}),
     };
 
     const response = await apiClient.post<BatchCountResponse>(

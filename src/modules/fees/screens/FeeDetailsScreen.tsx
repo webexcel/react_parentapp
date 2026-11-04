@@ -19,7 +19,6 @@ import {
   shadows,
   ListTemplate,
 } from '../../../design-system';
-import { useAuth } from '../../../core/auth';
 import { ROUTES } from '../../../core/constants';
 import { useFeeDetails, useFeeSelection, usePaymentHistory } from '../hooks';
 import { usePayOnline } from '../hooks/usePayOnline';
@@ -27,14 +26,14 @@ import { FeeItemCard, PaymentSummaryBar } from '../components';
 import { feesApi } from '../services/feesApi';
 import { AppAlert } from '../../../design-system/molecules/AppAlert';
 import { useFeatureFlag } from '../../../core/brand';
-import { useModuleAccessGuard } from '../../../core/menu';
+import { useModuleAccessGuard, useMenuStudents } from '../../../core/menu';
 
 type TabType = 'pending' | 'history';
 
 export const FeeDetailsScreen: React.FC = () => {
   useModuleAccessGuard('fees');
   const navigation = useNavigation<any>();
-  const { students, selectedStudentId, selectStudent } = useAuth();
+  const { students, selectedStudentId, selectStudent } = useMenuStudents('fees');
   // brand.config features.modules.fees.showPaymentGateway: when off the school
   // collects fees at the office, so fees are listed read-only - no checkboxes,
   // no "pay in order" notice and no Pay bar.

@@ -13,20 +13,18 @@ import {
   spacing,
   borderRadius,
 } from '../../../design-system';
-import { useAuth } from '../../../core/auth';
-import { useIsModuleEnabled } from '../../../core/brand/featureFlags';
 import { ROUTES } from '../../../core/constants';
 import { useReportCardTypes, useReportCardPdf } from '../hooks/useReportCard';
 import { ReportTypeDropdown } from '../components/ReportTypeDropdown';
 import { reportCardApi } from '../services/reportCardApi';
 import { ReportCardType } from '../types/reportCard.types';
 import { AppAlert } from '../../../design-system/molecules/AppAlert';
-import { useModuleAccessGuard } from '../../../core/menu';
+import { useModuleAccessGuard, useMenuStudents, useMenuAccess } from '../../../core/menu';
 
 export const ReportCardScreen: React.FC = () => {
   useModuleAccessGuard('marks');
   const navigation = useNavigation<any>();
-  const { students, selectedStudentId, selectStudent } = useAuth();
+  const { students, selectedStudentId, selectStudent } = useMenuStudents('marks');
   const selectedStudent = students.find(s => s.id === selectedStudentId);
 
   // The parent picks a report card first, unless there is only one.
@@ -46,7 +44,10 @@ export const ReportCardScreen: React.FC = () => {
     selectedStudent?.studentId,
     selectedType?.locked ? null : selectedType
   );
-  const isFeesEnabled = useIsModuleEnabled('fees');
+  // The fee lock is about THIS child's fees, so "Go to Fees" only shows when
+  // this child has the Fees menu (not merely a sibling).
+  const { isMenuEnabledFor } = useMenuAccess();
+  const isFeesEnabled = isMenuEnabledFor('fees', selectedStudentId);
 
   const handleDownload = async () => {
     if (!pdfPath || !selectedType) return;

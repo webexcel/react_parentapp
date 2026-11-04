@@ -19,19 +19,18 @@ import {
   spacing,
   borderRadius,
 } from '../../../design-system';
-import {useAuth} from '../../../core/auth';
 import {useLeaveLetter} from '../hooks/useLeaveLetter';
 import {LeaveRequestForm} from '../components/LeaveRequestForm';
 import {LeaveRequestCard} from '../components/LeaveRequestCard';
 import {LeaveRequest, LeaveFormData} from '../types/leaveLetter.types';
 import {parseLocalDate} from '../../../core/utils/dates';
 import { AppAlert } from '../../../design-system/molecules/AppAlert';
-import { useModuleAccessGuard } from '../../../core/menu';
+import { useModuleAccessGuard, useMenuStudents } from '../../../core/menu';
 
 export const LeaveLetterScreen: React.FC = () => {
   useModuleAccessGuard('leaveLetter');
   const navigation = useNavigation<any>();
-  const {students, selectedStudentId, selectStudent} = useAuth();
+  const { students, selectedStudentId, selectStudent } = useMenuStudents('leaveLetter');
   const [refreshing, setRefreshing] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingRequest, setEditingRequest] = useState<LeaveRequest | null>(

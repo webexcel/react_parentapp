@@ -11,7 +11,8 @@ import { useBrand, ModuleName } from '../brand/BrandContext';
 /**
  * Parent menus are configured per school in SchoolTree (school-wide, per class
  * and per student) and served by parentMenu/getMenus, keyed by admission
- * number. The app shows the SELECTED child's menus.
+ * number. A menu is shown when ANY child has it (union across children); inside
+ * a module only the children who have that menu are listed and fetched.
  *
  * Until the school is configured (configured:false, or nothing fetched or
  * cached yet) the brand config decides, exactly as before.
@@ -31,16 +32,23 @@ interface MenuData {
   byStudent: Record<string, ParentMenu[]>;
 }
 
+type StudentItem = ReturnType<typeof useAuth>['students'][number];
+
 interface MenuContextType {
   /** True when this school's menus come from the server */
   configured: boolean;
-  /** Menu visible for the selected child */
+  /** Menu visible for at least one child (drawer, tabs, tiles, cards) */
   isMenuEnabled: (key: ModuleName) => boolean;
   /** Menu visible for a specific child */
   isMenuEnabledFor: (key: ModuleName, studentId: string | null | undefined) => boolean;
-  /** Menu visible for at least one child (screen registration) */
+  /** Same as isMenuEnabled (kept for screen registration call sites) */
   isMenuEnabledForAny: (key: ModuleName) => boolean;
-  /** Server label/icon/order for the selected child, when configured */
+  /** The children who have this menu, in the parent's order */
+  studentsWithMenu: (key: ModuleName) => StudentItem[];
+  /**
+   * Server label/icon/order/quickAccess, when configured. Taken from the
+   * selected child when they have the menu, otherwise from the first child who does.
+   */
   getMenu: (key: ModuleName) => ParentMenu | undefined;
   /** Display name for a menu, even one the selected child doesn't have */
   getMenuLabel: (key: ModuleName) => string;
@@ -165,14 +173,27 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 
   const value = useMemo<MenuContextType>(() => {
-    const selectedMenus = selectedStudentId ? data?.byStudent?.[String(selectedStudentId)] : undefined;
+    const studentsWithMenu = (key: ModuleName) => students.filter((s) => isMenuEnabledFor(key, s.id));
+    const isMenuEnabledForAny = (key: ModuleName) =>
+      students.length === 0 ? isMenuEnabledFor(key, null) : students.some((s) => isMenuEnabledFor(key, s.id));
     return {
       configured,
-      isMenuEnabled: (key) => isMenuEnabledFor(key, selectedStudentId),
+      isMenuEnabled: isMenuEnabledForAny,
       isMenuEnabledFor,
-      isMenuEnabledForAny: (key) =>
-        students.length === 0 ? isMenuEnabledFor(key, null) : students.some((s) => isMenuEnabledFor(key, s.id)),
-      getMenu: (key) => (configured ? selectedMenus?.find((m) => m.key === key) : undefined),
+      isMenuEnabledForAny,
+      studentsWithMenu,
+      getMenu: (key) => {
+        if (!configured) return undefined;
+        const find = (id: string | null | undefined) =>
+          id ? data?.byStudent?.[String(id)]?.find((m) => m.key === key) : undefined;
+        const own = find(selectedStudentId);
+        if (own) return own;
+        for (const s of students) {
+          const m = find(s.id);
+          if (m) return m;
+        }
+        return undefined;
+      },
       getMenuLabel: (key) => {
         const fromServer = Object.values(data?.byStudent || {})
           .flat()

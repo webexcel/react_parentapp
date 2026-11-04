@@ -10,12 +10,11 @@ import {
   colors,
   spacing,
 } from '../../../design-system';
-import { useAuth } from '../../../core/auth';
 import { useHomework } from '../hooks/useHomework';
 import { HomeworkCard } from '../components/HomeworkCard';
 import { Homework } from '../types/homework.types';
 import { AppAlert } from '../../../design-system/molecules/AppAlert';
-import { useModuleAccessGuard } from '../../../core/menu';
+import { useModuleAccessGuard, useMenuStudents } from '../../../core/menu';
 
 type FilterType = 'all' | 'pending' | 'completed';
 
@@ -29,7 +28,7 @@ export const HomeworkScreen: React.FC = () => {
   useModuleAccessGuard('homework');
   const navigation = useNavigation();
   const route = useRoute<RouteProp<HomeworkRouteParams, 'Homework'>>();
-  const { students, selectedStudentId, selectStudent } = useAuth();
+  const { students, selectedStudentId, selectStudent } = useMenuStudents('homework');
 
   // Auto-select student from route params if provided
   useEffect(() => {

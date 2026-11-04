@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { QUERY_KEYS } from '../../../core/constants';
 import { useAuth } from '../../../core/auth';
+import { useOptionalMenuAccess } from '../../../core/menu';
 import { dashboardApi } from '../services/dashboardApi';
 import { DashboardSummary } from '../types/dashboard.types';
 
@@ -42,15 +43,26 @@ export const useBatchCount = (studentId?: string): UseBatchCountResult => {
   // for all of them in one request instead of only the selected one.
   const student = students.find((s) => s.id === targetStudentId);
   const adno = student?.studentId || student?.id;
-  const allAdnos = students.map((s) => String(s.studentId || s.id)).filter(Boolean);
+  // Only children who have Homework or Attendance feed those cards, so only
+  // they are requested (the menu context is absent in some tests/previews).
+  const menu = useOptionalMenuAccess();
+  const batchStudents = menu
+    ? students.filter((s) => menu.isMenuEnabledFor('homework', s.id) || menu.isMenuEnabledFor('attendance', s.id))
+    : students;
+  const allAdnos = batchStudents.map((s) => String(s.studentId || s.id)).filter(Boolean);
+  // The circulars count covers only children who have the Circulars menu.
+  const circularAdnos =
+    menu && students.length > 0
+      ? menu.studentsWithMenu('circulars').map((s) => String(s.studentId || s.id)).filter(Boolean)
+      : undefined;
 
   const { data, isLoading, isFetching, error, refetch } = useQuery({
-    queryKey: [QUERY_KEYS.DASHBOARD, 'batchCount', targetStudentId, allAdnos.join(',')],
+    queryKey: [QUERY_KEYS.DASHBOARD, 'batchCount', targetStudentId, allAdnos.join(','), circularAdnos?.join(',') ?? 'all'],
     queryFn: async (): Promise<{ summary: DashboardSummary; byStudent: Record<string, StudentDashboardCounts> }> => {
       const empty = { summary: getDefaultSummary(), byStudent: {} };
       if (!adno) return empty;
 
-      const response = await dashboardApi.getBatchCount(allAdnos.length ? allAdnos : [adno]);
+      const response = await dashboardApi.getBatchCount(allAdnos.length ? allAdnos : [adno], circularAdnos);
 
       if (response.status && response.data) {
         const counts = response.data;

@@ -20,17 +20,16 @@ import {
   borderRadius,
   shadows,
 } from '../../../design-system';
-import { useAuth } from '../../../core/auth';
 import { useParentMessages, useDeleteMessage } from '../hooks/useParentMessages';
 import { ParentMessage } from '../types/parentMessage.types';
 import { ROUTES } from '../../../core/constants';
 import { AppAlert } from '../../../design-system/molecules/AppAlert';
-import { useModuleAccessGuard } from '../../../core/menu';
+import { useModuleAccessGuard, useMenuStudents } from '../../../core/menu';
 
 export const ParentMessagesScreen: React.FC = () => {
   useModuleAccessGuard('parentMessage');
   const navigation = useNavigation<any>();
-  const { students, selectedStudentId, selectStudent } = useAuth();
+  const { students, selectedStudentId, selectStudent } = useMenuStudents('parentMessage');
   const [refreshing, setRefreshing] = useState(false);
 
   // Wrap async selectStudent for ListTemplate compatibility

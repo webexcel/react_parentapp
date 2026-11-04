@@ -45,6 +45,11 @@ export const API_ENDPOINTS = {
     GET_ALL_EXAMS: '/examSchedule/getAllExam',
   },
 
+  // Calendar
+  CALENDAR: {
+    GET: '/calendar/getCalendar',
+  },
+
   // Gallery
   GALLERY: {
     GET_CATEGORIES: '/gallery/getParentCategory',

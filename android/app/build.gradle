@@ -250,6 +250,9 @@ android {
         bsschool {
             dimension "brand"
             applicationId "com.schooltree.bs"
+            // Server requires minVersion 8.0 for this brand (appVersion/check)
+            versionCode 8
+            versionName "8.0"
             resValue "string", "app_name", "B.S Nursery & Primary School Parent"
             buildConfigField "String", "BRAND_ID", "\"bsschool\""
             buildConfigField "String", "AUTH_TYPE", "\"otp\""

@@ -63,7 +63,8 @@ export const DashboardScreen: React.FC = () => {
   const isTimetableEnabled = useIsModuleEnabled('timetable');
   const isParentMessageEnabled = useIsModuleEnabled('parentMessage');
   const isLeaveLetterEnabled = useIsModuleEnabled('leaveLetter');
-  const { getMenu, configured: menusConfigured, refetch: refetchMenus } = useMenuAccess();
+  const { getMenu, configured: menusConfigured, refetch: refetchMenus, studentsWithMenu, isMenuEnabledFor } =
+    useMenuAccess();
 
   // Brand social media links - empty when the brand configured none
   const socialItems = useSocialLinks();
@@ -131,25 +132,39 @@ export const DashboardScreen: React.FC = () => {
     return `${pending} Pending`;
   };
 
-  // Transform API data for attendance display - show all students
+  // Attendance / homework cards list only the children who have that menu.
+  // Colour follows the child's position in the full list so a child keeps the
+  // same colour on every card.
   const attendanceData = useMemo(() => {
-    return students.map((student, index) => ({
+    return studentsWithMenu('attendance').map((student) => ({
       ...student,
       percentage: byStudent[student.id]?.attendancePercentage ?? 0,
       leaveCount: byStudent[student.id]?.leaveCount ?? 0,
-      color: getAvatarColor(index),
+      color: getAvatarColor(students.findIndex((s) => s.id === student.id)),
     }));
-  }, [students, byStudent]);
+  }, [studentsWithMenu, students, byStudent]);
 
-  // Transform API data for homework display - show all students
   const homeworkData = useMemo(() => {
-    return students.map((student, index) => ({
+    return studentsWithMenu('homework').map((student) => ({
       ...student,
       pending: byStudent[student.id]?.homeworkCount ?? 0,
       completed: byStudent[student.id]?.homeworkCompleted ?? 0,
-      color: getAvatarColor(index),
+      color: getAvatarColor(students.findIndex((s) => s.id === student.id)),
     }));
-  }, [students, byStudent]);
+  }, [studentsWithMenu, students, byStudent]);
+
+  // With exactly one permitted child the compact card shows that child's
+  // numbers, which may not be the selected child.
+  const soloAttendance = attendanceData[0];
+  const attSummary = {
+    leaveCount: soloAttendance?.leaveCount ?? 0,
+    todayAttendanceStatus:
+      soloAttendance && soloAttendance.id === selectedStudentId ? summary.todayAttendanceStatus : 'Not Marked',
+  };
+  const hwSummary = {
+    homeworkCount: homeworkData[0]?.pending ?? 0,
+    homeworkCompleted: homeworkData[0]?.completed ?? 0,
+  };
 
   // Transform API latest messages to news format
   const latestNews = useMemo(() => {
@@ -217,7 +232,11 @@ export const DashboardScreen: React.FC = () => {
       icon: 'payments',
       title: 'Fee Details',
       subtitle: 'Invoices & receipts',
-      badge: summary.paymentStatus === 'Payment Due' ? 'PAYMENT DUE' : undefined,
+      // The due status is the selected child's; show it only if that child has Fees.
+      badge:
+        summary.paymentStatus === 'Payment Due' && isMenuEnabledFor('fees', selectedStudentId)
+          ? 'PAYMENT DUE'
+          : undefined,
       badgeColor: '#FEE2E2',
       badgeTextColor: '#DC2626',
       iconBg: '#E0E7FF',
@@ -416,7 +435,7 @@ export const DashboardScreen: React.FC = () => {
           )}
 
           {/* Homework Card - Bigger for 2+ students, compact for 1 */}
-          {isHomeworkEnabled && (students.length >= 2 ? (
+          {isHomeworkEnabled && (homeworkData.length >= 2 ? (
             <View style={styles.summaryCard}>
               <View style={styles.cardHeader}>
                 <Text style={styles.cardLabel}>Homework</Text>
@@ -482,7 +501,7 @@ export const DashboardScreen: React.FC = () => {
           ) : (
             <TouchableOpacity
               style={styles.compactCard}
-              onPress={() => navigation.navigate(ROUTES.HOMEWORK)}
+              onPress={() => navigation.navigate(ROUTES.HOMEWORK, { studentId: homeworkData[0]?.id })}
             >
               <View style={[styles.compactCardIcon, { backgroundColor: '#FFEDD5' }]}>
                 <Icon name="homework" size={20} color="#EA580C" />
@@ -491,22 +510,22 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={styles.cardLabel}>Homework</Text>
                 <Text style={[
                   styles.compactCardValue,
-                  summary.homeworkCount === 0 && summary.homeworkCompleted > 0 && { color: colors.success }
+                  hwSummary.homeworkCount === 0 && hwSummary.homeworkCompleted > 0 && { color: colors.success }
                 ]}>
-                  {getHomeworkStatusText(summary.homeworkCount, summary.homeworkCompleted)}
+                  {getHomeworkStatusText(hwSummary.homeworkCount, hwSummary.homeworkCompleted)}
                 </Text>
               </View>
               {/* Only show badge if there's homework (pending or completed) */}
-              {(summary.homeworkCount > 0 || summary.homeworkCompleted > 0) && (
+              {(hwSummary.homeworkCount > 0 || hwSummary.homeworkCompleted > 0) && (
                 <View style={[
                   styles.compactCardBadge,
-                  { backgroundColor: summary.homeworkCount === 0 ? '#D1FAE5' : '#FFEDD5' }
+                  { backgroundColor: hwSummary.homeworkCount === 0 ? '#D1FAE5' : '#FFEDD5' }
                 ]}>
                   <Text style={[
                     styles.compactCardBadgeText,
-                    { color: summary.homeworkCount === 0 ? colors.success : '#EA580C' }
+                    { color: hwSummary.homeworkCount === 0 ? colors.success : '#EA580C' }
                   ]}>
-                    {summary.homeworkCount === 0 ? 'DONE' : 'PENDING'}
+                    {hwSummary.homeworkCount === 0 ? 'DONE' : 'PENDING'}
                   </Text>
                 </View>
               )}
@@ -514,7 +533,7 @@ export const DashboardScreen: React.FC = () => {
           ))}
 
           {/* Attendance Card - Bigger for 2+ students, compact for 1 */}
-          {isAttendanceEnabled && (students.length >= 2 ? (
+          {isAttendanceEnabled && (attendanceData.length >= 2 ? (
             <View style={styles.summaryCard}>
               <View style={styles.cardHeader}>
                 <Text style={styles.cardLabel}>Attendance</Text>
@@ -575,21 +594,21 @@ export const DashboardScreen: React.FC = () => {
           ) : (
             <TouchableOpacity
               style={styles.compactCard}
-              onPress={() => navigation.navigate(ROUTES.ATTENDANCE, { studentId: selectedStudentId })}
+              onPress={() => navigation.navigate(ROUTES.ATTENDANCE, { studentId: soloAttendance?.id })}
             >
               <View style={[styles.compactCardIcon, { backgroundColor: '#D1FAE5' }]}>
                 <Icon name="attendance" size={20} color="#059669" />
               </View>
               <View style={styles.compactCardContent}>
                 <Text style={styles.cardLabel}>Attendance</Text>
-                <Text style={styles.compactCardValue}>{summary.leaveCount} Absent</Text>
+                <Text style={styles.compactCardValue}>{attSummary.leaveCount} Absent</Text>
               </View>
               <View style={[
                 styles.compactCardBadge,
                 {
-                  backgroundColor: summary.todayAttendanceStatus?.toLowerCase() === 'present'
+                  backgroundColor: attSummary.todayAttendanceStatus?.toLowerCase() === 'present'
                     ? '#D1FAE5'
-                    : summary.todayAttendanceStatus?.toLowerCase() === 'absent'
+                    : attSummary.todayAttendanceStatus?.toLowerCase() === 'absent'
                     ? '#FEE2E2'
                     : '#FEF3C7'
                 }
@@ -597,14 +616,14 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={[
                   styles.compactCardBadgeText,
                   {
-                    color: summary.todayAttendanceStatus?.toLowerCase() === 'present'
+                    color: attSummary.todayAttendanceStatus?.toLowerCase() === 'present'
                       ? '#059669'
-                      : summary.todayAttendanceStatus?.toLowerCase() === 'absent'
+                      : attSummary.todayAttendanceStatus?.toLowerCase() === 'absent'
                       ? '#DC2626'
                       : '#D97706'
                   }
                 ]}>
-                  {summary.todayAttendanceStatus?.toUpperCase() || 'NOT MARKED'}
+                  {attSummary.todayAttendanceStatus?.toUpperCase() || 'NOT MARKED'}
                 </Text>
               </View>
             </TouchableOpacity>
