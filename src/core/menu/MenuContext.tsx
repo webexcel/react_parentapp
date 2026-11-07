@@ -1,5 +1,4 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../api/apiClient';
@@ -54,12 +53,7 @@ interface MenuContextType {
   getMenuLabel: (key: ModuleName) => string;
   /** Force a refetch now (e.g. pull-to-refresh) */
   refetch: () => void;
-  /** Refetch only if the last fetch is older than the throttle window (app resume, dashboard focus) */
-  refreshMenus: () => void;
 }
-
-// Minimum gap between automatic menu refetches.
-const REFRESH_THROTTLE_MS = 15 * 60 * 1000;
 
 // Always shown; not configurable from SchoolTree.
 const ALWAYS_ON: ModuleName[] = ['dashboard', 'profile'];
@@ -117,6 +111,12 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return data;
     },
     enabled: isAuthenticated && !!token,
+    // Fetched once after login / app open; afterwards only via explicit
+    // refetch() (dashboard pull-to-refresh). No automatic refetches.
+    staleTime: Infinity,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     // Re-render this provider only when the data changes, not on isFetching etc.
     notifyOnChangeProps: ['data'],
   });
@@ -126,30 +126,12 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
   queryRef.current = query;
   const enabledRef = useRef(false);
   enabledRef.current = isAuthenticated && !!token;
-  const inFlight = useRef(false);
 
   const refetch = useCallback(() => {
     if (!enabledRef.current) return;
     // Join an in-flight fetch instead of cancelling and restarting it.
     queryRef.current.refetch({ cancelRefetch: false });
   }, []);
-
-  const refreshMenus = useCallback(() => {
-    if (!enabledRef.current || inFlight.current) return;
-    if (Date.now() - lastFetchedAt.current < REFRESH_THROTTLE_MS) return;
-    inFlight.current = true;
-    Promise.resolve(queryRef.current.refetch()).finally(() => {
-      inFlight.current = false;
-    });
-  }, []);
-
-  // Refresh when the app returns to the foreground.
-  useEffect(() => {
-    const sub = AppState.addEventListener('change', (state) => {
-      if (state === 'active') refreshMenus();
-    });
-    return () => sub.remove();
-  }, [refreshMenus]);
 
   // Keep the SAME object unless the menus really changed (cached copy vs.
   // server copy, or an identical refetch) so consumers don't re-render.
@@ -201,9 +183,8 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return fromServer || DEFAULT_LABELS[key] || key;
       },
       refetch,
-      refreshMenus,
     };
-  }, [configured, data, isMenuEnabledFor, selectedStudentId, students, refetch, refreshMenus]);
+  }, [configured, data, isMenuEnabledFor, selectedStudentId, students, refetch]);
 
   return <MenuContext.Provider value={value}>{children}</MenuContext.Provider>;
 };

@@ -94,13 +94,12 @@ export const DashboardScreen: React.FC = () => {
 
   const selectedStudent = students.find((s) => s.id === selectedStudentId) || students[0];
 
-  // Auto-fetch when screen comes into focus. getMenus runs every time; the
-  // provider only re-renders consumers if the response differs from current menus.
+  // Auto-fetch dashboard data when screen comes into focus. Menus are NOT
+  // refetched here: getMenus runs after login / app open and on pull-to-refresh only.
   useFocusEffect(
     useCallback(() => {
       refresh();
-      refetchMenus();
-    }, [refresh, refetchMenus])
+    }, [refresh])
   );
 
   // Show modal only on first load when flash messages are available
