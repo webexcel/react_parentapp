@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, ScrollView, StyleSheet, RefreshControl, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, ScrollView, StyleSheet, RefreshControl, ActivityIndicator, TouchableOpacity, Modal, Pressable } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
@@ -137,12 +137,18 @@ export const MarksScreen: React.FC = () => {
   const classId = selectedStudent?.classId;
 
   // Fetch exams list from API using classId
-  const { exams, isLoading: isLoadingExams, isWaitingForClassId, error: examsError } = useExams(classId);
+  const [selectedYearId, setSelectedYearId] = useState<number | null>(null);
+  const [showYearMenu, setShowYearMenu] = useState(false);
+  const { exams, years, isLoading: isLoadingExams, isWaitingForClassId, error: examsError } = useExams(classId, selectedYearId);
 
-  // Reset exam selection when student/class changes
+  // Reset exam/year selection when student/class changes
   useEffect(() => {
     setSelectedExamIndex(0);
+    setSelectedYearId(null);
   }, [selectedStudentId, classId]);
+
+  // Year shown in the dropdown: the picked one, else the newest (current) year
+  const activeYear = years.find(y => y.Year_Id === selectedYearId) ?? years[0];
 
   // Get selected exam (only if exams exist)
   const selectedExam = exams.length > 0 ? exams[selectedExamIndex] : null;
@@ -213,6 +219,18 @@ export const MarksScreen: React.FC = () => {
         title: 'Marks',
         showBack: true,
         onBack: () => navigation.goBack(),
+        rightComponent: years.length > 0 ? (
+          <TouchableOpacity
+            style={styles.yearButton}
+            onPress={() => setShowYearMenu(true)}
+            activeOpacity={0.7}
+          >
+            <Text variant="caption" semibold style={styles.yearButtonText}>
+              {activeYear?.name}
+            </Text>
+            <Icon name="chevron-down" size={16} color={colors.primary} />
+          </TouchableOpacity>
+        ) : undefined,
       }}
       students={students}
       selectedStudentId={selectedStudentId || ''}
@@ -418,6 +436,41 @@ export const MarksScreen: React.FC = () => {
         )}
       </ScrollView>
 
+      {/* Year dropdown */}
+      <Modal
+        visible={showYearMenu}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowYearMenu(false)}
+      >
+        <Pressable style={styles.yearBackdrop} onPress={() => setShowYearMenu(false)}>
+          <View style={styles.yearMenu}>
+            {years.map(y => (
+              <TouchableOpacity
+                key={y.Year_Id}
+                style={styles.yearItem}
+                onPress={() => {
+                  setSelectedYearId(y.Year_Id);
+                  setSelectedExamIndex(0);
+                  setShowYearMenu(false);
+                }}
+              >
+                <Text
+                  variant="body"
+                  semibold={y.Year_Id === activeYear?.Year_Id}
+                  style={y.Year_Id === activeYear?.Year_Id ? { color: colors.primary } : undefined}
+                >
+                  {y.name}
+                </Text>
+                {y.Year_Id === activeYear?.Year_Id && (
+                  <Icon name="checkmark" size={16} color={colors.primary} />
+                )}
+              </TouchableOpacity>
+            ))}
+          </View>
+        </Pressable>
+      </Modal>
+
       {/* Report Card WebView Modal */}
       <ReportCardWebView
         visible={showReportCard}
@@ -469,6 +522,44 @@ const styles = StyleSheet.create({
   reportCardButtonText: {
     color: colors.primary,
     marginHorizontal: spacing.sm,
+  },
+  yearButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minWidth: 110,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1.5,
+    borderColor: colors.primary,
+    backgroundColor: colors.primarySoft,
+  },
+  yearButtonText: {
+    color: colors.primary,
+    fontSize: 14,
+    marginRight: spacing.sm,
+  },
+  yearBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.25)',
+    alignItems: 'flex-end',
+    paddingTop: 70,
+    paddingRight: spacing.base,
+  },
+  yearMenu: {
+    minWidth: 150,
+    backgroundColor: colors.surfaceLight,
+    borderRadius: borderRadius.lg,
+    paddingVertical: spacing.xs,
+    ...shadows.sm,
+  },
+  yearItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.base,
+    paddingVertical: spacing.md,
   },
   sectionTitle: {
     paddingHorizontal: spacing.base,

@@ -53,6 +53,13 @@ export interface ExamListResponse {
 // selectExamName API types
 export interface SelectExamNameRequest {
   class_Id: number;
+  /** Optional academic year; backend defaults to the current year. */
+  Year_Id?: number;
+}
+
+export interface ExamYear {
+  Year_Id: number;
+  name: string;
 }
 
 export interface ExamNameItem {
@@ -68,6 +75,8 @@ export interface SelectExamNameResponse {
   status: boolean;
   message: string;
   examdata: ExamNameItem[];
+  /** Years with published exams, newest first (current year on top). */
+  years?: ExamYear[];
 }
 
 // Report Card types

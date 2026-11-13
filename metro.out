@@ -22,49 +22,60 @@ Starting dev server on http://localhost:8081
               Fast - Scalable - Integrated
 
 
- INFO  Dev server ready. Press Ctrl+C to exit.
- INFO  Interactive mode is not supported in this environment
- BUNDLE  ./index.js ░░░░░░░░░░░░░░░░ 0.0% (0/1)
- BUNDLE  ./index.js ░░░░░░░░░░░░░░░░ 1.0% (1/1)
- BUNDLE  ./index.js ▓▓▓▓▓▓░░░░░░░░░░ 40.5% (9/101)
- BUNDLE  ./index.js ▓▓▓▓▓▓░░░░░░░░░░ 40.5% (26/154)
- BUNDLE  ./index.js ▓▓▓▓▓▓░░░░░░░░░░ 40.5% (74/217)
- BUNDLE  ./index.js ▓▓▓▓▓▓░░░░░░░░░░ 40.5% (116/325)
- BUNDLE  ./index.js ▓▓▓▓▓▓░░░░░░░░░░ 40.5% (158/395)
- BUNDLE  ./index.js ▓▓▓▓▓▓░░░░░░░░░░ 40.5% (212/467)
- BUNDLE  ./index.js ▓▓▓▓▓▓░░░░░░░░░░ 40.5% (273/540)
- BUNDLE  ./index.js ▓▓▓▓▓▓░░░░░░░░░░ 40.5% (321/667)
- BUNDLE  ./index.js ▓▓▓▓▓▓░░░░░░░░░░ 40.5% (388/715)
- BUNDLE  ./index.js ▓▓▓▓▓▓░░░░░░░░░░ 40.5% (469/756)
- BUNDLE  ./index.js ▓▓▓▓▓▓░░░░░░░░░░ 42.7% (522/814)
- BUNDLE  ./index.js ▓▓▓▓▓▓▓░░░░░░░░░ 46.1% (590/869)
- BUNDLE  ./index.js ▓▓▓▓▓▓▓▓░░░░░░░░ 51.2% (640/926)
- BUNDLE  ./index.js ▓▓▓▓▓▓▓▓░░░░░░░░ 51.7% (682/956)
- BUNDLE  ./index.js ▓▓▓▓▓▓▓▓░░░░░░░░ 52.8% (742/1035)
- BUNDLE  ./index.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 56.5% (790/1051)
- BUNDLE  ./index.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 56.7% (794/1085)
- BUNDLE  ./index.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 56.7% (847/1166)
- BUNDLE  ./index.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 57.6% (910/1208)
- BUNDLE  ./index.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 66.8% (1017/1251)
- BUNDLE  ./index.js ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 71.9% (1100/1303)
- BUNDLE  ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓░░░░ 77.0% (1185/1350)
- BUNDLE  ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 86.3% (1291/1390)
- BUNDLE  ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 95.3% (1394/1440)
- BUNDLE  ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 96.1% (1461/1490)
- BUNDLE  ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.5% (1527/1531)
- BUNDLE  ./index.js 
  INFO  [1m[7m💡 JavaScript logs have moved![22m They can now be viewed in React Native DevTools. Tip: Type [1mj[22m in the terminal to open.[27m
- BUNDLE  src\core\storage/secureStorage.ts ▓▓▓▓▓▓▓▓▓░░░░░░░ 56.3% (110/223)
- BUNDLE  src\core\storage/secureStorage.ts 
- BUNDLE  ./index.js ░░░░░░░░░░░░░░░░ 0.0% (0/1)
- BUNDLE  ./index.js 
- BUNDLE  src\core\storage/secureStorage.ts 
- BUNDLE  ./index.js ░░░░░░░░░░░░░░░░ 0.0% (0/1)
- BUNDLE  ./index.js 
- BUNDLE  src\core\storage/secureStorage.ts 
- INFO  Launching DevTools...
+ INFO  Dev server ready. Press Ctrl+C to exit.
+ INFO  Key commands available:
 
+   r  - reload app(s)
+   d  - open Dev Menu
+   j  - open DevTools
+
+ BUNDLE  ./index.js ░░░░░░░░░░░░░░░░ 0.0% (0/1)
+transform[stderr]: (node:30692) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:70936) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:58380) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:160412) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:70488) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:117488) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+ BUNDLE  ./index.js ▓▓▓▓░░░░░░░░░░░░ 29.0% (32/165)
+transform[stderr]: (node:125500) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:85704) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+ BUNDLE  ./index.js ▓▓▓▓░░░░░░░░░░░░ 29.0% (332/683)
+ BUNDLE  ./index.js ▓▓▓▓▓▓▓░░░░░░░░░ 48.2% (617/891)
+ BUNDLE  ./index.js ▓▓▓▓▓▓▓▓░░░░░░░░ 55.4% (784/1064)
+ BUNDLE  ./index.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 57.2% (822/1117)
+ BUNDLE  ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓░░░░ 76.4% (1212/1387)
+ BUNDLE  ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (1578/1579)
+ BUNDLE  ./index.js 
+ MAP  ./index.js 
+ BUNDLE  src\core\storage/secureStorage.ts 
+ MAP  src\core\storage/secureStorage.ts 
+ BUNDLE  src\core\auth/authService.ts 
+ MAP  src\core\auth/authService.ts 
+ BUNDLE  ./index.js ░░░░░░░░░░░░░░░░ 0.0% (0/1)
+ BUNDLE  ./index.js 
+ BUNDLE  src\core\storage/secureStorage.ts ░░░░░░░░░░░░░░░░ 0.0% (0/1)
+ BUNDLE  src\core\storage/secureStorage.ts 
+ BUNDLE  src\core\auth/authService.ts 
  MAP  ./index.js ░░░░░░░░░░░░░░░░ 0.0% (0/1)
  MAP  ./index.js 
+ BUNDLE  ./index.js ░░░░░░░░░░░░░░░░ 0.0% (0/1)
+ BUNDLE  ./index.js 
+ BUNDLE  src\core\storage/secureStorage.ts ░░░░░░░░░░░░░░░░ 0.0% (0/1)
+ BUNDLE  src\core\storage/secureStorage.ts 
+ BUNDLE  src\core\auth/authService.ts 
+ MAP  ./index.js ░░░░░░░░░░░░░░░░ 0.0% (0/1)
+ MAP  ./index.js 
+ MAP  src\modules\marks\hooks/useExams.ts ░░░░░░░░░░░░░░░░ 0.0% (0/1)
+ MAP  src\modules\marks\hooks/useExams.ts 
+ MAP  src\modules\marks\screens/MarksScreen.tsx 
  MAP  src\modules\marks\screens/MarksScreen.tsx ░░░░░░░░░░░░░░░░ 0.0% (0/1)
  MAP  src\modules\marks\screens/MarksScreen.tsx 
