@@ -49,6 +49,9 @@ export interface BrandModules {
   profile: ModuleConfig;
   parentMessage: ModuleConfig;
   leaveLetter: ModuleConfig;
+  /** Timed MCQ tests. Optional: brands without it fall back to disabled; the
+   *  school turns it on per class/student via the 'mcq' parent menu. */
+  mcq?: ModuleConfig;
 }
 
 // Splash screen configuration
@@ -163,6 +166,7 @@ const defaultFeatures: BrandFeatures = {
     profile: { enabled: true },
     parentMessage: { enabled: true },
     leaveLetter: { enabled: true },
+    mcq: { enabled: false },
   },
   notifications: {
     enabled: true,

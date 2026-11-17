@@ -119,4 +119,13 @@ export const API_ENDPOINTS = {
   PARENT_MENU: {
     GET_MENUS: '/parentMenu/getMenus',
   },
+
+  // Timed MCQ tests (server-side timer and scoring)
+  MCQ: {
+    LIST: '/mcq/exam/list',
+    START: '/mcq/exam/start',
+    ANSWER: '/mcq/exam/answer',
+    FINISH: '/mcq/exam/finish',
+    RESULT: '/mcq/exam/result',
+  },
 } as const;

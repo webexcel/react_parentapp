@@ -197,6 +197,9 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({ visible, onClose }) => {
     push(isModuleEnabled('leaveLetter'), {
       id: 'leaveLetter', label: 'Leave Letter', icon: 'eventNote', route: ROUTES.LEAVE_LETTER,
     });
+    push(isModuleEnabled('mcq'), {
+      id: 'mcq', label: 'MCQ Tests', icon: 'quiz', route: ROUTES.MCQ_TESTS,
+    });
     push(isModuleEnabled('chat'), {
       id: 'chat', label: 'Chat', icon: 'chat', route: ROUTES.CHAT, isTab: true,
     });

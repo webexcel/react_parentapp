@@ -35,6 +35,11 @@ export const ROUTES = {
   // Leave Letter
   LEAVE_LETTER: 'LeaveLetter',
 
+  // MCQ tests
+  MCQ_TESTS: 'McqTests',
+  MCQ_EXAM: 'McqExam',
+  MCQ_RESULT: 'McqResult',
+
   // Change Password
   CHANGE_PASSWORD: 'ChangePassword',
 } as const;

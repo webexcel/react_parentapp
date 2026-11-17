@@ -10,6 +10,7 @@ import {
   Dimensions,
   ActivityIndicator,
   Image,
+  AppState,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -22,8 +23,9 @@ import {
 } from '../../../design-system';
 import { useAuth } from '../../../core/auth';
 import { ROUTES } from '../../../core/constants';
-import { useDashboard } from '../hooks';
-import { FlashMessageModal } from '../components';
+import { useDashboard, useFlashMessage, useFlashSeen, flashIdOf } from '../hooks';
+import { FlashMessageModal, FlashStatusStrip } from '../components';
+import type { FlashMessage } from '../types/dashboard.types';
 import { useIsModuleEnabled, useSocialLinks } from '../../../core/brand/featureFlags';
 import { useMenuAccess } from '../../../core/menu';
 import type { ModuleName } from '../../../core/brand/BrandContext';
@@ -48,8 +50,15 @@ export const DashboardScreen: React.FC = () => {
   // menus drive the tiles, drawer and tabs.
   const canSwitchStudent = students.length > 1;
   const [refreshing, setRefreshing] = React.useState(false);
+  // Flash messages: status strip + popup (same behaviour as the teacher app).
+  // flashAutoQueue = unread messages auto-playing 5 s each; null = opened by hand.
   const [showFlashModal, setShowFlashModal] = React.useState(false);
-  const hasShownModalRef = React.useRef(false);
+  const [flashIndex, setFlashIndex] = React.useState(0);
+  const [flashAutoQueue, setFlashAutoQueue] = React.useState<FlashMessage[] | null>(null);
+  const showFlashRef = React.useRef(false);
+  showFlashRef.current = showFlashModal;
+  const { seen: flashSeen, markSeen: markFlashSeen, loadSeen: loadFlashSeen } = useFlashSeen();
+  const { refetch: refetchFlash } = useFlashMessage();
 
   // Feature flags - check which modules are enabled
   const isMarksEnabled = useIsModuleEnabled('marks');
@@ -63,6 +72,7 @@ export const DashboardScreen: React.FC = () => {
   const isTimetableEnabled = useIsModuleEnabled('timetable');
   const isParentMessageEnabled = useIsModuleEnabled('parentMessage');
   const isLeaveLetterEnabled = useIsModuleEnabled('leaveLetter');
+  const isMcqEnabled = useIsModuleEnabled('mcq');
   const { getMenu, configured: menusConfigured, refetch: refetchMenus, studentsWithMenu, isMenuEnabledFor } =
     useMenuAccess();
 
@@ -77,7 +87,6 @@ export const DashboardScreen: React.FC = () => {
     summary,
     byStudent,
     flashMessages,
-    hasFlashMessage,
     latestMessages,
     isLoading,
     isFetching,
@@ -102,13 +111,36 @@ export const DashboardScreen: React.FC = () => {
     }, [refresh])
   );
 
-  // Show modal only on first load when flash messages are available
+  // Unread flash messages pop up one by one (5 s each) when the app opens
+  // after login and whenever it comes back from the background. Anything
+  // shown is marked seen on this device, so it never auto-pops again.
+  const showUnreadFlash = useCallback(async () => {
+    if (showFlashRef.current) return;
+    const [{ data }, seenIds] = await Promise.all([refetchFlash(), loadFlashSeen()]);
+    const unread = ((data as FlashMessage[] | undefined) ?? []).filter((m) => !seenIds.includes(flashIdOf(m)));
+    if (unread.length === 0 || showFlashRef.current) return;
+    setFlashAutoQueue(unread);
+    setFlashIndex(0);
+    setShowFlashModal(true);
+  }, [refetchFlash, loadFlashSeen]);
+
   useEffect(() => {
-    if (hasFlashMessage && flashMessages.length > 0 && !hasShownModalRef.current) {
-      setShowFlashModal(true);
-      hasShownModalRef.current = true;
-    }
-  }, [hasFlashMessage, flashMessages.length]);
+    showUnreadFlash();
+    let prev = AppState.currentState;
+    const sub = AppState.addEventListener('change', (state) => {
+      if (prev === 'background' && state === 'active') showUnreadFlash();
+      prev = state;
+    });
+    return () => sub.remove();
+    // Mount only: the listener calls the latest showUnreadFlash via closure-safe deps.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const openFlash = useCallback((index: number) => {
+    setFlashAutoQueue(null);
+    setFlashIndex(index);
+    setShowFlashModal(true);
+  }, []);
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -272,6 +304,16 @@ export const DashboardScreen: React.FC = () => {
       iconColor: '#16A34A',
       onPress: () => navigation.navigate(ROUTES.LEAVE_LETTER),
     },
+    {
+      id: 'mcq',
+      enabled: isMcqEnabled,
+      icon: 'quiz',
+      title: 'MCQ Tests',
+      subtitle: 'Take online tests',
+      iconBg: '#EDE7F6',
+      iconColor: '#5E35B1',
+      onPress: () => navigation.navigate(ROUTES.MCQ_TESTS),
+    },
   ];
 
   // Filter to only show enabled modules. A school configured in SchoolTree
@@ -286,15 +328,12 @@ export const DashboardScreen: React.FC = () => {
 
   const displayName = 'Parent';
 
-  // Handle flash message dismiss
-  const handleFlashMessageDismiss = useCallback((messageId: number) => {
-    // Could implement local dismissal state or API call
-  }, []);
-
-  // Handle modal close
   const handleCloseModal = useCallback(() => {
     setShowFlashModal(false);
+    setFlashAutoQueue(null);
   }, []);
+
+  const handleFlashShown = useCallback((m: FlashMessage) => markFlashSeen(flashIdOf(m)), [markFlashSeen]);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -313,17 +352,6 @@ export const DashboardScreen: React.FC = () => {
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Dashboard</Text>
         </View>
-        <View style={styles.headerRight}>
-          <TouchableOpacity
-            style={styles.notificationButton}
-            onPress={() => hasFlashMessage && setShowFlashModal(true)}
-          >
-            <Icon name="notification" size={24} color={colors.textSecondary} />
-            {(summary.circularsCount > 0 || hasFlashMessage) && (
-              <View style={styles.notificationBadge} />
-            )}
-          </TouchableOpacity>
-        </View>
       </View>
 
       <ScrollView
@@ -339,12 +367,14 @@ export const DashboardScreen: React.FC = () => {
           />
         }
       >
-        {/* Flash Message Modal */}
+        {/* Flash message popup: auto-plays unread ones, or all when opened by hand */}
         <FlashMessageModal
-          messages={flashMessages}
+          messages={flashAutoQueue ?? flashMessages}
           visible={showFlashModal}
+          initialIndex={flashIndex}
+          autoPlay={!!flashAutoQueue}
           onClose={handleCloseModal}
-          onDismiss={handleFlashMessageDismiss}
+          onShow={handleFlashShown}
         />
 
         {/* Hero Section */}
@@ -399,6 +429,14 @@ export const DashboardScreen: React.FC = () => {
             </View>
           </View>
         </View>
+
+        {/* Flash messages as WhatsApp-style status bubbles (tap -> popup) */}
+        <FlashStatusStrip
+          messages={flashMessages}
+          seen={flashSeen}
+          onOpen={openFlash}
+          popupOpen={showFlashModal}
+        />
 
         {/* Summary Cards */}
         <View style={styles.cardsContainer}>
@@ -784,26 +822,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     color: colors.textPrimary,
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  notificationButton: {
-    padding: spacing.xs,
-    position: 'relative',
-  },
-  notificationBadge: {
-    position: 'absolute',
-    top: 4,
-    right: 4,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#EF4444',
-    borderWidth: 1.5,
-    borderColor: colors.backgroundLight,
   },
   scrollView: {
     flex: 1,

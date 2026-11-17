@@ -32,6 +32,7 @@ import {MarksScreen} from '../modules/marks';
 import {ReportCardScreen} from '../modules/reportCard';
 import {ParentMessagesScreen, SendMessageScreen} from '../modules/parentMessage';
 import {LeaveLetterScreen} from '../modules/leaveLetter';
+import {McqTestsScreen, McqExamScreen, McqResultScreen} from '../modules/mcq';
 
 // Stack and Tab navigators
 const AuthStack = createNativeStackNavigator();
@@ -252,6 +253,16 @@ const MainNavigator = () => {
         name={ROUTES.LEAVE_LETTER}
         component={LeaveLetterScreen}
       />
+
+      {/* MCQ tests - visibility controlled by the 'mcq' parent menu */}
+      <MainStack.Screen name={ROUTES.MCQ_TESTS} component={McqTestsScreen} />
+      {/* The exam must not be swiped away: leaving is handled (and ends the test) in the screen */}
+      <MainStack.Screen
+        name={ROUTES.MCQ_EXAM}
+        component={McqExamScreen}
+        options={{gestureEnabled: false, animation: 'slide_from_bottom'}}
+      />
+      <MainStack.Screen name={ROUTES.MCQ_RESULT} component={McqResultScreen} />
 
       {/* Notification Settings - Always available (part of profile) */}
       <MainStack.Screen

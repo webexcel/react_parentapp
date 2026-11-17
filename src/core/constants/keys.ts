@@ -10,6 +10,8 @@ export const STORAGE_KEYS = {
   ONBOARDING_COMPLETE: '@onboarding_complete',
   NOTIFICATION_SETTINGS: '@notification_settings',
   PARENT_MENUS: '@parent_menus',
+  /** Flash message ids already shown on this device (status ring + auto-popup). */
+  FLASH_SEEN_IDS: '@flash_seen_ids',
 } as const;
 
 // Query Keys for React Query
@@ -30,4 +32,5 @@ export const QUERY_KEYS = {
   GALLERY: 'gallery',
   LEAVE_LETTER: 'leaveLetter',
   TIMETABLE: 'timetable',
+  MCQ_TESTS: 'mcqTests',
 } as const;
