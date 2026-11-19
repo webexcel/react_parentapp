@@ -7,6 +7,7 @@ import {
   Badge,
   Icon,
   EmptyState,
+  AttachmentSection,
   colors,
   spacing,
   borderRadius,
@@ -15,6 +16,7 @@ import {
 import { useExamSchedule } from '../hooks/useExamSchedule';
 import { ExamScheduleItem } from '../types/examSchedule.types';
 import { useModuleAccessGuard, useMenuStudents } from '../../../core/menu';
+import { parseAttachments } from '../../../core/utils/attachments';
 
 // Subject color mapping
 const SUBJECT_COLORS: { [key: string]: string } = {
@@ -32,7 +34,11 @@ const SUBJECT_COLORS: { [key: string]: string } = {
   Computer: '#a855f7',
 };
 
-const getSubjectColor = (subject: string): string => {
+const getSubjectColor = (subject?: string | null): string => {
+  // Image-only schedules (uploaded from the teacher app) have no subject.
+  if (!subject) {
+    return '#6b7280';
+  }
   // Check for exact match first
   if (SUBJECT_COLORS[subject]) {
     return SUBJECT_COLORS[subject];
@@ -182,7 +188,7 @@ export const ExamScheduleScreen: React.FC = () => {
           )}
           <View style={styles.examHeader}>
             <Text variant="body" semibold style={[isPast && styles.textFaded]}>
-              {item.subject}
+              {item.subject || (item.imgfile ? 'Exam Schedule' : '')}
             </Text>
             <Badge
               label={daysUntil}
@@ -206,6 +212,11 @@ export const ExamScheduleScreen: React.FC = () => {
                 Syllabus: {item.portion}
               </Text>
             </View>
+          )}
+
+          {/* Schedule image uploaded by the school (teacher app "Upload" tab). */}
+          {!!item.imgfile && (
+            <AttachmentSection attachments={parseAttachments(item.imgfile)} variant="compact" />
           )}
         </View>
       </View>

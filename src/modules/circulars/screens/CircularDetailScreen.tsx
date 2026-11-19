@@ -277,42 +277,29 @@ export const CircularDetailScreen: React.FC = () => {
     try {
       setDownloadingId(attachment.id);
       const fileName = attachment.url.split('/').pop() || `document_${Date.now()}`;
-      const dirs = ReactNativeBlobUtil.fs.dirs;
-      const filePath = `${dirs.DownloadDir}/${fileName}`;
+      // Download into the app's own cache, which the file viewer may share
+      // with other apps. Android's DownloadManager ignores a custom path and
+      // keeps the file in its private cache, so the viewer could not open it
+      // ("Failed to find configured root") — every .doc/.xls failed.
+      const filePath = `${ReactNativeBlobUtil.fs.dirs.CacheDir}/${fileName}`;
 
       const res = await ReactNativeBlobUtil.config({
         fileCache: true,
         path: filePath,
-        addAndroidDownloads: {
-          useDownloadManager: true,
-          notification: true,
-          title: fileName,
-          description: 'Downloading attachment...',
-          mime: getMimeType(fileName),
-          mediaScannable: true,
-        },
       }).fetch('GET', attachment.url);
 
-      const downloadedPath = res.path();
-      await FileViewer.open(downloadedPath, { showOpenWithDialog: true });
+      const status = res.info().status;
+      if (status < 200 || status >= 300) {
+        throw new Error(`HTTP ${status}`);
+      }
+
+      await FileViewer.open(res.path(), { showOpenWithDialog: true });
     } catch {
       AppAlert.alert('Error', 'Could not download or open the file.');
     } finally {
       setDownloadingId(null);
     }
   }, []);
-
-  const getMimeType = (fileName: string): string => {
-    const ext = fileName.split('.').pop()?.toLowerCase() || '';
-    const mimeMap: Record<string, string> = {
-      doc: 'application/msword',
-      docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      xls: 'application/vnd.ms-excel',
-      xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      pdf: 'application/pdf',
-    };
-    return mimeMap[ext] || 'application/octet-stream';
-  };
 
   const handleAttachmentPress = useCallback((attachment: Attachment) => {
     switch (attachment.type) {

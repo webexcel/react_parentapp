@@ -33,6 +33,7 @@ import {ReportCardScreen} from '../modules/reportCard';
 import {ParentMessagesScreen, SendMessageScreen} from '../modules/parentMessage';
 import {LeaveLetterScreen} from '../modules/leaveLetter';
 import {McqTestsScreen, McqExamScreen, McqResultScreen} from '../modules/mcq';
+import {StarsScreen} from '../modules/stars';
 
 // Stack and Tab navigators
 const AuthStack = createNativeStackNavigator();
@@ -263,6 +264,9 @@ const MainNavigator = () => {
         options={{gestureEnabled: false, animation: 'slide_from_bottom'}}
       />
       <MainStack.Screen name={ROUTES.MCQ_RESULT} component={McqResultScreen} />
+
+      {/* Star Rewards - visibility controlled by the 'stars' parent menu */}
+      <MainStack.Screen name={ROUTES.STARS} component={StarsScreen} />
 
       {/* Notification Settings - Always available (part of profile) */}
       <MainStack.Screen

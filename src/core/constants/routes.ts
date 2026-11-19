@@ -40,6 +40,9 @@ export const ROUTES = {
   MCQ_EXAM: 'McqExam',
   MCQ_RESULT: 'McqResult',
 
+  // Star Rewards
+  STARS: 'Stars',
+
   // Change Password
   CHANGE_PASSWORD: 'ChangePassword',
 } as const;

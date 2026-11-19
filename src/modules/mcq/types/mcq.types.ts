@@ -31,6 +31,8 @@ export interface McqTest {
   state: McqTestState;
   /** The teacher allowed this test again; qus_date is then the retake date. */
   retake?: boolean;
+  /** Star Rewards: taking this test earns stars (finish + score). */
+  stars?: boolean;
   result: McqResultSummary | null;
 }
 

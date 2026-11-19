@@ -51,7 +51,8 @@ export const McqTestsScreen: React.FC = () => {
           '• The timer starts as soon as you begin and cannot be paused.\n' +
           '• The test finishes automatically when the time runs out.\n' +
           '• Leaving this screen or the app (Home, another app, a call) ends the test immediately.\n' +
-          '• You can take this test only once.',
+          '• You can take this test only once.' +
+          (t.stars ? '\n\n⭐ Finish it to earn stars — and more stars for a good score!' : ''),
         [
           {text: 'Not now', style: 'cancel'},
           {text: 'Start test', onPress: () => navigation.navigate(ROUTES.MCQ_EXAM, params)},
@@ -88,6 +89,11 @@ export const McqTestsScreen: React.FC = () => {
             {item.retake && (
               <View style={[styles.badge, styles.retakeBadge]}>
                 <Text variant="caption" style={{color: '#6A1B9A', fontWeight: '700'}}>Retake</Text>
+              </View>
+            )}
+            {item.stars && (item.state === 'AVAILABLE' || item.state === 'UPCOMING') && (
+              <View style={[styles.badge, styles.starBadge]}>
+                <Text variant="caption" style={{color: '#B45309', fontWeight: '700'}}>★ Earn stars</Text>
               </View>
             )}
             {item.result?.results_published && item.result.correct !== undefined && (
@@ -155,5 +161,6 @@ const styles = StyleSheet.create({
   badge: {borderRadius: borderRadius.full, paddingHorizontal: spacing.sm, paddingVertical: 2},
   score: {marginLeft: spacing.sm},
   retakeBadge: {backgroundColor: '#F3E5F5', marginLeft: spacing.xs},
+  starBadge: {backgroundColor: '#FFF7E6', marginLeft: spacing.xs},
   startBtn: {backgroundColor: colors.primary, borderRadius: borderRadius.full, paddingHorizontal: spacing.md, paddingVertical: spacing.xs + 2, marginLeft: spacing.sm},
 });

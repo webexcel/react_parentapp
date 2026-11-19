@@ -52,6 +52,9 @@ export interface BrandModules {
   /** Timed MCQ tests. Optional: brands without it fall back to disabled; the
    *  school turns it on per class/student via the 'mcq' parent menu. */
   mcq?: ModuleConfig;
+  /** Star Rewards. Optional: off unless the school enables it in SchoolTree
+   *  (School Settings → Stars), which activates the 'stars' parent menu. */
+  stars?: ModuleConfig;
 }
 
 // Splash screen configuration
@@ -167,6 +170,7 @@ const defaultFeatures: BrandFeatures = {
     parentMessage: { enabled: true },
     leaveLetter: { enabled: true },
     mcq: { enabled: false },
+    stars: { enabled: false },
   },
   notifications: {
     enabled: true,
@@ -216,7 +220,9 @@ const transformJsonConfig = (jsonConfig: any): BrandConfig => ({
   api: {
     // Allow API_BASE_URL override from .env for local development (e.g., localhost:3005)
     // Otherwise use the URL from brand.config.json
-    baseUrl: Config.API_BASE_URL || jsonConfig.api.baseUrl,
+    // react-native-config is a no-op under the New Architecture, so debug builds
+    // fall back to the local Mob_Teacher_node (needs `adb reverse tcp:3005 tcp:3005`).
+    baseUrl: Config.API_BASE_URL || (__DEV__ ? 'http://localhost:3005/api' : jsonConfig.api.baseUrl),
     databaseName: jsonConfig.api.databaseName,
   },
   firebase: jsonConfig.firebase,

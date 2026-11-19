@@ -200,6 +200,9 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({ visible, onClose }) => {
     push(isModuleEnabled('mcq'), {
       id: 'mcq', label: 'MCQ Tests', icon: 'quiz', route: ROUTES.MCQ_TESTS,
     });
+    push(isModuleEnabled('stars'), {
+      id: 'stars', label: 'Star Rewards', icon: 'star', route: ROUTES.STARS,
+    });
     push(isModuleEnabled('chat'), {
       id: 'chat', label: 'Chat', icon: 'chat', route: ROUTES.CHAT, isTab: true,
     });

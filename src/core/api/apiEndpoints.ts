@@ -128,4 +128,11 @@ export const API_ENDPOINTS = {
     FINISH: '/mcq/exam/finish',
     RESULT: '/mcq/exam/result',
   },
+
+  // Star Rewards (configured in SchoolTree → School Settings → Stars)
+  STARS: {
+    SUMMARY: '/stars/summary',
+    HISTORY: '/stars/history',
+    LEADERBOARD: '/stars/leaderboard',
+  },
 } as const;

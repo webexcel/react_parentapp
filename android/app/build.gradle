@@ -1182,6 +1182,10 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+    // Animated GIF attachments (circulars / personalized messages). Without it
+    // Android's image pipeline shows only the first frame. Keep in step with
+    // the fresco version React Native ships (node_modules/react-native/gradle/libs.versions.toml).
+    implementation("com.facebook.fresco:animated-gif:3.6.0")
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")

@@ -74,6 +74,7 @@ const DEFAULT_LABELS: Record<ModuleName, string> = {
   parentMessage: 'Write to School',
   leaveLetter: 'Leave Letter',
   mcq: 'MCQ Tests',
+  stars: 'Star Rewards',
 };
 
 const MenuContext = createContext<MenuContextType | undefined>(undefined);

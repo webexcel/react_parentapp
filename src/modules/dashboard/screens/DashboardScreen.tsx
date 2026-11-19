@@ -31,6 +31,7 @@ import { useMenuAccess } from '../../../core/menu';
 import type { ModuleName } from '../../../core/brand/BrandContext';
 import { useCirculars } from '../../circulars/hooks/useCirculars';
 import { useDrawer } from '../../../app/components';
+import { StarSummaryCard, StarFamilyCard } from '../../stars';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -73,6 +74,9 @@ export const DashboardScreen: React.FC = () => {
   const isParentMessageEnabled = useIsModuleEnabled('parentMessage');
   const isLeaveLetterEnabled = useIsModuleEnabled('leaveLetter');
   const isMcqEnabled = useIsModuleEnabled('mcq');
+  const isStarsEnabled = useIsModuleEnabled('stars');
+  // Bumped on focus / pull-to-refresh so the star card refetches with the rest.
+  const [starsRefreshKey, setStarsRefreshKey] = React.useState(0);
   const { getMenu, configured: menusConfigured, refetch: refetchMenus, studentsWithMenu, isMenuEnabledFor } =
     useMenuAccess();
 
@@ -108,6 +112,7 @@ export const DashboardScreen: React.FC = () => {
   useFocusEffect(
     useCallback(() => {
       refresh();
+      setStarsRefreshKey((k) => k + 1);
     }, [refresh])
   );
 
@@ -145,6 +150,7 @@ export const DashboardScreen: React.FC = () => {
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     refetchMenus();
+    setStarsRefreshKey((k) => k + 1);
     await refresh();
     setRefreshing(false);
   }, [refresh, refetchMenus]);
@@ -183,6 +189,13 @@ export const DashboardScreen: React.FC = () => {
       color: getAvatarColor(students.findIndex((s) => s.id === student.id)),
     }));
   }, [studentsWithMenu, students, byStudent]);
+
+  const starsData = useMemo(() => {
+    return studentsWithMenu('stars').map((student) => ({
+      ...student,
+      color: getAvatarColor(students.findIndex((s) => s.id === student.id)),
+    }));
+  }, [studentsWithMenu, students]);
 
   // With exactly one permitted child the compact card shows that child's
   // numbers, which may not be the selected child.
@@ -313,6 +326,16 @@ export const DashboardScreen: React.FC = () => {
       iconBg: '#EDE7F6',
       iconColor: '#5E35B1',
       onPress: () => navigation.navigate(ROUTES.MCQ_TESTS),
+    },
+    {
+      id: 'stars',
+      enabled: isStarsEnabled,
+      icon: 'star',
+      title: 'Star Rewards',
+      subtitle: 'Stars & leaderboard',
+      iconBg: '#FFF7E6',
+      iconColor: '#F59E0B',
+      onPress: () => navigation.navigate(ROUTES.STARS),
     },
   ];
 
@@ -665,6 +688,23 @@ export const DashboardScreen: React.FC = () => {
               </View>
             </TouchableOpacity>
           ))}
+
+          {/* Star Rewards — one column per child (2+ children with the stars
+              menu), else the single child's card. Hidden when the school has
+              stars off. */}
+          {isStarsEnabled && (starsData.length >= 2 ? (
+            <StarFamilyCard
+              students={starsData}
+              refreshKey={starsRefreshKey}
+              onPressStudent={(studentId) => navigation.navigate(ROUTES.STARS, { studentId })}
+            />
+          ) : starsData.length === 1 ? (
+            <StarSummaryCard
+              studentId={starsData[0].id}
+              refreshKey={starsRefreshKey}
+              onPress={() => navigation.navigate(ROUTES.STARS, { studentId: starsData[0].id })}
+            />
+          ) : null)}
         </View>
 
 

@@ -33,4 +33,6 @@ export const QUERY_KEYS = {
   LEAVE_LETTER: 'leaveLetter',
   TIMETABLE: 'timetable',
   MCQ_TESTS: 'mcqTests',
+  STARS_SUMMARY: 'starsSummary',
+  STARS_LEADERBOARD: 'starsLeaderboard',
 } as const;
