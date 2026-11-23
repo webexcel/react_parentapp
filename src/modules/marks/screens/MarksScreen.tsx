@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, ScrollView, StyleSheet, RefreshControl, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, ScrollView, StyleSheet, RefreshControl, ActivityIndicator, TouchableOpacity, Modal, Pressable } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
@@ -12,11 +12,13 @@ import {
   borderRadius,
   shadows,
 } from '../../../design-system';
-import { useAuth } from '../../../core/auth';
 import { useMarks } from '../hooks/useMarks';
 import { useExams } from '../hooks/useExams';
 import { useReportCard } from '../hooks/useReportCard';
 import { ReportCardWebView } from '../components/ReportCardWebView';
+import { useReportCardTypes } from '../../reportCard';
+import { ROUTES } from '../../../core/constants';
+import { useModuleAccessGuard, useMenuStudents } from '../../../core/menu';
 
 // Subject color mapping (lowercase keys for case-insensitive matching)
 const SUBJECT_COLORS: { [key: string]: string } = {
@@ -72,6 +74,22 @@ const COLOR_PALETTE = [
 const dynamicColorCache: { [key: string]: string } = {};
 let colorIndex = 0;
 
+// Subject names come straight from the subject master ("II_LANGUAGE",
+// "Social_Science"): show them with spaces, and long ALL-CAPS words in title
+// case, keeping short codes such as II, EVS or GK as they are.
+const formatSubjectName = (subject: string): string =>
+  subject
+    .replace(/_+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .split(' ')
+    .map((word) =>
+      word.length > 3 && word === word.toUpperCase()
+        ? word.charAt(0) + word.slice(1).toLowerCase()
+        : word
+    )
+    .join(' ');
+
 const getSubjectColor = (subject: string): string => {
   const normalizedSubject = subject.toLowerCase().trim();
 
@@ -108,8 +126,9 @@ const calculateGrade = (percentage: number): string => {
 
 
 export const MarksScreen: React.FC = () => {
-  const navigation = useNavigation();
-  const { students, selectedStudentId, selectStudent } = useAuth();
+  useModuleAccessGuard('marks');
+  const navigation = useNavigation<any>();
+  const { students, selectedStudentId, selectStudent } = useMenuStudents('marks');
   const [selectedExamIndex, setSelectedExamIndex] = useState(0);
   const [showReportCard, setShowReportCard] = useState(false);
 
@@ -118,12 +137,18 @@ export const MarksScreen: React.FC = () => {
   const classId = selectedStudent?.classId;
 
   // Fetch exams list from API using classId
-  const { exams, isLoading: isLoadingExams, isWaitingForClassId, error: examsError } = useExams(classId);
+  const [selectedYearId, setSelectedYearId] = useState<number | null>(null);
+  const [showYearMenu, setShowYearMenu] = useState(false);
+  const { exams, years, isLoading: isLoadingExams, isWaitingForClassId, error: examsError } = useExams(classId, selectedYearId);
 
-  // Reset exam selection when student/class changes
+  // Reset exam/year selection when student/class changes
   useEffect(() => {
     setSelectedExamIndex(0);
+    setSelectedYearId(null);
   }, [selectedStudentId, classId]);
+
+  // Year shown in the dropdown: the picked one, else the newest (current) year
+  const activeYear = years.find(y => y.Year_Id === selectedYearId) ?? years[0];
 
   // Get selected exam (only if exams exist)
   const selectedExam = exams.length > 0 ? exams[selectedExamIndex] : null;
@@ -131,6 +156,9 @@ export const MarksScreen: React.FC = () => {
   // Only fetch marks if we have a valid exam from API
   const {
     marks,
+    feeBlocked,
+    feeMessage,
+    blockedSubjects,
     isLoading: isLoadingMarks,
     isFetching: isFetchingMarks,
     error,
@@ -139,6 +167,12 @@ export const MarksScreen: React.FC = () => {
     selectedExam?.id ?? 0,
     selectedExam?.year_id ?? 0
   );
+
+  // Report cards from schooltree templates: available when the school has set
+  // up a template for the student's exam group. Takes over from the per-school
+  // PHP report card below, which stays only for schools without templates.
+  const { types: reportCardTypes } = useReportCardTypes(selectedStudent?.studentId);
+  const hasTemplateReportCard = reportCardTypes.length > 0;
 
   // Get report card URL - examgrpid from student (source of truth), term_type from exam
   const {
@@ -150,7 +184,8 @@ export const MarksScreen: React.FC = () => {
     Number(classId) || 0,
     selectedStudent?.examgrpid ?? undefined,  // From student (student_class_map)
     selectedExam?.year_id || 0,
-    selectedExam?.term_type
+    selectedExam?.term_type,
+    selectedExam?.id
   );
 
   // Auto-fetch when screen comes into focus
@@ -184,6 +219,18 @@ export const MarksScreen: React.FC = () => {
         title: 'Marks',
         showBack: true,
         onBack: () => navigation.goBack(),
+        rightComponent: years.length > 0 ? (
+          <TouchableOpacity
+            style={styles.yearButton}
+            onPress={() => setShowYearMenu(true)}
+            activeOpacity={0.7}
+          >
+            <Text variant="caption" semibold style={styles.yearButtonText}>
+              {activeYear?.name}
+            </Text>
+            <Icon name="chevron-down" size={16} color={colors.primary} />
+          </TouchableOpacity>
+        ) : undefined,
       }}
       students={students}
       selectedStudentId={selectedStudentId || ''}
@@ -218,11 +265,16 @@ export const MarksScreen: React.FC = () => {
           </ScrollView>
         )}
 
-        {/* Report Card Button - Only show when exam has term_type and report card is available */}
-        {selectedExam?.term_type && isReportCardAvailable && (
+        {/* Report Card Button - template report card when the school has one,
+            otherwise the PHP one (only for exams with a term_type) */}
+        {(hasTemplateReportCard || (selectedExam?.term_type && isReportCardAvailable)) && (
           <TouchableOpacity
             style={styles.reportCardButton}
-            onPress={() => setShowReportCard(true)}
+            onPress={() =>
+              hasTemplateReportCard
+                ? navigation.navigate(ROUTES.REPORT_CARD)
+                : setShowReportCard(true)
+            }
             activeOpacity={0.7}
           >
             <Icon name="document-text-outline" size={20} color={colors.primary} />
@@ -253,6 +305,59 @@ export const MarksScreen: React.FC = () => {
             title="Unable to Load Marks"
             description="Please check your connection and try again."
           />
+        ) : feeBlocked && blockedSubjects.length === 0 ? (
+          <EmptyState
+            icon="marks"
+            title="Term Fees Pending"
+            description={feeMessage}
+          />
+        ) : feeBlocked ? (
+          <>
+            <View style={styles.feeBanner}>
+              <Icon name="lock-closed" size={20} color={colors.warning} />
+              <View style={styles.feeBannerText}>
+                <Text variant="body" semibold>
+                  Term Fees Pending
+                </Text>
+                <Text variant="caption" color="secondary">
+                  {feeMessage}
+                </Text>
+              </View>
+            </View>
+
+            <Text variant="h3" style={styles.sectionTitle}>
+              Subject-wise Marks
+            </Text>
+
+            {/* Placeholders only — the backend sends no marks while fees are pending */}
+            {blockedSubjects.map((subject, index) => {
+              const color = getSubjectColor(subject);
+              return (
+                <View key={index} style={styles.markCard}>
+                  <View style={styles.markHeader}>
+                    <View style={[styles.subjectDot, { backgroundColor: color }]} />
+                    <Text variant="body" semibold style={styles.subjectName}>
+                      {formatSubjectName(subject)}
+                    </Text>
+                    <Icon name="lock-closed" size={16} color={colors.textSecondary} />
+                  </View>
+
+                  {/* Soft stacked layers read as a blurred score */}
+                  <View style={styles.blurredScore}>
+                    <View style={[styles.blurLayer, styles.blurOuter, { backgroundColor: color }]} />
+                    <View style={[styles.blurLayer, styles.blurMiddle, { backgroundColor: color }]} />
+                    <View style={[styles.blurLayer, styles.blurInner, { backgroundColor: color }]} />
+                  </View>
+
+                  <View style={styles.progressContainer}>
+                    <View style={styles.progressBar}>
+                      <View style={[styles.progressFill, styles.blurredFill, { backgroundColor: color }]} />
+                    </View>
+                  </View>
+                </View>
+              );
+            })}
+          </>
         ) : (
           <>
             {/* Subject-wise Marks */}
@@ -262,8 +367,15 @@ export const MarksScreen: React.FC = () => {
 
             {marks.length > 0 ? (
               marks.map((mark, index) => {
-                const subjectPercentage = Math.round((mark.marks / mark.total) * 100);
-                const grade = calculateGrade(subjectPercentage);
+                // Only when both are real numbers: the API sends text such as
+                // "A" (absent), null for blank marks, and a null total when no
+                // max marks are configured for the subject.
+                const hasPercentage =
+                  typeof mark.marks === 'number' && typeof mark.total === 'number' && mark.total > 0;
+                const subjectPercentage = hasPercentage
+                  ? Math.round(((mark.marks as number) / (mark.total as number)) * 100)
+                  : null;
+                const grade = subjectPercentage !== null ? calculateGrade(subjectPercentage) : null;
                 const color = getSubjectColor(mark.subject);
 
                 return (
@@ -271,22 +383,26 @@ export const MarksScreen: React.FC = () => {
                     <View style={styles.markHeader}>
                       <View style={[styles.subjectDot, { backgroundColor: color }]} />
                       <Text variant="body" semibold style={styles.subjectName}>
-                        {mark.subject}
+                        {formatSubjectName(mark.subject)}
                       </Text>
-                      <View style={[styles.gradeBadge, { backgroundColor: `${color}20` }]}>
-                        <Text variant="caption" semibold style={{ color }}>
-                          {grade}
-                        </Text>
-                      </View>
+                      {grade && (
+                        <View style={[styles.gradeBadge, { backgroundColor: `${color}20` }]}>
+                          <Text variant="caption" semibold style={{ color }}>
+                            {grade}
+                          </Text>
+                        </View>
+                      )}
                     </View>
 
                     <View style={styles.markDetails}>
                       <Text variant="h3" style={{ color }}>
-                        {mark.marks}
+                        {mark.marks ?? '–'}
                       </Text>
-                      <Text variant="caption" color="muted">
-                        /{mark.total}
-                      </Text>
+                      {mark.total != null && (
+                        <Text variant="caption" color="muted">
+                          /{mark.total}
+                        </Text>
+                      )}
                     </View>
 
                     {/* Progress Bar */}
@@ -296,14 +412,14 @@ export const MarksScreen: React.FC = () => {
                           style={[
                             styles.progressFill,
                             {
-                              width: `${subjectPercentage}%`,
+                              width: `${Math.min(Math.max(subjectPercentage ?? 0, 0), 100)}%`,
                               backgroundColor: color,
                             },
                           ]}
                         />
                       </View>
                       <Text variant="caption" color="secondary">
-                        {subjectPercentage}%
+                        {subjectPercentage !== null ? `${subjectPercentage}%` : '–'}
                       </Text>
                     </View>
                   </View>
@@ -319,6 +435,41 @@ export const MarksScreen: React.FC = () => {
           </>
         )}
       </ScrollView>
+
+      {/* Year dropdown */}
+      <Modal
+        visible={showYearMenu}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowYearMenu(false)}
+      >
+        <Pressable style={styles.yearBackdrop} onPress={() => setShowYearMenu(false)}>
+          <View style={styles.yearMenu}>
+            {years.map(y => (
+              <TouchableOpacity
+                key={y.Year_Id}
+                style={styles.yearItem}
+                onPress={() => {
+                  setSelectedYearId(y.Year_Id);
+                  setSelectedExamIndex(0);
+                  setShowYearMenu(false);
+                }}
+              >
+                <Text
+                  variant="body"
+                  semibold={y.Year_Id === activeYear?.Year_Id}
+                  style={y.Year_Id === activeYear?.Year_Id ? { color: colors.primary } : undefined}
+                >
+                  {y.name}
+                </Text>
+                {y.Year_Id === activeYear?.Year_Id && (
+                  <Icon name="checkmark" size={16} color={colors.primary} />
+                )}
+              </TouchableOpacity>
+            ))}
+          </View>
+        </Pressable>
+      </Modal>
 
       {/* Report Card WebView Modal */}
       <ReportCardWebView
@@ -372,6 +523,44 @@ const styles = StyleSheet.create({
     color: colors.primary,
     marginHorizontal: spacing.sm,
   },
+  yearButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minWidth: 110,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1.5,
+    borderColor: colors.primary,
+    backgroundColor: colors.primarySoft,
+  },
+  yearButtonText: {
+    color: colors.primary,
+    fontSize: 14,
+    marginRight: spacing.sm,
+  },
+  yearBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.25)',
+    alignItems: 'flex-end',
+    paddingTop: 70,
+    paddingRight: spacing.base,
+  },
+  yearMenu: {
+    minWidth: 150,
+    backgroundColor: colors.surfaceLight,
+    borderRadius: borderRadius.lg,
+    paddingVertical: spacing.xs,
+    ...shadows.sm,
+  },
+  yearItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.base,
+    paddingVertical: spacing.md,
+  },
   sectionTitle: {
     paddingHorizontal: spacing.base,
     marginTop: spacing.lg,
@@ -424,5 +613,52 @@ const styles = StyleSheet.create({
   progressFill: {
     height: '100%',
     borderRadius: 3,
+  },
+  feeBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: `${colors.warning}1A`,
+    borderWidth: 1,
+    borderColor: colors.warning,
+    borderRadius: borderRadius.lg,
+    marginHorizontal: spacing.base,
+    marginTop: spacing.md,
+    padding: spacing.md,
+  },
+  feeBannerText: {
+    flex: 1,
+    marginLeft: spacing.sm,
+  },
+  blurredScore: {
+    width: 96,
+    height: 36,
+    marginBottom: spacing.sm,
+    justifyContent: 'center',
+  },
+  blurLayer: {
+    position: 'absolute',
+    alignSelf: 'center',
+  },
+  blurOuter: {
+    width: 96,
+    height: 36,
+    borderRadius: 18,
+    opacity: 0.08,
+  },
+  blurMiddle: {
+    width: 76,
+    height: 26,
+    borderRadius: 13,
+    opacity: 0.12,
+  },
+  blurInner: {
+    width: 56,
+    height: 16,
+    borderRadius: 8,
+    opacity: 0.18,
+  },
+  blurredFill: {
+    width: '60%',
+    opacity: 0.25,
   },
 });

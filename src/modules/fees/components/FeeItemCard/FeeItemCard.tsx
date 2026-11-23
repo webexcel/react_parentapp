@@ -7,12 +7,15 @@ interface FeeItemCardProps {
   fee: SelectableFeeItem;
   onPress: (feeheadId: number) => void;
   showOrder?: boolean;
+  /** False when the school has no online payment: shown as a plain row, no checkbox */
+  selectable?: boolean;
 }
 
 export const FeeItemCard: React.FC<FeeItemCardProps> = ({
   fee,
   onPress,
   showOrder = true,
+  selectable = true,
 }) => {
   const handlePress = () => {
     if (fee.isSelectable || fee.isSelected) {
@@ -21,6 +24,38 @@ export const FeeItemCard: React.FC<FeeItemCardProps> = ({
   };
 
   const isDisabled = !fee.isSelectable && !fee.isSelected;
+
+  if (!selectable) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.content}>
+          <View style={styles.header}>
+            {showOrder && (
+              <View style={styles.orderBadge}>
+                <Text style={styles.orderText}>{fee.order}</Text>
+              </View>
+            )}
+            <Text style={styles.feeHead} numberOfLines={1}>
+              {fee.feehead}
+            </Text>
+          </View>
+
+          {fee.feetype && <Text style={styles.feeType}>{fee.feetype}</Text>}
+
+          <View style={styles.amountRow}>
+            <View style={styles.amountContainer}>
+              <Text style={styles.amountLabel}>Total</Text>
+              <Text style={styles.totalAmount}>₹{fee.Total_Amount.toLocaleString('en-IN')}</Text>
+            </View>
+            <View style={styles.amountContainer}>
+              <Text style={styles.amountLabel}>Balance</Text>
+              <Text style={styles.balanceAmount}>₹{fee.Balance_Amount.toLocaleString('en-IN')}</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <TouchableOpacity

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert, TouchableOpacity, Image, Modal, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image, Modal, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import {
   AuthTemplate,
   Text,
@@ -16,6 +16,7 @@ import {
   getCurrentBrandId,
 } from '../../../core/brand/BrandConfig';
 import { getBrandLogo } from '../../../core/brand/BrandAssets';
+import { AppAlert } from '../../../design-system/molecules/AppAlert';
 
 export const LoginScreen: React.FC = () => {
   const [mobileNumber, setMobileNumber] = useState('');
@@ -40,12 +41,12 @@ export const LoginScreen: React.FC = () => {
 
   const handleLogin = async () => {
     if (!isValidMobile) {
-      Alert.alert('Invalid Number', 'Please enter a valid 10-digit mobile number');
+      AppAlert.alert('Invalid Number', 'Please enter a valid 10-digit mobile number');
       return;
     }
 
     if (password.length === 0) {
-      Alert.alert('Invalid Password', 'Please enter your password');
+      AppAlert.alert('Invalid Password', 'Please enter your password');
       return;
     }
 
@@ -58,16 +59,16 @@ export const LoginScreen: React.FC = () => {
         // Now verify password
         const result = await verifyPassword(mobileNumber, password, otpResult.installId);
         if (!result.success) {
-          Alert.alert('Login Failed', result.message || 'Invalid password');
+          AppAlert.alert('Login Failed', result.message || 'Invalid password');
         }
       } else {
-        Alert.alert('Error', otpResult.message || 'Mobile number not found');
+        AppAlert.alert('Error', otpResult.message || 'Mobile number not found');
       }
     } else {
       // Mobile already verified, just verify password
       const result = await verifyPassword(mobileNumber, password, installId);
       if (!result.success) {
-        Alert.alert('Login Failed', result.message || 'Invalid password');
+        AppAlert.alert('Login Failed', result.message || 'Invalid password');
       }
     }
   };
@@ -81,15 +82,15 @@ export const LoginScreen: React.FC = () => {
 
   const handleForgotPassword = async () => {
     if (!isValidForgotMobile) {
-      Alert.alert('Invalid Number', 'Please enter a valid 10-digit mobile number.');
+      AppAlert.alert('Invalid Number', 'Please enter a valid 10-digit mobile number.');
       return;
     }
     const result = await forgotPassword(forgotMobile);
     setShowForgotModal(false);
     if (result.success) {
-      Alert.alert('Password Sent', result.message, [{ text: 'OK' }]);
+      AppAlert.alert('Password Sent', result.message, [{ text: 'OK' }]);
     } else {
-      Alert.alert('Forgot Password', result.message, [{ text: 'OK' }]);
+      AppAlert.alert('Forgot Password', result.message, [{ text: 'OK' }]);
     }
   };
 

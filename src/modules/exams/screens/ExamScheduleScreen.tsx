@@ -7,14 +7,16 @@ import {
   Badge,
   Icon,
   EmptyState,
+  AttachmentSection,
   colors,
   spacing,
   borderRadius,
   shadows,
 } from '../../../design-system';
-import { useAuth } from '../../../core/auth';
 import { useExamSchedule } from '../hooks/useExamSchedule';
 import { ExamScheduleItem } from '../types/examSchedule.types';
+import { useModuleAccessGuard, useMenuStudents } from '../../../core/menu';
+import { parseAttachments } from '../../../core/utils/attachments';
 
 // Subject color mapping
 const SUBJECT_COLORS: { [key: string]: string } = {
@@ -32,7 +34,11 @@ const SUBJECT_COLORS: { [key: string]: string } = {
   Computer: '#a855f7',
 };
 
-const getSubjectColor = (subject: string): string => {
+const getSubjectColor = (subject?: string | null): string => {
+  // Image-only schedules (uploaded from the teacher app) have no subject.
+  if (!subject) {
+    return '#6b7280';
+  }
   // Check for exact match first
   if (SUBJECT_COLORS[subject]) {
     return SUBJECT_COLORS[subject];
@@ -48,8 +54,9 @@ const getSubjectColor = (subject: string): string => {
 };
 
 export const ExamScheduleScreen: React.FC = () => {
+  useModuleAccessGuard('exams');
   const navigation = useNavigation();
-  const { students, selectedStudentId, selectStudent } = useAuth();
+  const { students, selectedStudentId, selectStudent } = useMenuStudents('exams');
   const [refreshing, setRefreshing] = useState(false);
 
   // Get selected student's classId
@@ -174,9 +181,14 @@ export const ExamScheduleScreen: React.FC = () => {
 
         {/* Exam Details */}
         <View style={styles.examDetails}>
+          {!!item.exam_name && (
+            <Text variant="caption" semibold style={[styles.examName, { color }, isPast && styles.textFaded]}>
+              {item.exam_name}
+            </Text>
+          )}
           <View style={styles.examHeader}>
             <Text variant="body" semibold style={[isPast && styles.textFaded]}>
-              {item.subject}
+              {item.subject || (item.imgfile ? 'Exam Schedule' : '')}
             </Text>
             <Badge
               label={daysUntil}
@@ -200,6 +212,11 @@ export const ExamScheduleScreen: React.FC = () => {
                 Syllabus: {item.portion}
               </Text>
             </View>
+          )}
+
+          {/* Schedule image uploaded by the school (teacher app "Upload" tab). */}
+          {!!item.imgfile && (
+            <AttachmentSection attachments={parseAttachments(item.imgfile)} variant="compact" />
           )}
         </View>
       </View>
@@ -254,6 +271,11 @@ export const ExamScheduleScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  examName: {
+    marginBottom: 2,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
   loadingContainer: {
     flex: 1,
     alignItems: 'center',

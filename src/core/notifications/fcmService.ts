@@ -4,11 +4,11 @@ import messaging, {
 import {
   Platform,
   PermissionsAndroid,
-  Alert,
   Linking,
   AppState,
   AppStateStatus,
 } from 'react-native';
+import { AppAlert } from '../../design-system/molecules/AppAlert';
 
 export interface FCMNotification {
   title?: string;
@@ -23,6 +23,7 @@ class FCMService {
   private backgroundHandler: NotificationHandler | null = null;
   private tokenRefreshUnsubscribe: (() => void) | null = null;
   private foregroundUnsubscribe: (() => void) | null = null;
+  private openedUnsubscribe: (() => void) | null = null;
   private appStateSubscription: ReturnType<
     typeof AppState.addEventListener
   > | null = null;
@@ -161,7 +162,7 @@ class FCMService {
    * Show alert requiring user to enable notifications
    */
   private showPermissionRequiredAlert(): void {
-    Alert.alert(
+    AppAlert.alert(
       'Notifications Required',
       'This app requires notification permissions to keep you updated about important school information. Please enable notifications in Settings.',
       [
@@ -273,6 +274,25 @@ class FCMService {
   }
 
   /**
+   * Call `handler` when the user taps a notification while the app is in the
+   * background (getInitialNotification covers the app-was-closed case).
+   * Registered on its own, not in setupFCM, so it works even when FCM setup
+   * waits on the permission prompt.
+   */
+  onNotificationOpened(handler: NotificationHandler): void {
+    this.openedUnsubscribe?.();
+    this.openedUnsubscribe = messaging().onNotificationOpenedApp(
+      (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
+        handler({
+          title: remoteMessage.notification?.title,
+          body: remoteMessage.notification?.body,
+          data: remoteMessage.data as Record<string, string> | undefined,
+        });
+      },
+    );
+  }
+
+  /**
    * Check if app was opened from a notification
    */
   async getInitialNotification(): Promise<FCMNotification | null> {
@@ -324,6 +344,10 @@ class FCMService {
     if (this.foregroundUnsubscribe) {
       this.foregroundUnsubscribe();
       this.foregroundUnsubscribe = null;
+    }
+    if (this.openedUnsubscribe) {
+      this.openedUnsubscribe();
+      this.openedUnsubscribe = null;
     }
     if (this.appStateSubscription) {
       this.appStateSubscription.remove();

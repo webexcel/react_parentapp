@@ -10,6 +10,7 @@ export const ROUTES = {
   DASHBOARD: 'Dashboard',
   HOMEWORK: 'Homework',
   MARKS: 'Marks',
+  REPORT_CARD: 'ReportCard',
   CHAT: 'Chat',
   PROFILE: 'Profile',
   NOTIFICATION_SETTINGS: 'NotificationSettings',
@@ -33,6 +34,14 @@ export const ROUTES = {
 
   // Leave Letter
   LEAVE_LETTER: 'LeaveLetter',
+
+  // MCQ tests
+  MCQ_TESTS: 'McqTests',
+  MCQ_EXAM: 'McqExam',
+  MCQ_RESULT: 'McqResult',
+
+  // Star Rewards
+  STARS: 'Stars',
 
   // Change Password
   CHANGE_PASSWORD: 'ChangePassword',

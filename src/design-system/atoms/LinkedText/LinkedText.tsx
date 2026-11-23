@@ -9,12 +9,13 @@
  * Detection rules live in core/utils/linkify.
  */
 import React, { useCallback, useMemo } from 'react';
-import { Alert, Linking, Text as RNText } from 'react-native';
+import { Linking, Text as RNText } from 'react-native';
 import { Text } from '../Text';
 import { useColors } from '../../theme/ThemeContext';
 import { parseLinks, LinkChunk } from '../../../core/utils/linkify';
 import { LinkedTextProps } from './LinkedText.types';
 import { styles } from './LinkedText.styles';
+import { AppAlert } from '../../molecules/AppAlert';
 
 const FAILURE_MESSAGE: Record<LinkChunk['kind'], string> = {
   url: 'Could not open this link.',
@@ -46,7 +47,7 @@ export const LinkedText: React.FC<LinkedTextProps> = ({
       try {
         await Linking.openURL(link.href);
       } catch {
-        Alert.alert('Error', FAILURE_MESSAGE[link.kind]);
+        AppAlert.alert('Error', FAILURE_MESSAGE[link.kind]);
       }
     },
     [onLinkPress],

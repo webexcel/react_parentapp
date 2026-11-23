@@ -6,7 +6,8 @@ import {useAuth} from '../core/auth';
 import {ROUTES} from '../core/constants';
 import {Spinner, Icon} from '../design-system';
 import {useTheme} from '../design-system/theme/ThemeContext';
-import {useBrand, useAuthType} from '../core/brand';
+import {useAuthType} from '../core/brand';
+import {useMenuAccess} from '../core/menu';
 import {navigationRef} from './navigationRef';
 import {DrawerProvider} from './components';
 
@@ -28,8 +29,11 @@ import {GalleryScreen} from '../modules/gallery';
 import {TimetableScreen} from '../modules/timetable';
 import {ChatScreen} from '../modules/chat';
 import {MarksScreen} from '../modules/marks';
+import {ReportCardScreen} from '../modules/reportCard';
 import {ParentMessagesScreen, SendMessageScreen} from '../modules/parentMessage';
 import {LeaveLetterScreen} from '../modules/leaveLetter';
+import {McqTestsScreen, McqExamScreen, McqResultScreen} from '../modules/mcq';
+import {StarsScreen} from '../modules/stars';
 
 // Stack and Tab navigators
 const AuthStack = createNativeStackNavigator();
@@ -59,13 +63,20 @@ const AuthNavigator = () => {
   );
 };
 
+// A tab the selected child doesn't have keeps its screen registered (so the
+// screen's access guard can send the parent to the Dashboard with a message)
+// but its button is hidden.
+const HIDDEN_TAB = {tabBarButton: () => null};
+
 /**
- * Bottom Tab Navigator - Shows tabs based on enabled modules
- * Modules are configured per brand in brand.config.json
+ * Bottom Tab Navigator - Shows the selected child's tabs.
+ * Menus come from SchoolTree (or brand.config.json until the school is configured).
  */
 const TabNavigator = () => {
   const {colors} = useTheme();
-  const {isModuleEnabled} = useBrand();
+  const {isMenuEnabled, isMenuEnabledForAny: isModuleEnabled} = useMenuAccess();
+  const tabOptions = (key: Parameters<typeof isMenuEnabled>[0], label: string) =>
+    isMenuEnabled(key) ? {tabBarLabel: label} : {tabBarLabel: label, ...HIDDEN_TAB};
 
   return (
     <Tab.Navigator
@@ -106,7 +117,7 @@ const TabNavigator = () => {
         <Tab.Screen
           name={ROUTES.HOMEWORK}
           component={HomeworkScreen}
-          options={{tabBarLabel: 'Homework'}}
+          options={tabOptions('homework', 'Homework')}
         />
       )}
 
@@ -115,7 +126,7 @@ const TabNavigator = () => {
         <Tab.Screen
           name={ROUTES.CIRCULARS}
           component={CircularsListScreen}
-          options={{tabBarLabel: 'Circulars'}}
+          options={tabOptions('circulars', 'Circulars')}
         />
       )}
 
@@ -124,7 +135,7 @@ const TabNavigator = () => {
         <Tab.Screen
           name={ROUTES.CHAT}
           component={ChatScreen}
-          options={{tabBarLabel: 'Chat'}}
+          options={tabOptions('chat', 'Chat')}
         />
       )}
 
@@ -145,7 +156,9 @@ const TabNavigator = () => {
  * Feature screens are conditionally included based on brand configuration
  */
 const MainNavigator = () => {
-  const {isModuleEnabled} = useBrand();
+  // Registered when any child has the menu; the screen itself redirects a
+  // child without access (useModuleAccessGuard).
+  const {isMenuEnabledForAny: isModuleEnabled} = useMenuAccess();
 
   return (
     <MainStack.Navigator
@@ -221,6 +234,11 @@ const MainNavigator = () => {
         <MainStack.Screen name={ROUTES.MARKS} component={MarksScreen} />
       )}
 
+      {/* Report Card - opened from View Marks */}
+      {isModuleEnabled('marks') && (
+        <MainStack.Screen name={ROUTES.REPORT_CARD} component={ReportCardScreen} />
+      )}
+
       {/* Parent Message - Always registered (visibility controlled in Dashboard) */}
       <MainStack.Screen
         name={ROUTES.PARENT_MESSAGES}
@@ -236,6 +254,19 @@ const MainNavigator = () => {
         name={ROUTES.LEAVE_LETTER}
         component={LeaveLetterScreen}
       />
+
+      {/* MCQ tests - visibility controlled by the 'mcq' parent menu */}
+      <MainStack.Screen name={ROUTES.MCQ_TESTS} component={McqTestsScreen} />
+      {/* The exam must not be swiped away: leaving is handled (and ends the test) in the screen */}
+      <MainStack.Screen
+        name={ROUTES.MCQ_EXAM}
+        component={McqExamScreen}
+        options={{gestureEnabled: false, animation: 'slide_from_bottom'}}
+      />
+      <MainStack.Screen name={ROUTES.MCQ_RESULT} component={McqResultScreen} />
+
+      {/* Star Rewards - visibility controlled by the 'stars' parent menu */}
+      <MainStack.Screen name={ROUTES.STARS} component={StarsScreen} />
 
       {/* Notification Settings - Always available (part of profile) */}
       <MainStack.Screen

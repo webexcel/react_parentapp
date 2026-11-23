@@ -6,9 +6,9 @@ const QUERY_KEYS = {
   EXAMS: 'exams',
 };
 
-export const useExams = (classId?: string | number) => {
+export const useExams = (classId?: string | number, yearId?: number | null) => {
   const query = useQuery({
-    queryKey: [QUERY_KEYS.EXAMS, classId],
+    queryKey: [QUERY_KEYS.EXAMS, classId, yearId ?? null],
     queryFn: async () => {
       if (!classId) {
         return { status: false, message: 'No class ID', examdata: [] };
@@ -18,6 +18,7 @@ export const useExams = (classId?: string | number) => {
 
       const response = await marksApi.selectExamName({
         class_Id: parsedClassId,
+        ...(yearId ? { Year_Id: yearId } : {}),
       });
       return response;
     },
@@ -36,6 +37,9 @@ export const useExams = (classId?: string | number) => {
       term_type: item.term_type,
     }));
 
+  // Years for the dropdown, newest first (backend already sorts; keep stable)
+  const years = query.data?.years || [];
+
   // Don't expose error if we got a valid response (even if empty)
   // This handles the case where backend returns 400 for "no data"
   const hasValidResponse = query.data !== undefined;
@@ -46,6 +50,7 @@ export const useExams = (classId?: string | number) => {
 
   return {
     exams,
+    years,
     isLoading,
     isWaitingForClassId,
     error: hasValidResponse ? null : query.error,

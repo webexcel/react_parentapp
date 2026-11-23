@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import {
     AuthTemplate,
     Text,
@@ -10,6 +10,7 @@ import {
 } from '../../../design-system';
 import { useAuth } from '../../../core/auth';
 import { authService } from '../../../core/auth/authService';
+import { AppAlert } from '../../../design-system/molecules/AppAlert';
 
 export const CreatePasswordScreen: React.FC = () => {
     const { userData, completePasswordSetup } = useAuth();
@@ -25,12 +26,12 @@ export const CreatePasswordScreen: React.FC = () => {
         setError(null);
 
         if (!isValidPassword) {
-            Alert.alert('Invalid Password', 'Password must be exactly 5 digits.');
+            AppAlert.alert('Invalid Password', 'Password must be exactly 5 digits.');
             return;
         }
 
         if (!passwordsMatch) {
-            Alert.alert('Mismatch', 'Passwords do not match. Please try again.');
+            AppAlert.alert('Mismatch', 'Passwords do not match. Please try again.');
             return;
         }
 
@@ -39,26 +40,26 @@ export const CreatePasswordScreen: React.FC = () => {
             const mobileNumber = userData?.mobileNumber || userData?.mobile_number || '';
 
             if (!mobileNumber) {
-                Alert.alert('Error', 'Mobile number not found. Please login again.');
+                AppAlert.alert('Error', 'Mobile number not found. Please login again.');
                 return;
             }
 
             const result = await authService.createPassword(password, mobileNumber);
 
             if (result.status) {
-                Alert.alert(
+                AppAlert.alert(
                     'Password Created',
                     'Your password has been set successfully. You can use this password for future logins.',
                     [{ text: 'OK', onPress: () => completePasswordSetup() }]
                 );
             } else {
                 setError(result.message);
-                Alert.alert('Error', result.message);
+                AppAlert.alert('Error', result.message);
             }
         } catch (err: any) {
             const errorMessage = err.message || 'Something went wrong. Please try again.';
             setError(errorMessage);
-            Alert.alert('Error', errorMessage);
+            AppAlert.alert('Error', errorMessage);
         } finally {
             setIsLoading(false);
         }

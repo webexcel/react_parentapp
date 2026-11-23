@@ -5,11 +5,11 @@ import {
   ScrollView,
   RefreshControl,
   ActivityIndicator,
-  Alert,
   TouchableOpacity,
   Linking,
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import FileViewer from 'react-native-file-viewer';
 import {
   Text,
   Icon,
@@ -19,17 +19,25 @@ import {
   shadows,
   ListTemplate,
 } from '../../../design-system';
-import { useAuth } from '../../../core/auth';
 import { ROUTES } from '../../../core/constants';
 import { useFeeDetails, useFeeSelection, usePaymentHistory } from '../hooks';
 import { usePayOnline } from '../hooks/usePayOnline';
 import { FeeItemCard, PaymentSummaryBar } from '../components';
+import { feesApi } from '../services/feesApi';
+import { AppAlert } from '../../../design-system/molecules/AppAlert';
+import { useFeatureFlag } from '../../../core/brand';
+import { useModuleAccessGuard, useMenuStudents } from '../../../core/menu';
 
 type TabType = 'pending' | 'history';
 
 export const FeeDetailsScreen: React.FC = () => {
+  useModuleAccessGuard('fees');
   const navigation = useNavigation<any>();
-  const { students, selectedStudentId, selectStudent } = useAuth();
+  const { students, selectedStudentId, selectStudent } = useMenuStudents('fees');
+  // brand.config features.modules.fees.showPaymentGateway: when off the school
+  // collects fees at the office, so fees are listed read-only - no checkboxes,
+  // no "pay in order" notice and no Pay bar.
+  const canPayOnline = useFeatureFlag('paymentGateway');
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>('pending');
 
@@ -54,6 +62,22 @@ export const FeeDetailsScreen: React.FC = () => {
     isLoading: isHistoryLoading,
     refetch: refetchHistory,
   } = usePaymentHistory();
+
+  // Receipt whose bill PDF is being fetched (one at a time)
+  const [openingReceiptId, setOpeningReceiptId] = useState<string | null>(null);
+
+  const handleViewReceipt = async (receiptId: string, yearId?: number) => {
+    if (openingReceiptId || !yearId) return;
+    setOpeningReceiptId(receiptId);
+    try {
+      const path = await feesApi.downloadFeeBill(receiptId, yearId);
+      await FileViewer.open(path, { showOpenWithDialog: true, displayName: `Receipt ${receiptId}` });
+    } catch (e: any) {
+      AppAlert.alert('Receipt', e?.message || 'Could not open the receipt.');
+    } finally {
+      setOpeningReceiptId(null);
+    }
+  };
 
   // Auto-fetch when screen comes into focus
   useFocusEffect(
@@ -97,7 +121,7 @@ export const FeeDetailsScreen: React.FC = () => {
 
   const handlePayPress = useCallback(() => {
     if (!canProceedToPayment) {
-      Alert.alert(
+      AppAlert.alert(
         'Invalid Selection',
         'Please select fees in order. You cannot skip fees in the payment sequence.',
         [{ text: 'OK' }]
@@ -105,7 +129,7 @@ export const FeeDetailsScreen: React.FC = () => {
       return;
     }
 
-    Alert.alert(
+    AppAlert.alert(
       'Proceed to Payment',
       `You are about to pay \u20B9${selectedAmount.toLocaleString('en-IN')} for ${selectedCount} fee(s).`,
       [
@@ -146,7 +170,7 @@ export const FeeDetailsScreen: React.FC = () => {
                 });
               }
             } catch {
-              Alert.alert(
+              AppAlert.alert(
                 'Payment Error',
                 paymentError || 'Unable to initiate payment. Please try again.',
                 [{ text: 'OK' }]
@@ -309,11 +333,23 @@ export const FeeDetailsScreen: React.FC = () => {
               <View style={styles.noticeCard}>
                 <Icon name="info" size={20} color={colors.primary} />
                 <View style={styles.noticeContent}>
-                  <Text style={styles.noticeTitle}>Payment Order</Text>
-                  <Text style={styles.noticeText}>
-                    Fees must be paid in sequence. Select fees starting from the first
-                    pending fee. You can pay multiple fees together, but cannot skip any.
-                  </Text>
+                  {canPayOnline ? (
+                    <>
+                      <Text style={styles.noticeTitle}>Payment Order</Text>
+                      <Text style={styles.noticeText}>
+                        Fees must be paid in sequence. Select fees starting from the first
+                        pending fee. You can pay multiple fees together, but cannot skip any.
+                      </Text>
+                    </>
+                  ) : (
+                    <>
+                      <Text style={styles.noticeTitle}>Pending Fees</Text>
+                      <Text style={styles.noticeText}>
+                        Online payment is not available for this school. Please pay the
+                        pending fees at the school office.
+                      </Text>
+                    </>
+                  )}
                 </View>
               </View>
             )}
@@ -334,6 +370,7 @@ export const FeeDetailsScreen: React.FC = () => {
                   fee={fee}
                   onPress={handleFeePress}
                   showOrder
+                  selectable={canPayOnline}
                 />
               ))
             )}
@@ -372,7 +409,8 @@ export const FeeDetailsScreen: React.FC = () => {
                   <View style={styles.receiptItems}>
                     {receipt.items.map((item, index) => (
                       <View
-                        key={item.FEE_REC_DET_ID}
+                        // getStudentPayHistory does not send FEE_REC_DET_ID
+                        key={item.FEE_REC_DET_ID ?? `${receipt.receiptId}-${item.FEE_HEAD}-${index}`}
                         style={[
                           styles.receiptItem,
                           index < receipt.items.length - 1 && styles.receiptItemBorder,
@@ -385,6 +423,22 @@ export const FeeDetailsScreen: React.FC = () => {
                       </View>
                     ))}
                   </View>
+
+                  <TouchableOpacity
+                    style={styles.viewReceiptButton}
+                    onPress={() => handleViewReceipt(receipt.receiptId, receipt.items[0]?.YEAR_ID)}
+                    disabled={openingReceiptId !== null}
+                    activeOpacity={0.7}
+                  >
+                    {openingReceiptId === receipt.receiptId ? (
+                      <ActivityIndicator size="small" color={colors.primary} />
+                    ) : (
+                      <>
+                        <Icon name="pdf" size={16} color={colors.primary} />
+                        <Text style={styles.viewReceiptText}>View Receipt</Text>
+                      </>
+                    )}
+                  </TouchableOpacity>
                 </View>
               ))
             )}
@@ -393,7 +447,7 @@ export const FeeDetailsScreen: React.FC = () => {
       </ScrollView>
 
       {/* Bottom Payment Bar - Only show on pending tab */}
-      {activeTab === 'pending' && fees.length > 0 && (
+      {canPayOnline && activeTab === 'pending' && fees.length > 0 && (
         <PaymentSummaryBar
           selectedCount={selectedCount}
           totalFees={fees.length}
@@ -627,5 +681,22 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '500',
     color: colors.textPrimary,
+  },
+  viewReceiptButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: spacing.sm,
+    paddingVertical: spacing.sm,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    minHeight: 36,
+  },
+  viewReceiptText: {
+    marginLeft: spacing.xs,
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.primary,
   },
 });

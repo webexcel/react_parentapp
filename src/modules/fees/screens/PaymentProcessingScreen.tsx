@@ -5,13 +5,13 @@ import {
   AppState,
   AppStateStatus,
   BackHandler,
-  Alert,
 } from 'react-native';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { Text, Icon, Spinner, colors, spacing } from '../../../design-system';
 import { TouchableOpacity } from 'react-native';
 import { ROUTES } from '../../../core/constants';
 import { feesApi } from '../services/feesApi';
+import { AppAlert } from '../../../design-system/molecules/AppAlert';
 
 interface PaymentProcessingParams {
   orderId: string;
@@ -134,7 +134,7 @@ export const PaymentProcessingScreen: React.FC = () => {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        Alert.alert(
+        AppAlert.alert(
           'Cancel Payment?',
           'Are you sure you want to cancel? If you already completed payment in PhonePe, it will still be processed.',
           [

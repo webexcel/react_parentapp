@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet, Alert, Platform } from 'react-native';
+import { View, ScrollView, StyleSheet, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -18,6 +18,7 @@ import {
   updateNotificationSetting,
   type NotificationSettings,
 } from '../../../core/storage';
+import { AppAlert } from '../../../design-system/molecules/AppAlert';
 
 interface SettingItem {
   key: keyof NotificationSettings;
@@ -97,7 +98,7 @@ export const NotificationSettingsScreen: React.FC = () => {
       const currentSettings = await getNotificationSettings();
       setSettings(currentSettings);
     } catch (error) {
-      Alert.alert('Error', 'Failed to load notification settings');
+      AppAlert.alert('Error', 'Failed to load notification settings');
     } finally {
       setLoading(false);
     }
@@ -116,14 +117,14 @@ export const NotificationSettingsScreen: React.FC = () => {
       // If toggling master switch, show appropriate message
       if (key === 'pushNotifications') {
         if (!value) {
-          Alert.alert(
+          AppAlert.alert(
             'Notifications Disabled',
             'You will not receive any push notifications. You can re-enable them anytime from settings.'
           );
         } else {
           // Check if platform permissions are granted
           if (Platform.OS === 'ios' || Platform.OS === 'android') {
-            Alert.alert(
+            AppAlert.alert(
               'Notifications Enabled',
               'Make sure notification permissions are granted in your device settings.'
             );
@@ -135,7 +136,7 @@ export const NotificationSettingsScreen: React.FC = () => {
       if (settings) {
         setSettings({ ...settings, [key]: !value });
       }
-      Alert.alert('Error', 'Failed to update notification setting');
+      AppAlert.alert('Error', 'Failed to update notification setting');
     }
   };
 

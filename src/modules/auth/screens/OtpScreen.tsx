@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import {
   AuthTemplate,
@@ -11,6 +11,7 @@ import {
 } from '../../../design-system';
 import { useOtpVerification } from '../hooks/useOtpVerification';
 import { useLogin } from '../hooks/useLogin';
+import { AppAlert } from '../../../design-system/molecules/AppAlert';
 
 type RootStackParamList = {
   OTP: { mobileNumber: string; installId?: string };
@@ -43,13 +44,13 @@ export const OtpScreen: React.FC = () => {
   const handleVerify = async () => {
     const value = credential.trim();
     if (!value) {
-      Alert.alert('Required', 'Please enter your OTP, password, or admission number');
+      AppAlert.alert('Required', 'Please enter your OTP, password, or admission number');
       return;
     }
 
     const result = await verifyOtp(mobileNumber, value, installId);
     if (!result.success) {
-      Alert.alert('Verification Failed', result.message || 'Invalid credentials');
+      AppAlert.alert('Verification Failed', result.message || 'Invalid credentials');
     }
   };
 
@@ -61,9 +62,9 @@ export const OtpScreen: React.FC = () => {
       setCredential('');
       setCountdown(30);
       setCanResend(false);
-      Alert.alert('OTP Sent', 'A new OTP has been sent to your mobile number');
+      AppAlert.alert('OTP Sent', 'A new OTP has been sent to your mobile number');
     } else {
-      Alert.alert('Error', result.message || 'Failed to resend OTP');
+      AppAlert.alert('Error', result.message || 'Failed to resend OTP');
     }
   };
 

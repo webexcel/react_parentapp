@@ -10,12 +10,13 @@ import {
   TouchableWithoutFeedback,
   PanResponder,
   Dimensions,
-  Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Text, Icon, colors } from '../../../design-system';
+import { Text, Icon, ConfirmDialog, colors } from '../../../design-system';
 import { useAuth } from '../../../core/auth';
 import { useBrand } from '../../../core/brand';
+import { useMenuAccess } from '../../../core/menu';
+import { isIconName } from '../../../design-system/atoms/Icon';
 import { getBrandLogo } from '../../../core/brand/BrandAssets';
 import { ROUTES } from '../../../core/constants';
 import { navigateFromRoot } from '../../navigationRef';
@@ -34,7 +35,10 @@ const getInitial = (name?: string): string =>
 export const SideDrawer: React.FC<SideDrawerProps> = ({ visible, onClose }) => {
   const insets = useSafeAreaInsets();
   const { students, logout } = useAuth();
-  const { brand, brandId, isModuleEnabled } = useBrand();
+  const { brand, brandId } = useBrand();
+  // The selected child's menus (server-configured, or the brand's when the
+  // school isn't configured yet).
+  const { isMenuEnabled: isModuleEnabled, getMenu, configured } = useMenuAccess();
 
   // Keeps the Modal mounted while the close animation plays
   const [mounted, setMounted] = useState(visible);
@@ -121,23 +125,40 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({ visible, onClose }) => {
     [closeThen],
   );
 
-  const handleLogout = useCallback(() => {
-    closeThen(() => {
-      Alert.alert('Logout', 'Are you sure you want to logout?', [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Logout', style: 'destructive', onPress: () => logout() },
-      ]);
-    });
-  }, [closeThen, logout]);
+  // The confirm dialog outlives the drawer's own Modal, so it is rendered
+  // outside it and opened once the panel has slid away.
+  const [confirmLogout, setConfirmLogout] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
-  // The menu mirrors the brand's enabled modules, so a disabled module never
-  // shows a dead entry here.
+  const handleLogout = useCallback(() => {
+    closeThen(() => setConfirmLogout(true));
+  }, [closeThen]);
+
+  const handleConfirmLogout = useCallback(async () => {
+    setLoggingOut(true);
+    try {
+      await logout();
+    } finally {
+      setLoggingOut(false);
+      setConfirmLogout(false);
+    }
+  }, [logout]);
+
+  // The menu mirrors the selected child's enabled modules, so a disabled
+  // module never shows a dead entry here. Configured schools also set the
+  // label, icon and order from SchoolTree.
   const { mainItems, accountItems } = useMemo(() => {
     const main: DrawerMenuItem[] = [];
     const push = (enabled: boolean, item: DrawerMenuItem) => {
-      if (enabled) {
-        main.push(item);
+      if (!enabled) {
+        return;
       }
+      const server = getMenu(item.id as Parameters<typeof getMenu>[0]);
+      main.push(
+        server
+          ? { ...item, label: server.name || item.label, icon: isIconName(server.icon) ? server.icon : item.icon }
+          : item,
+      );
     };
 
     push(isModuleEnabled('dashboard'), {
@@ -176,9 +197,22 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({ visible, onClose }) => {
     push(isModuleEnabled('leaveLetter'), {
       id: 'leaveLetter', label: 'Leave Letter', icon: 'eventNote', route: ROUTES.LEAVE_LETTER,
     });
+    push(isModuleEnabled('mcq'), {
+      id: 'mcq', label: 'MCQ Tests', icon: 'quiz', route: ROUTES.MCQ_TESTS,
+    });
+    push(isModuleEnabled('stars'), {
+      id: 'stars', label: 'Star Rewards', icon: 'star', route: ROUTES.STARS,
+    });
     push(isModuleEnabled('chat'), {
       id: 'chat', label: 'Chat', icon: 'chat', route: ROUTES.CHAT, isTab: true,
     });
+
+    if (configured) {
+      // Home stays first; the rest follow the server's menu order.
+      const orderOf = (item: DrawerMenuItem) =>
+        item.id === 'dashboard' ? -1 : getMenu(item.id as Parameters<typeof getMenu>[0])?.order ?? Number.MAX_SAFE_INTEGER;
+      main.sort((a, b) => orderOf(a) - orderOf(b));
+    }
 
     const account: DrawerMenuItem[] = [];
     if (isModuleEnabled('profile')) {
@@ -194,10 +228,24 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({ visible, onClose }) => {
     });
 
     return { mainItems: main, accountItems: account };
-  }, [isModuleEnabled]);
+  }, [isModuleEnabled, getMenu, configured]);
+
+  const logoutDialog = (
+    <ConfirmDialog
+      visible={confirmLogout}
+      icon="logout"
+      title="Logout"
+      message="Are you sure you want to logout?"
+      confirmLabel="Logout"
+      destructive
+      loading={loggingOut}
+      onConfirm={handleConfirmLogout}
+      onCancel={() => setConfirmLogout(false)}
+    />
+  );
 
   if (!mounted) {
-    return null;
+    return logoutDialog;
   }
 
   const translateX = Animated.add(
@@ -225,6 +273,8 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({ visible, onClose }) => {
   );
 
   return (
+    <>
+    {logoutDialog}
     <Modal
       visible
       transparent
@@ -347,5 +397,6 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({ visible, onClose }) => {
         </Animated.View>
       </View>
     </Modal>
+    </>
   );
 };

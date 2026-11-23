@@ -10,6 +10,7 @@ import {
   Dimensions,
   ActivityIndicator,
   Image,
+  AppState,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -22,11 +23,15 @@ import {
 } from '../../../design-system';
 import { useAuth } from '../../../core/auth';
 import { ROUTES } from '../../../core/constants';
-import { useDashboard } from '../hooks';
-import { FlashMessageModal } from '../components';
+import { useDashboard, useFlashMessage, useFlashSeen, flashIdOf } from '../hooks';
+import { FlashMessageModal, FlashStatusStrip } from '../components';
+import type { FlashMessage } from '../types/dashboard.types';
 import { useIsModuleEnabled, useSocialLinks } from '../../../core/brand/featureFlags';
+import { useMenuAccess } from '../../../core/menu';
+import type { ModuleName } from '../../../core/brand/BrandContext';
 import { useCirculars } from '../../circulars/hooks/useCirculars';
 import { useDrawer } from '../../../app/components';
+import { StarSummaryCard, StarFamilyCard } from '../../stars';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -41,10 +46,20 @@ const avatarColors = [
 
 export const DashboardScreen: React.FC = () => {
   const navigation = useNavigation<any>();
-  const { students, selectedStudentId, userData } = useAuth();
+  const { students, selectedStudentId, userData, selectStudent } = useAuth();
+  // With 2+ children the hero card is the child selector: the selected child's
+  // menus drive the tiles, drawer and tabs.
+  const canSwitchStudent = students.length > 1;
   const [refreshing, setRefreshing] = React.useState(false);
+  // Flash messages: status strip + popup (same behaviour as the teacher app).
+  // flashAutoQueue = unread messages auto-playing 5 s each; null = opened by hand.
   const [showFlashModal, setShowFlashModal] = React.useState(false);
-  const hasShownModalRef = React.useRef(false);
+  const [flashIndex, setFlashIndex] = React.useState(0);
+  const [flashAutoQueue, setFlashAutoQueue] = React.useState<FlashMessage[] | null>(null);
+  const showFlashRef = React.useRef(false);
+  showFlashRef.current = showFlashModal;
+  const { seen: flashSeen, markSeen: markFlashSeen, loadSeen: loadFlashSeen } = useFlashSeen();
+  const { refetch: refetchFlash } = useFlashMessage();
 
   // Feature flags - check which modules are enabled
   const isMarksEnabled = useIsModuleEnabled('marks');
@@ -52,11 +67,18 @@ export const DashboardScreen: React.FC = () => {
   const isExamsEnabled = useIsModuleEnabled('exams');
   const isCalendarEnabled = useIsModuleEnabled('calendar');
   const isFeesEnabled = useIsModuleEnabled('fees');
+  const isCircularsEnabled = useIsModuleEnabled('circulars');
   const isHomeworkEnabled = useIsModuleEnabled('homework');
   const isAttendanceEnabled = useIsModuleEnabled('attendance');
   const isTimetableEnabled = useIsModuleEnabled('timetable');
   const isParentMessageEnabled = useIsModuleEnabled('parentMessage');
   const isLeaveLetterEnabled = useIsModuleEnabled('leaveLetter');
+  const isMcqEnabled = useIsModuleEnabled('mcq');
+  const isStarsEnabled = useIsModuleEnabled('stars');
+  // Bumped on focus / pull-to-refresh so the star card refetches with the rest.
+  const [starsRefreshKey, setStarsRefreshKey] = React.useState(0);
+  const { getMenu, configured: menusConfigured, refetch: refetchMenus, studentsWithMenu, isMenuEnabledFor } =
+    useMenuAccess();
 
   // Brand social media links - empty when the brand configured none
   const socialItems = useSocialLinks();
@@ -67,8 +89,8 @@ export const DashboardScreen: React.FC = () => {
   // Use dashboard hook for all data
   const {
     summary,
+    byStudent,
     flashMessages,
-    hasFlashMessage,
     latestMessages,
     isLoading,
     isFetching,
@@ -85,26 +107,53 @@ export const DashboardScreen: React.FC = () => {
 
   const selectedStudent = students.find((s) => s.id === selectedStudentId) || students[0];
 
-  // Auto-fetch when screen comes into focus
+  // Auto-fetch dashboard data when screen comes into focus. Menus are NOT
+  // refetched here: getMenus runs after login / app open and on pull-to-refresh only.
   useFocusEffect(
     useCallback(() => {
       refresh();
+      setStarsRefreshKey((k) => k + 1);
     }, [refresh])
   );
 
-  // Show modal only on first load when flash messages are available
+  // Unread flash messages pop up one by one (5 s each) when the app opens
+  // after login and whenever it comes back from the background. Anything
+  // shown is marked seen on this device, so it never auto-pops again.
+  const showUnreadFlash = useCallback(async () => {
+    if (showFlashRef.current) return;
+    const [{ data }, seenIds] = await Promise.all([refetchFlash(), loadFlashSeen()]);
+    const unread = ((data as FlashMessage[] | undefined) ?? []).filter((m) => !seenIds.includes(flashIdOf(m)));
+    if (unread.length === 0 || showFlashRef.current) return;
+    setFlashAutoQueue(unread);
+    setFlashIndex(0);
+    setShowFlashModal(true);
+  }, [refetchFlash, loadFlashSeen]);
+
   useEffect(() => {
-    if (hasFlashMessage && flashMessages.length > 0 && !hasShownModalRef.current) {
-      setShowFlashModal(true);
-      hasShownModalRef.current = true;
-    }
-  }, [hasFlashMessage, flashMessages.length]);
+    showUnreadFlash();
+    let prev = AppState.currentState;
+    const sub = AppState.addEventListener('change', (state) => {
+      if (prev === 'background' && state === 'active') showUnreadFlash();
+      prev = state;
+    });
+    return () => sub.remove();
+    // Mount only: the listener calls the latest showUnreadFlash via closure-safe deps.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const openFlash = useCallback((index: number) => {
+    setFlashAutoQueue(null);
+    setFlashIndex(index);
+    setShowFlashModal(true);
+  }, []);
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
+    refetchMenus();
+    setStarsRefreshKey((k) => k + 1);
     await refresh();
     setRefreshing(false);
-  }, [refresh]);
+  }, [refresh, refetchMenus]);
 
   const getStudentInitial = (name: string) => {
     return name?.charAt(0)?.toUpperCase() || '?';
@@ -120,25 +169,46 @@ export const DashboardScreen: React.FC = () => {
     return `${pending} Pending`;
   };
 
-  // Transform API data for attendance display - show all students
+  // Attendance / homework cards list only the children who have that menu.
+  // Colour follows the child's position in the full list so a child keeps the
+  // same colour on every card.
   const attendanceData = useMemo(() => {
-    return students.map((student, index) => ({
+    return studentsWithMenu('attendance').map((student) => ({
       ...student,
-      percentage: student.id === selectedStudentId ? summary.attendancePercentage : 0,
-      leaveCount: student.id === selectedStudentId ? summary.leaveCount : 0,
-      color: getAvatarColor(index),
+      percentage: byStudent[student.id]?.attendancePercentage ?? 0,
+      leaveCount: byStudent[student.id]?.leaveCount ?? 0,
+      color: getAvatarColor(students.findIndex((s) => s.id === student.id)),
     }));
-  }, [students, selectedStudentId, summary.attendancePercentage, summary.leaveCount]);
+  }, [studentsWithMenu, students, byStudent]);
 
-  // Transform API data for homework display - show all students
   const homeworkData = useMemo(() => {
-    return students.map((student, index) => ({
+    return studentsWithMenu('homework').map((student) => ({
       ...student,
-      pending: student.id === selectedStudentId ? summary.homeworkCount : 0,
-      completed: student.id === selectedStudentId ? summary.homeworkCompleted : 0,
-      color: getAvatarColor(index),
+      pending: byStudent[student.id]?.homeworkCount ?? 0,
+      completed: byStudent[student.id]?.homeworkCompleted ?? 0,
+      color: getAvatarColor(students.findIndex((s) => s.id === student.id)),
     }));
-  }, [students, selectedStudentId, summary.homeworkCount, summary.homeworkCompleted]);
+  }, [studentsWithMenu, students, byStudent]);
+
+  const starsData = useMemo(() => {
+    return studentsWithMenu('stars').map((student) => ({
+      ...student,
+      color: getAvatarColor(students.findIndex((s) => s.id === student.id)),
+    }));
+  }, [studentsWithMenu, students]);
+
+  // With exactly one permitted child the compact card shows that child's
+  // numbers, which may not be the selected child.
+  const soloAttendance = attendanceData[0];
+  const attSummary = {
+    leaveCount: soloAttendance?.leaveCount ?? 0,
+    todayAttendanceStatus:
+      soloAttendance && soloAttendance.id === selectedStudentId ? summary.todayAttendanceStatus : 'Not Marked',
+  };
+  const hwSummary = {
+    homeworkCount: homeworkData[0]?.pending ?? 0,
+    homeworkCompleted: homeworkData[0]?.completed ?? 0,
+  };
 
   // Transform API latest messages to news format
   const latestNews = useMemo(() => {
@@ -206,7 +276,11 @@ export const DashboardScreen: React.FC = () => {
       icon: 'payments',
       title: 'Fee Details',
       subtitle: 'Invoices & receipts',
-      badge: summary.paymentStatus === 'Payment Due' ? 'PAYMENT DUE' : undefined,
+      // The due status is the selected child's; show it only if that child has Fees.
+      badge:
+        summary.paymentStatus === 'Payment Due' && isMenuEnabledFor('fees', selectedStudentId)
+          ? 'PAYMENT DUE'
+          : undefined,
       badgeColor: '#FEE2E2',
       badgeTextColor: '#DC2626',
       iconBg: '#E0E7FF',
@@ -243,22 +317,46 @@ export const DashboardScreen: React.FC = () => {
       iconColor: '#16A34A',
       onPress: () => navigation.navigate(ROUTES.LEAVE_LETTER),
     },
+    {
+      id: 'mcq',
+      enabled: isMcqEnabled,
+      icon: 'quiz',
+      title: 'MCQ Tests',
+      subtitle: 'Take online tests',
+      iconBg: '#EDE7F6',
+      iconColor: '#5E35B1',
+      onPress: () => navigation.navigate(ROUTES.MCQ_TESTS),
+    },
+    {
+      id: 'stars',
+      enabled: isStarsEnabled,
+      icon: 'star',
+      title: 'Star Rewards',
+      subtitle: 'Stars & leaderboard',
+      iconBg: '#FFF7E6',
+      iconColor: '#F59E0B',
+      onPress: () => navigation.navigate(ROUTES.STARS),
+    },
   ];
 
-  // Filter to only show enabled modules
-  const quickAccessItems = allQuickAccessItems.filter(item => item.enabled);
+  // Filter to only show enabled modules. A school configured in SchoolTree
+  // also decides which are tiles, their labels and their order.
+  const menuOf = (id: string) => getMenu(id as ModuleName);
+  const quickAccessItems = menusConfigured
+    ? allQuickAccessItems
+        .filter(item => item.enabled && menuOf(item.id)?.quickAccess === 1)
+        .map(item => ({ ...item, title: menuOf(item.id)?.name || item.title }))
+        .sort((a, b) => (menuOf(a.id)?.order ?? 0) - (menuOf(b.id)?.order ?? 0))
+    : allQuickAccessItems.filter(item => item.enabled);
 
   const displayName = 'Parent';
 
-  // Handle flash message dismiss
-  const handleFlashMessageDismiss = useCallback((messageId: number) => {
-    // Could implement local dismissal state or API call
-  }, []);
-
-  // Handle modal close
   const handleCloseModal = useCallback(() => {
     setShowFlashModal(false);
+    setFlashAutoQueue(null);
   }, []);
+
+  const handleFlashShown = useCallback((m: FlashMessage) => markFlashSeen(flashIdOf(m)), [markFlashSeen]);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -277,17 +375,6 @@ export const DashboardScreen: React.FC = () => {
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Dashboard</Text>
         </View>
-        <View style={styles.headerRight}>
-          <TouchableOpacity
-            style={styles.notificationButton}
-            onPress={() => hasFlashMessage && setShowFlashModal(true)}
-          >
-            <Icon name="notification" size={24} color={colors.textSecondary} />
-            {(summary.circularsCount > 0 || hasFlashMessage) && (
-              <View style={styles.notificationBadge} />
-            )}
-          </TouchableOpacity>
-        </View>
       </View>
 
       <ScrollView
@@ -303,12 +390,14 @@ export const DashboardScreen: React.FC = () => {
           />
         }
       >
-        {/* Flash Message Modal */}
+        {/* Flash message popup: auto-plays unread ones, or all when opened by hand */}
         <FlashMessageModal
-          messages={flashMessages}
+          messages={flashAutoQueue ?? flashMessages}
           visible={showFlashModal}
+          initialIndex={flashIndex}
+          autoPlay={!!flashAutoQueue}
           onClose={handleCloseModal}
-          onDismiss={handleFlashMessageDismiss}
+          onShow={handleFlashShown}
         />
 
         {/* Hero Section */}
@@ -318,7 +407,17 @@ export const DashboardScreen: React.FC = () => {
               {students.map((student, index) => (
                 <React.Fragment key={student.id}>
                   {index > 0 && <View style={styles.heroStudentDivider} />}
-                  <View style={styles.heroStudentRow}>
+                  <TouchableOpacity
+                    style={[
+                      styles.heroStudentRow,
+                      canSwitchStudent && student.id === selectedStudentId && styles.heroStudentRowSelected,
+                    ]}
+                    disabled={!canSwitchStudent || student.id === selectedStudentId}
+                    onPress={() => selectStudent(student.id)}
+                    activeOpacity={0.7}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: student.id === selectedStudentId }}
+                  >
                     <View
                       style={[
                         styles.heroStudentAvatar,
@@ -344,16 +443,28 @@ export const DashboardScreen: React.FC = () => {
                         {student.className} | Adm No: {student.admissionNo || student.studentId}
                       </Text>
                     </View>
-                  </View>
+                    {canSwitchStudent && student.id === selectedStudentId && (
+                      <Icon name="check" size={22} color="#FFFFFF" />
+                    )}
+                  </TouchableOpacity>
                 </React.Fragment>
               ))}
             </View>
           </View>
         </View>
 
+        {/* Flash messages as WhatsApp-style status bubbles (tap -> popup) */}
+        <FlashStatusStrip
+          messages={flashMessages}
+          seen={flashSeen}
+          onOpen={openFlash}
+          popupOpen={showFlashModal}
+        />
+
         {/* Summary Cards */}
         <View style={styles.cardsContainer}>
           {/* Circulars Card */}
+          {isCircularsEnabled && (
           <TouchableOpacity
             style={styles.circularsCard}
             onPress={() => navigation.navigate(ROUTES.CIRCULARS)}
@@ -381,9 +492,10 @@ export const DashboardScreen: React.FC = () => {
               <Icon name="campaign" size={24} color="#2563EB" />
             </View>
           </TouchableOpacity>
+          )}
 
           {/* Homework Card - Bigger for 2+ students, compact for 1 */}
-          {isHomeworkEnabled && (students.length >= 2 ? (
+          {isHomeworkEnabled && (homeworkData.length >= 2 ? (
             <View style={styles.summaryCard}>
               <View style={styles.cardHeader}>
                 <Text style={styles.cardLabel}>Homework</Text>
@@ -449,7 +561,7 @@ export const DashboardScreen: React.FC = () => {
           ) : (
             <TouchableOpacity
               style={styles.compactCard}
-              onPress={() => navigation.navigate(ROUTES.HOMEWORK)}
+              onPress={() => navigation.navigate(ROUTES.HOMEWORK, { studentId: homeworkData[0]?.id })}
             >
               <View style={[styles.compactCardIcon, { backgroundColor: '#FFEDD5' }]}>
                 <Icon name="homework" size={20} color="#EA580C" />
@@ -458,22 +570,22 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={styles.cardLabel}>Homework</Text>
                 <Text style={[
                   styles.compactCardValue,
-                  summary.homeworkCount === 0 && summary.homeworkCompleted > 0 && { color: colors.success }
+                  hwSummary.homeworkCount === 0 && hwSummary.homeworkCompleted > 0 && { color: colors.success }
                 ]}>
-                  {getHomeworkStatusText(summary.homeworkCount, summary.homeworkCompleted)}
+                  {getHomeworkStatusText(hwSummary.homeworkCount, hwSummary.homeworkCompleted)}
                 </Text>
               </View>
               {/* Only show badge if there's homework (pending or completed) */}
-              {(summary.homeworkCount > 0 || summary.homeworkCompleted > 0) && (
+              {(hwSummary.homeworkCount > 0 || hwSummary.homeworkCompleted > 0) && (
                 <View style={[
                   styles.compactCardBadge,
-                  { backgroundColor: summary.homeworkCount === 0 ? '#D1FAE5' : '#FFEDD5' }
+                  { backgroundColor: hwSummary.homeworkCount === 0 ? '#D1FAE5' : '#FFEDD5' }
                 ]}>
                   <Text style={[
                     styles.compactCardBadgeText,
-                    { color: summary.homeworkCount === 0 ? colors.success : '#EA580C' }
+                    { color: hwSummary.homeworkCount === 0 ? colors.success : '#EA580C' }
                   ]}>
-                    {summary.homeworkCount === 0 ? 'DONE' : 'PENDING'}
+                    {hwSummary.homeworkCount === 0 ? 'DONE' : 'PENDING'}
                   </Text>
                 </View>
               )}
@@ -481,7 +593,7 @@ export const DashboardScreen: React.FC = () => {
           ))}
 
           {/* Attendance Card - Bigger for 2+ students, compact for 1 */}
-          {isAttendanceEnabled && (students.length >= 2 ? (
+          {isAttendanceEnabled && (attendanceData.length >= 2 ? (
             <View style={styles.summaryCard}>
               <View style={styles.cardHeader}>
                 <Text style={styles.cardLabel}>Attendance</Text>
@@ -542,21 +654,21 @@ export const DashboardScreen: React.FC = () => {
           ) : (
             <TouchableOpacity
               style={styles.compactCard}
-              onPress={() => navigation.navigate(ROUTES.ATTENDANCE, { studentId: selectedStudentId })}
+              onPress={() => navigation.navigate(ROUTES.ATTENDANCE, { studentId: soloAttendance?.id })}
             >
               <View style={[styles.compactCardIcon, { backgroundColor: '#D1FAE5' }]}>
                 <Icon name="attendance" size={20} color="#059669" />
               </View>
               <View style={styles.compactCardContent}>
                 <Text style={styles.cardLabel}>Attendance</Text>
-                <Text style={styles.compactCardValue}>{summary.leaveCount} Absent</Text>
+                <Text style={styles.compactCardValue}>{attSummary.leaveCount} Absent</Text>
               </View>
               <View style={[
                 styles.compactCardBadge,
                 {
-                  backgroundColor: summary.todayAttendanceStatus?.toLowerCase() === 'present'
+                  backgroundColor: attSummary.todayAttendanceStatus?.toLowerCase() === 'present'
                     ? '#D1FAE5'
-                    : summary.todayAttendanceStatus?.toLowerCase() === 'absent'
+                    : attSummary.todayAttendanceStatus?.toLowerCase() === 'absent'
                     ? '#FEE2E2'
                     : '#FEF3C7'
                 }
@@ -564,18 +676,35 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={[
                   styles.compactCardBadgeText,
                   {
-                    color: summary.todayAttendanceStatus?.toLowerCase() === 'present'
+                    color: attSummary.todayAttendanceStatus?.toLowerCase() === 'present'
                       ? '#059669'
-                      : summary.todayAttendanceStatus?.toLowerCase() === 'absent'
+                      : attSummary.todayAttendanceStatus?.toLowerCase() === 'absent'
                       ? '#DC2626'
                       : '#D97706'
                   }
                 ]}>
-                  {summary.todayAttendanceStatus?.toUpperCase() || 'NOT MARKED'}
+                  {attSummary.todayAttendanceStatus?.toUpperCase() || 'NOT MARKED'}
                 </Text>
               </View>
             </TouchableOpacity>
           ))}
+
+          {/* Star Rewards — one column per child (2+ children with the stars
+              menu), else the single child's card. Hidden when the school has
+              stars off. */}
+          {isStarsEnabled && (starsData.length >= 2 ? (
+            <StarFamilyCard
+              students={starsData}
+              refreshKey={starsRefreshKey}
+              onPressStudent={(studentId) => navigation.navigate(ROUTES.STARS, { studentId })}
+            />
+          ) : starsData.length === 1 ? (
+            <StarSummaryCard
+              studentId={starsData[0].id}
+              refreshKey={starsRefreshKey}
+              onPress={() => navigation.navigate(ROUTES.STARS, { studentId: starsData[0].id })}
+            />
+          ) : null)}
         </View>
 
 
@@ -671,6 +800,13 @@ const styles = StyleSheet.create({
   heroStudentRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    borderRadius: 14,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    marginHorizontal: -spacing.sm,
+  },
+  heroStudentRowSelected: {
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
   },
   heroStudentAvatar: {
     width: 48,
@@ -726,26 +862,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     color: colors.textPrimary,
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  notificationButton: {
-    padding: spacing.xs,
-    position: 'relative',
-  },
-  notificationBadge: {
-    position: 'absolute',
-    top: 4,
-    right: 4,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#EF4444',
-    borderWidth: 1.5,
-    borderColor: colors.backgroundLight,
   },
   scrollView: {
     flex: 1,

@@ -45,6 +45,11 @@ export const API_ENDPOINTS = {
     GET_ALL_EXAMS: '/examSchedule/getAllExam',
   },
 
+  // Calendar
+  CALENDAR: {
+    GET: '/calendar/getCalendar',
+  },
+
   // Gallery
   GALLERY: {
     GET_CATEGORIES: '/gallery/getParentCategory',
@@ -58,6 +63,12 @@ export const API_ENDPOINTS = {
     GET_TERM_REPORTCARD: '/reportCard/getTermReportcardAdno',
   },
 
+  // Report Card (PDF generated from schooltree's report card templates)
+  REPORT_CARD: {
+    GET_TYPES: '/reportCard/getReportCardType',
+    GENERATE: '/reportCard/generateReportCard',
+  },
+
   // Payments/Fees
   PAYMENTS: {
     GET_STUDENT_PAY_DETAILS: '/payments/getStudentPayDetails',
@@ -65,6 +76,7 @@ export const API_ENDPOINTS = {
     GET_FEE_INSTALLMENT: '/payments/getFeeInstallment',
     GET_STUDENT_PAY_HISTORY: '/payments/getStudentPayHistory',
     GET_PRINT_BILL: '/payments/getPrintBill',
+    GET_FEE_BILL: '/payments/getFeeBill',
     PAY_ONLINE: '/payments/payOnline',
     UPDATE_ORDER_ID: '/payments/updateOrderId',
     GET_YEAR_ID: '/payments/getYearId',
@@ -101,5 +113,26 @@ export const API_ENDPOINTS = {
   // App Version
   APP_VERSION: {
     CHECK: '/appVersion/check',
+  },
+
+  // Parent menus configured in SchoolTree
+  PARENT_MENU: {
+    GET_MENUS: '/parentMenu/getMenus',
+  },
+
+  // Timed MCQ tests (server-side timer and scoring)
+  MCQ: {
+    LIST: '/mcq/exam/list',
+    START: '/mcq/exam/start',
+    ANSWER: '/mcq/exam/answer',
+    FINISH: '/mcq/exam/finish',
+    RESULT: '/mcq/exam/result',
+  },
+
+  // Star Rewards (configured in SchoolTree → School Settings → Stars)
+  STARS: {
+    SUMMARY: '/stars/summary',
+    HISTORY: '/stars/history',
+    LEADERBOARD: '/stars/leaderboard',
   },
 } as const;

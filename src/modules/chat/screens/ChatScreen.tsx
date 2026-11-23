@@ -5,7 +5,6 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   TouchableOpacity,
 } from 'react-native';
 import {
@@ -17,11 +16,12 @@ import {
   borderRadius,
   shadows,
 } from '../../../design-system';
-import { useAuth } from '../../../core/auth';
 import { useChatProvider } from '../hooks/useChatProvider';
 import { MessageBubble, ChatInput, SuggestedQuestions, ProviderSelector } from '../components';
 import { ChatMessage, StudentContext, ChatProvider } from '../types/chat.types';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AppAlert } from '../../../design-system/molecules/AppAlert';
+import { useModuleAccessGuard, useMenuStudents } from '../../../core/menu';
 
 const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -37,7 +37,8 @@ const getWelcomeMessage = (provider: ChatProvider): ChatMessage => ({
 });
 
 export const ChatScreen: React.FC = () => {
-  const { students, selectedStudentId } = useAuth();
+  useModuleAccessGuard('chat');
+  const { students, selectedStudentId } = useMenuStudents('chat');
   const flatListRef = useRef<FlatList>(null);
 
   const {
@@ -91,7 +92,7 @@ export const ChatScreen: React.FC = () => {
 
   const handleSendMessage = async (text: string) => {
     if (!isInitialized) {
-      Alert.alert(
+      AppAlert.alert(
         'AI Not Available',
         providerError || 'The AI assistant is not configured. Please contact support.',
         [{ text: 'OK' }]
@@ -140,7 +141,7 @@ export const ChatScreen: React.FC = () => {
       // Remove loading message and show error
       setMessages((prev) => prev.filter((m) => m.id !== 'loading'));
 
-      Alert.alert('Error', error.message || 'Failed to get response. Please try again.');
+      AppAlert.alert('Error', error.message || 'Failed to get response. Please try again.');
     } finally {
       setIsLoading(false);
       scrollToBottom();
@@ -148,7 +149,7 @@ export const ChatScreen: React.FC = () => {
   };
 
   const handleClearChat = () => {
-    Alert.alert(
+    AppAlert.alert(
       'Clear Chat',
       'Are you sure you want to clear the chat history?',
       [
@@ -170,7 +171,7 @@ export const ChatScreen: React.FC = () => {
 
     // If there are messages beyond welcome, confirm switch
     if (messages.length > 1) {
-      Alert.alert(
+      AppAlert.alert(
         'Switch AI Provider',
         `Switching to ${newProvider === 'dialogflow' ? 'School Assistant' : 'Gemini AI'} will clear the current conversation. Continue?`,
         [

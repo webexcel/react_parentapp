@@ -9,7 +9,8 @@ export const circularsApi = {
   getCirculars: async (
     mobileNumber: string,
     pageSize: number = 50,
-    currentSize: number = 0
+    currentSize: number = 0,
+    adnos?: string[]
   ): Promise<CircularsResponse> => {
     const response = await apiClient.post<CircularsResponse>(
       API_ENDPOINTS.CIRCULAR.GET_ALL,
@@ -17,6 +18,8 @@ export const circularsApi = {
         mobile_number: mobileNumber,
         page_size: pageSize,
         current_size: currentSize,
+        // Children who have the Circulars menu; omitted = server returns all
+        ...(adnos ? { adnos } : {}),
       }
     );
     return response.data;

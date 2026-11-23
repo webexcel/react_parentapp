@@ -250,6 +250,9 @@ android {
         bsschool {
             dimension "brand"
             applicationId "com.schooltree.bs"
+            // Server requires minVersion 8.0 for this brand (appVersion/check)
+            versionCode 8
+            versionName "8.0"
             resValue "string", "app_name", "B.S Nursery & Primary School Parent"
             buildConfigField "String", "BRAND_ID", "\"bsschool\""
             buildConfigField "String", "AUTH_TYPE", "\"otp\""
@@ -480,6 +483,8 @@ android {
         pssenior {
             dimension "brand"
             applicationId "com.schooltree.pssenior"
+            versionCode 11
+            versionName "11.0"
             resValue "string", "app_name", "P.S. Senior Secondary School Parent"
             buildConfigField "String", "BRAND_ID", "\"pssenior\""
             buildConfigField "String", "AUTH_TYPE", "\"password\""
@@ -490,6 +495,8 @@ android {
         railwaybalabhavan {
             dimension "brand"
             applicationId "com.schooltree.balabhavan"
+            versionCode 13
+            versionName "13.0"
             resValue "string", "app_name", "Railway Balabhavan School Parent"
             buildConfigField "String", "BRAND_ID", "\"railwaybalabhavan\""
             buildConfigField "String", "AUTH_TYPE", "\"otp\""
@@ -530,7 +537,7 @@ android {
         stdominics {
             dimension "brand"
             applicationId "com.schooltree.dominics"
-            resValue "string", "app_name", "St. Dominic's anglo-indian Hr. Sec. School Parent"
+            resValue "string", "app_name", "St. Dominic\\'s anglo-indian Hr. Sec. School Parent"
             buildConfigField "String", "BRAND_ID", "\"stdominics\""
             buildConfigField "String", "AUTH_TYPE", "\"otp\""
             buildConfigField "String", "DB_NAME", "\"dominic\""
@@ -1175,6 +1182,10 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+    // Animated GIF attachments (circulars / personalized messages). Without it
+    // Android's image pipeline shows only the first frame. Keep in step with
+    // the fresco version React Native ships (node_modules/react-native/gradle/libs.versions.toml).
+    implementation("com.facebook.fresco:animated-gif:3.6.0")
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")

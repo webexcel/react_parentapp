@@ -2,6 +2,7 @@ import React from 'react';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {AuthProvider} from '../core/auth';
 import {BrandProvider} from '../core/brand';
+import {MenuProvider} from '../core/menu';
 import {ThemeProvider} from '../design-system/theme/ThemeContext';
 
 // Create React Query client - exported for Reactotron integration
@@ -27,13 +28,16 @@ interface AppProvidersProps {
  * 2. ThemeProvider - Provides dynamic theming based on brand
  * 3. QueryClientProvider - React Query for server state
  * 4. AuthProvider - Authentication state management
+ * 5. MenuProvider - Server-configured menus for the selected child
  */
 export const AppProviders: React.FC<AppProvidersProps> = ({children}) => {
   return (
     <BrandProvider>
       <ThemeProvider>
         <QueryClientProvider client={queryClient}>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <MenuProvider>{children}</MenuProvider>
+          </AuthProvider>
         </QueryClientProvider>
       </ThemeProvider>
     </BrandProvider>

@@ -32,10 +32,11 @@ export interface LinkChunk {
 export type LinkifyChunk = TextChunk | LinkChunk;
 
 /**
- * What we look for unless a caller asks for more. Phone numbers are left out
- * because the false-positive rate on school text is high.
+ * What we look for unless a caller asks for less. Phone numbers are matched
+ * only in Indian mobile / landline shapes (see isPhoneNumber), which keeps
+ * dates, amounts and roll numbers in school text from turning into links.
  */
-export const DEFAULT_LINK_KINDS: LinkKind[] = ['url', 'email'];
+export const DEFAULT_LINK_KINDS: LinkKind[] = ['url', 'email', 'phone'];
 
 // Kept as literals rather than strings so the escaping stays readable - they are
 // combined through their .source in buildPattern.
@@ -101,8 +102,21 @@ const normalizePhone = (value: string): string => {
 };
 
 const isPhoneNumber = (value: string): boolean => {
-  const digits = value.replace(/\D/g, '').length;
-  return digits >= MIN_PHONE_DIGITS && digits <= MAX_PHONE_DIGITS;
+  const count = value.replace(/\D/g, '').length;
+  if (count < MIN_PHONE_DIGITS || count > MAX_PHONE_DIGITS) {
+    return false;
+  }
+  // A number is written in at most a few groups ("98765 43210",
+  // "044-2498 1234"); a long run of short groups is a list of figures.
+  if (value.trim().split(/[\s-]+/).length > 4) {
+    return false;
+  }
+  let digits = value.replace(/\D/g, '');
+  if (digits.length === 12 && digits.startsWith('91')) {
+    digits = digits.slice(2);
+  }
+  // Indian mobile (10 digits, starts 6-9) or landline with STD code (0 + 10)
+  return /^[6-9]\d{9}$/.test(digits) || /^0\d{10}$/.test(digits);
 };
 
 /**

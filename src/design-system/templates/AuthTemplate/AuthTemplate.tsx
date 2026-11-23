@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   View,
   StyleSheet,
   KeyboardAvoidingView,
+  Keyboard,
   Platform,
   ScrollView,
   StatusBar,
@@ -21,14 +22,29 @@ export const AuthTemplate: React.FC<AuthTemplateProps> = ({
   header,
   footer,
 }) => {
+  const scrollRef = useRef<ScrollView>(null);
+
+  // Auth forms are short: when the keyboard opens, scroll to the bottom so the
+  // submit button (e.g. "Log In") is not left hidden behind the keyboard.
+  useEffect(() => {
+    const sub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      () => setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 50)
+    );
+    return () => sub.remove();
+  }, []);
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={colors.surfaceLight} />
       <KeyboardAvoidingView
         style={styles.keyboardView}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        // Android already resizes the window (adjustResize in the manifest);
+        // adding 'height' on top kept the form from moving above the keyboard.
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <ScrollView
+          ref={scrollRef}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"

@@ -50,7 +50,9 @@ export type IconName =
   | 'playCircle'
   | 'add'
   | 'arrowBack'
-  | 'thumbUp';
+  | 'thumbUp'
+  | 'quiz'
+  | 'timer';
 
 export interface IconProps {
   name: IconName;
@@ -109,6 +111,8 @@ const iconMap: Record<IconName, string> = {
   add: 'add',
   arrowBack: 'arrow-back',
   thumbUp: 'thumb-up',
+  quiz: 'quiz',
+  timer: 'timer',
 };
 
 export const Icon: React.FC<IconProps> = ({
@@ -128,5 +132,9 @@ export const Icon: React.FC<IconProps> = ({
     />
   );
 };
+
+/** True for a name the app can draw (e.g. an icon name configured on the server). */
+export const isIconName = (name: string | null | undefined): name is IconName =>
+  !!name && Object.prototype.hasOwnProperty.call(iconMap, name);
 
 export { iconMap };

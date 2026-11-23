@@ -6,7 +6,6 @@ import {
   RefreshControl,
   ActivityIndicator,
   TouchableOpacity,
-  Alert,
   Image,
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -21,14 +20,16 @@ import {
   borderRadius,
   shadows,
 } from '../../../design-system';
-import { useAuth } from '../../../core/auth';
 import { useParentMessages, useDeleteMessage } from '../hooks/useParentMessages';
 import { ParentMessage } from '../types/parentMessage.types';
 import { ROUTES } from '../../../core/constants';
+import { AppAlert } from '../../../design-system/molecules/AppAlert';
+import { useModuleAccessGuard, useMenuStudents } from '../../../core/menu';
 
 export const ParentMessagesScreen: React.FC = () => {
+  useModuleAccessGuard('parentMessage');
   const navigation = useNavigation<any>();
-  const { students, selectedStudentId, selectStudent } = useAuth();
+  const { students, selectedStudentId, selectStudent } = useMenuStudents('parentMessage');
   const [refreshing, setRefreshing] = useState(false);
 
   // Wrap async selectStudent for ListTemplate compatibility
@@ -53,7 +54,7 @@ export const ParentMessagesScreen: React.FC = () => {
   };
 
   const handleDelete = (id: number) => {
-    Alert.alert(
+    AppAlert.alert(
       'Delete Message',
       'Are you sure you want to delete this message?',
       [
