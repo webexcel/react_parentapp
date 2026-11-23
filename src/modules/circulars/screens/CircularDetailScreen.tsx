@@ -283,7 +283,7 @@ export const CircularDetailScreen: React.FC = () => {
       // ("Failed to find configured root") — every .doc/.xls failed.
       const filePath = `${ReactNativeBlobUtil.fs.dirs.CacheDir}/${fileName}`;
 
-      const res = await ReactNativeBlobUtil.config({
+      await ReactNativeBlobUtil.config({
         fileCache: true,
         path: filePath,
       }).fetch('GET', attachment.url);
